@@ -1,0 +1,7 @@
+db_nextcloud_pwd: "{{ lookup('password', '/tmp/db-nextcloud.pwd chars=ascii_letters,digits length=32') }}"
+nc_admin_pwd: "{{ lookup('password', '/tmp/nc-admin.pwd chars=ascii_letters,digits length=32') }}"
+nc_admin_pwd_file: "/root/nc-admin.pwd"
+www_root: "/var/www"
+nc_dir: "{{ www_root }}/nextcloud"
+data_dir: "/var/nc-data"
+allow_download: false

@@ -1,0 +1,7 @@
+[KDE]
+SingleClick=false
+
+[KDE Action Restrictions][$i]
+action/start_new_session=false
+#action/switch_user=false
+#action/lock_screen=false

@@ -1,0 +1,24 @@
+- name: check if dnsmasq is already there
+  stat: path=/etc/dnsmasq.d/dnsmasq-dhcp
+  register: dnsmasq
+
+- name: install dnsmasq package
+  apt:
+    name:
+      - dnsmasq
+      - resolvconf
+    state: latest # noqa package-latest
+
+- name: configure dnsmasq dhcp
+  template:
+    src: dnsmasq-dhcp.j2
+    dest: /etc/dnsmasq.d/dnsmasq-dhcp
+    mode: 0644
+  notify: "restart dnsmasq"
+
+- name: configure dnsmasq tftp
+  template:
+    src: dnsmasq-tftp-netboot-installer.j2
+    dest: /etc/dnsmasq.d/tftp-netboot-installer
+    mode: 0644
+  notify: "restart dnsmasq"

@@ -1,0 +1,135 @@
+---
+- name: install packages
+  ansible.builtin.apt:
+    name:
+      - live-build
+      - systemd-journal-remote
+    state: latest # noqa package-latest
+
+- name: prepare live-build directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/systemd-journal-remote.service.d/
+    state: directory
+    mode: 0755
+
+- name: configure remote journal
+  ansible.builtin.blockinfile:
+    path: /etc/systemd/system/systemd-journal-remote.service.d/override.conf
+    create: true
+    block: |
+      [Service]
+      ExecStart=
+      ExecStart=/lib/systemd/systemd-journal-remote --listen-http=-3 --output=/var/log/journal/remote
+  notify: restart systemd-journal-remote
+
+- name: prepare live-build directory
+  ansible.builtin.file:
+    path: "{{ build_dir }}"
+    state: directory
+    mode: 0755
+
+- name: copy build script
+  ansible.builtin.template:
+    src: livebuilder.sh
+    dest: /usr/local/sbin/
+    mode: 0755
+
+- name: prepare shared directory
+  ansible.builtin.file:
+    path: "/srv/tmpshare"
+    state: directory
+    mode: "1777"
+
+- name: mount tmpfs on shared directory
+  ansible.builtin.mount:
+    path: "/srv/tmpshare/"
+    src: "tmpfs"
+    fstype: tmpfs
+    opts: rw,nofail
+    state: mounted
+
+- name: export shared directory
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    line: "/srv/tmpshare/ *(rw,fsid=0,crossmnt,no_subtree_check)"
+  notify: export nfs
+
+- name: provide service and timer for livebuilder
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: 0644
+  with_items:
+    - livebuilder.service
+    - livebuilder.timer
+  notify: "enable livebuilder.timer"
+
+- name: copy live-build configuration
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ build_dir }}"
+    force: false
+    local_follow: false
+    mode: preserve
+  loop: "{{ build_images }}"
+
+- name: prepare debian live nfs boot entry title
+  ansible.builtin.blockinfile:
+    path: /etc/di-netboot-assistant/ipxemenu.HEAD
+    insertafter: '-- Customized Boot Entries --'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK menu entries {{ item }}"
+    block: |
+      item {{ item }}-NFS Debian GNU/Linux {{ item }} NFS
+      item {{ item }}-RAM Debian GNU/Linux {{ item }} RAM
+  loop:
+    "{{ build_images }}"
+  notify: rebuild di-netboot menu
+
+- name: prepare debian live boot loader ipxe
+  ansible.builtin.blockinfile:
+    path: /etc/di-netboot-assistant/ipxemenu.HEAD
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}"
+    block: |
+      :{{ item }}-NFS
+          echo Booting Debian GNU/Linux {{ item }} NFS
+          kernel ${210:string}d-i/n-live/{{ item }}/live/vmlinuz \
+            initrd=initrd.img netboot=nfs {{ boot_params|join(' ') }} hostname=${netX/mac} \
+            nfsroot={{ ansible_default_ipv4.address }}:/var/lib/tftpboot/d-i/n-live/{{ item }}/
+          initrd ${210:string}d-i/n-live/{{ item }}/live/initrd.img
+          boot
+
+      :{{ item }}-RAM
+          echo Booting Debian GNU/Linux {{ item }} RAM
+          kernel ${210:string}d-i/n-live/{{ item }}/live/vmlinuz \
+            initrd=initrd.img {{ boot_params|join(' ') }} hostname=${netX/mac} \
+            fetch=http://{{ ansible_default_ipv4.address }}/d-i/n-live/{{ item }}/live/filesystem.squashfs
+          initrd ${210:string}d-i/n-live/{{ item }}/live/initrd.img
+          boot
+  loop: "{{ build_images }}"
+  notify: rebuild di-netboot menu
+
+- name: prepare debian live boot loader grub
+  ansible.builtin.blockinfile:
+    path: /etc/di-netboot-assistant/grub.cfg.HEAD
+    insertbefore: "^menuentry 'Boot from local disk..'"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}"
+    block: |
+      menuentry 'Debian GNU/Linux Live {{ item }} NFS' {
+          regexp --set=1:oct4 --set=2:oct5 --set=3:oct6 \
+            "\:([[:xdigit:]]+)\:([[:xdigit:]]+)\:([[:xdigit:]]+)\$" $net_default_mac
+          linux (http,{{ ansible_default_ipv4.address }})/d-i/n-live/{{ item }}/live/vmlinuz \
+            netboot=nfs {{ boot_params|join(' ') }} hostname=${oct4}${oct5}${oct6} \
+            nfsroot={{ ansible_default_ipv4.address }}:/var/lib/tftpboot/d-i/n-live/{{ item }}/
+          initrd (http,{{ ansible_default_ipv4.address }})/d-i/n-live/{{ item }}/live/initrd.img
+      }
+
+      menuentry 'Debian GNU/Linux Live {{ item }} RAM' {
+          regexp --set=1:oct4 --set=2:oct5 --set=3:oct6 \
+            "\:([[:xdigit:]]+)\:([[:xdigit:]]+)\:([[:xdigit:]]+)\$" $net_default_mac
+          linux (http,{{ ansible_default_ipv4.address }})/d-i/n-live/{{ item }}/live/vmlinuz \
+            {{ boot_params|join(' ') }} hostname=${oct4}${oct5}${oct6} \
+            fetch=http://{{ ansible_default_ipv4.address }}/d-i/n-live/{{ item }}/live/filesystem.squashfs
+          initrd (http,{{ ansible_default_ipv4.address }})/d-i/n-live/{{ item }}/live/initrd.img
+      }
+  loop: "{{ build_images }}"
+  notify: rebuild di-netboot menu

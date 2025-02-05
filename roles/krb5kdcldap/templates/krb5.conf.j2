@@ -1,0 +1,26 @@
+[libdefaults]
+        default_realm = {{ ansible_domain | upper }}
+
+[realms]
+        {{ ansible_domain | upper }} = {
+                kdc = {{ ansible_hostname }}
+                admin_server = {{ ansible_hostname }}
+                database_module = LDAP
+        }
+
+[domain_realm]
+        .{{ ansible_domain }} = {{ ansible_domain | upper }}
+        {{ ansible_domain }} = {{ ansible_domain | upper }}
+
+[dbdefaults]
+        ldap_kerberos_container_dn = cn=kerberos,{{ basedn }}
+
+[dbmodules]
+        LDAP = {
+                db_library = kldap
+                ldap_kdc_dn = cn=kdc,cn=kerberos,{{ basedn }}
+                ldap_kadmind_dn = cn=kadmin,cn=kerberos,{{ basedn }}
+                ldap_service_password_file = /etc/krb5kdc/service.keyfile
+                ldap_servers = ldapi:///
+                ldap_conns_per_server = 5
+        }

@@ -1,0 +1,20 @@
+---
+- name: run the image build script
+  ansible.builtin.command:
+    cmd: livebuilder.sh
+  listen: run build script
+
+- name: enable timer for livebuilder
+  ansible.builtin.systemd:
+    name: livebuilder.timer
+    state: started
+    enabled: true
+  listen: enable livebuilder.timer
+
+- name: restart systemd-journal-remote
+  ansible.builtin.systemd:
+    name: systemd-journal-remote.socket
+    daemon_reload: true
+    state: restarted
+    enabled: true
+  listen: restart systemd-journal-remote

@@ -1,0 +1,23 @@
+[sssd]
+domains = LDAP
+config_file_version = 2
+
+[nss]
+filter_groups = root
+filter_users = root
+
+[pam]
+
+[domain/LDAP]
+id_provider = ldap
+ldap_uri = ldap://{{ ldap_server }}/
+ldap_search_base = {{ basedn }}
+
+auth_provider = ldap
+cache_credentials = true
+
+min_id = {{ min_id_sssd }}
+max_id = {{ max_id_sssd }}
+
+## remove this after providing propper certificates:
+ldap_tls_reqcert = allow

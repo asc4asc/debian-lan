@@ -1,0 +1,7 @@
+- name: enable ddns-update timer
+  systemd:
+    name: ddns-update.timer
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  listen: "enable ddns-update timer"

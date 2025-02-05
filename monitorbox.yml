@@ -1,0 +1,32 @@
+## This playbook deploys icinga with graphite.
+##
+## After running this playbook, visit
+##  https://monitorbox.org/icingaweb2/setup
+## and continue the setup:
+##
+##  • setup token: '/etc/icingaweb2/setup.token'
+##  • switch on graphite and icingadb
+##  • user DB: icingawebuser
+##  • add a web user
+##  • icinga DB: icingadb
+##  • redis DB: localhost, port 6379
+##  • icinga API: localhost, icingadb-web
+##
+## Credentials for the data bases are available
+## in '/root/icinga.pwd'.  To get rid of PHP
+## warnings, run the playbook once more.    
+##
+---
+- name: apply configuration to the monitorbox
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+#    ansible_connection: local
+    extra_pkgs: []
+    extra_pkgs_bpo: []
+
+  roles:
+    - up2date_debian
+    - icinga

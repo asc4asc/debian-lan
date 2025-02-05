@@ -1,0 +1,100 @@
+#!/usr/bin/python3
+
+import os, sys
+import subprocess
+import xmlrpc.client as xc
+import ssl
+import argparse
+
+parser = argparse.ArgumentParser(description='Upload a file to the bittorrent seeder.')
+parser.add_argument('--server', required=True,
+                    help="server address and RPC port like 'IPaddress:port'")
+parser.add_argument('--dht-port', required=True,
+                    help='the DHT port the RPC server is listening on')
+pwgrp = parser.add_mutually_exclusive_group(required=True)
+pwgrp.add_argument('--passwd',
+                   help='RPC secret, either this or --pwdfile needs to be provided')
+pwgrp.add_argument('--pwdfile', help="file containing the RPC secret in the form " \
+                   "'secret = \"token:SECRET\"'. " \
+                   'Either this or --secret needs to be provided')
+certgrp = parser.add_mutually_exclusive_group(required=True)
+certgrp.add_argument('--no-cert', action='store_true',
+                     help='do not use/check SSL certificate')
+certgrp.add_argument('--cert', help='the certificate to use for verification')
+parser.add_argument('--aria-opt', help='extra aria2c options appended to the defaults')
+parser.add_argument('FILE', help='the file to upload')
+
+args = parser.parse_args()
+
+rpcseeder = 'https://' + args.server + '/rpc'
+dhtentry = args.server.split(':')[0] + ':' + args.dht_port
+file2send = args.FILE
+torrent = '/tmp/' + os.path.basename(file2send) + '.torrent'
+
+if args.aria_opt:
+    aria2options = args.aria_opt
+else:
+    aria2options = None
+
+if args.passwd:
+    secret = 'token:' + args.passwd
+else:
+    exec(open(args.pwdfile).read())
+
+ssl_ctx = ssl.create_default_context()
+if args.no_cert:
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
+    print("Certificate verification disabled.")
+elif args.cert is not None:
+    ssl_ctx.load_verify_locations(args.cert)
+
+s = xc.ServerProxy(rpcseeder, context = ssl_ctx)
+
+def make_torrent():
+    if os.path.isfile(torrent):
+        print("Torrent file", torrent, "exists already, please (re)move it.")
+        sys.exit(1)
+
+    cmd = ["/usr/bin/mktorrent", "-l 24", "-v", "-o", torrent, file2send]
+    subprocess.run(cmd, check=True)
+    h = subprocess.check_output(["/usr/bin/aria2c", "-S ", torrent])
+    for line in h.decode().splitlines():
+        if "Info Hash" in line:
+            return line.split(': ')[1]
+
+def check_seeds(bthash):
+    active_seeds = s.aria2.tellActive(secret)
+    for seed in active_seeds:
+        f = seed['bittorrent']['info']['name']
+        gid = seed['gid']
+        ihash = seed['infoHash']
+        if f == os.path.basename(file2send):
+            print(file2send, "is already seeded with GID:", gid)
+            print("Info Hash is:", ihash)
+            if bthash == ihash:
+                print("The torrent file has not changed, exiting.")
+                return False
+            else:
+                print("The torrent file has changed, replacing torrent.")
+                s.aria2.remove(secret, gid)
+                return True
+    print("="*19, " Uploading new torrent with aria2 now. ", "="*19)
+    return True
+
+def upload_torrent():
+    s.aria2.addTorrent(secret, xc.Binary(open(torrent, mode='rb').read()))
+    cmd = ["/usr/bin/aria2c", "--dht-entry-point=" + dhtentry,
+           "--check-integrity", "--dir=" + os.path.dirname(file2send)]
+    if aria2options:
+        cmd = cmd + aria2options.split()
+    cmd.append(torrent)
+    subprocess.run(cmd)
+
+############################
+
+if __name__ == '__main__':
+    infoHash = make_torrent()
+    if check_seeds(infoHash):
+        upload_torrent()
+        print("Upload of", file2send, "with", __file__, "finished.")

@@ -1,0 +1,27 @@
+- name: make sure /etc/ddns-update/ exists
+  file: path=/etc/ddns-update/ state=directory recurse=yes
+
+- name: install ddns-update config
+  template:
+    src: ddns-update.conf.j2
+    dest: /etc/ddns-update/ddns-update.conf
+    mode: 0644
+
+- name: install ddns-update script
+  copy:
+    src: ddns-update
+    dest: /usr/local/bin/ddns-update
+    mode: 0755
+
+- name: install ddns-update.service
+  copy:
+    src: ddns-update.service
+    dest: /etc/systemd/system/ddns-update.service
+    mode: 0644
+
+- name: install ddns-update.timer
+  copy:
+    src: ddns-update.timer
+    dest: /etc/systemd/system/ddns-update.timer
+    mode: 0644
+  notify: enable ddns-update timer

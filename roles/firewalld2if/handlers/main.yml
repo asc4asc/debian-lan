@@ -1,0 +1,9 @@
+- name: restart networking
+  command: ifup {{ if_lan }}
+  listen: "bring up LAN interface"
+  when: not run_in_installer|default(false)|bool
+
+- name: start firewalld
+  systemd: name=firewalld state=started enabled=yes
+  listen: "start firewalld"
+  when: not run_in_installer|default(false)|bool

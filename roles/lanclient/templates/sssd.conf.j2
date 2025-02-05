@@ -1,0 +1,22 @@
+[sssd]
+domains = LDAP
+config_file_version = 2
+
+[nss]
+filter_groups = root
+filter_users = root
+
+[pam]
+
+[domain/LDAP]
+id_provider = ldap
+ldap_uri = ldap://{{ ldap_server }}/
+ldap_search_base = {{ basedn }}
+
+auth_provider = krb5
+krb5_server = {{ krb_server }}
+krb5_realm = {{ ansible_domain | upper }}
+cache_credentials = true
+
+min_id = {{ min_id_sssd }}
+max_id = {{ max_id_sssd }}

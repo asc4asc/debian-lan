@@ -1,0 +1,36 @@
+---
+## This playbook deploys the installbox6.  Add 'hostname=XXX' and
+## 'domain=YYY' to the installer boot parameters to set hostname and
+## domain.
+
+## FIXME: works only on bookworm (kea-dhcp6, atftpd)
+
+- name: apply configuration to the installbox6
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+    ## This interface provides the default route:
+    if_lan: "{{ ansible_default_ipv4.interface }}"
+    prefix: '2001:db8:b001::/64'
+
+    ## Find the IPv6 address: FIXME: not needed anymore?
+    ipv6_lan: "{{ prefix | ipaddr('address') | slaac(ansible_default_ipv4.macaddress) }}"
+
+    di_dist: "{{ ansible_distribution_release }}"
+    di_version: 11 # "{{ ansible_distribution_major_version }}"
+    di_pkg: "debian-installer-{{ di_version }}-netboot-amd64"
+
+    extra_pkgs: [binutils] # FIXME: missing dependency in di-netboot-assistant
+
+    ansible_user: ansible
+    repo_dir: "/home/{{ ansible_user }}/debian-lan"
+    ansible_python_interpreter: "/usr/bin/python3"  ## needed for firewalld module
+
+  roles:
+    - up2date_debian
+    - dhcp6radvdatftpd
+    - netbootinstaller
+    - aptcacher
+    - prepare4clients

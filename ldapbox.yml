@@ -1,0 +1,27 @@
+---
+## This playbook deploys the ldapbox server.  Add 'hostname=XXX' and 'domain=YYY'
+## to the installer boot parameters to set hostname and domain.
+##
+
+
+- name: Apply configuration to the ldapbox server
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+#    ansible_connection: local
+    internal_if: "{{ ansible_default_ipv4.interface }}"
+    ansible_python_interpreter: "/usr/bin/python3"  ## needed for firewalld module
+
+  vars_prompt:
+    - name: "foo_pwd"
+      prompt:
+        In case you would like to prepare a test user 'foo' and have
+        not done so yet, provide foo's password here.  Leave empty to
+        just continue
+      private: true
+
+  roles:
+    - up2date_debian
+    - ldap

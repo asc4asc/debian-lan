@@ -1,0 +1,227 @@
+## Install and configure icinga with graphite
+- name: Install icinga components
+  apt:
+    name:
+      - icinga2
+      - icingadb
+      - icingadb-web
+      - mariadb-server
+      - python3-pymysql
+      - redis-server
+      - graphite-web
+      - python3-mysqldb
+      - graphite-carbon
+      - icingaweb2-module-graphite
+      - libapache2-mod-wsgi-py3
+    state: latest # noqa package-latest
+
+- name: Enable apache TLS module
+  apache2_module:
+    name: ssl
+  notify: Reload apache2
+
+- name: Enable https
+  shell: 'grep -q "VirtualHost .*:443" * || a2ensite default-ssl.conf'
+  args:
+    chdir: /etc/apache2/sites-enabled/
+    creates: default-ssl.conf
+  notify: Reload apache2
+  register: cmd_result
+  changed_when: cmd_result.stdout != '' and cmd_result.stdout is not search('skipped')
+
+- name: Create icinga databases
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ item }}"
+    state: present
+  loop:
+    - icingadb
+    - icingawebuser
+    - graphite
+  register: dbsetup
+
+- name: create all database users
+  mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ item.db }}"
+    password: "{{ item.pw }}"
+    priv: '{{ item.db }}.*:ALL'
+    state: present
+  loop:
+    - db: icingadb
+      pw: "{{ icingadb_pwd }}"
+    - db: icingawebuser
+      pw: "{{ icingawebuser_pwd }}"
+    - db: graphite
+      pw: "{{ graphite_pwd }}"
+  when: dbsetup.changed
+
+- name: Dump DB passwords
+  shell: >
+    echo "{{ item.usr }}: {{ item.pw }}" >>
+    "{{ icinga_pwd_file }}" ; chmod 0600 "{{ icinga_pwd_file }}"
+  no_log: true
+  loop:
+    - usr: icingawebuser
+      pw: "{{ icingawebuser_pwd }}"
+    - usr: icingadb
+      pw: "{{ icingadb_pwd }}"
+    - usr: icingadb-web
+      pw: "{{ icinga_api_pwd }}"
+  when: dbsetup.changed
+
+- name: Initialize icingadb DB
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: icingadb
+    state: import
+    target: /usr/share/icingadb/schema/mysql/schema.sql
+  when: dbsetup.changed
+
+- name: Run icinga API setup and enable icingadb
+  command:
+    cmd: "{{ item }}"
+  loop:
+    - icinga2 node setup --master
+    - icinga2 feature enable icingadb
+  notify: Restart icinga
+  when: dbsetup.changed
+
+- name: Configure icingadb
+  replace:
+    path: "{{ item.path }}"
+    regexp: "{{ item.pat }}"
+    replace: "{{ item.rep }}"
+  loop:
+    - path: /etc/icingadb/config.yml
+      pat: 'password: CHANGEME'
+      rep: "password: {{ icingadb_pwd }}"
+    - path: /etc/icingadb/config.yml
+      pat: '^#  port: 6380'
+      rep: "  port: 6379"
+    - path: /etc/icinga2/features-enabled/icingadb.conf
+      pat: '//host = "127.0.0.1"'
+      rep: 'host = "127.0.0.1"'
+    - path: /etc/icinga2/features-enabled/icingadb.conf
+      pat: '//port = 6380'
+      rep: 'port = 6379'
+  notify: Enable and start icingadb
+
+- name: Configure icingadb-web
+  blockinfile:
+    path: /etc/icinga2/conf.d/api-users.conf
+    block: |
+      object ApiUser "icingadb-web" {
+        password = "{{ icinga_api_pwd }}"
+        permissions = [ "actions/*", "objects/modify/*", "objects/query/*", "status/query" ]
+      }
+  notify: Restart icinga
+
+- name: Generate setup token
+  command: icingacli setup token create
+  when: dbsetup.changed
+
+- name: Fix PHP deprecation warning
+  lineinfile:
+    path: /etc/icingaweb2/resources.ini
+    line: 'skip_validation = "0"'
+    state: absent
+
+- name: Generate setup token
+  command: icinga2 feature enable graphite
+  notify: Restart icinga
+  when: dbsetup.changed
+
+#### graphite ####
+- name: Set graphite host and port
+  replace:
+    path: /etc/icinga2/features-enabled/graphite.conf
+    regexp: "{{ item.pat }}"
+    replace: "{{ item.rep }}"
+  loop:
+    - pat: '//host = "127.0.0.1"'
+      rep: 'host = "127.0.0.1"'
+    - pat: '//port = 2003'
+      rep: 'port = 2003'
+  notify: Restart icinga
+
+- name: Copy graphite config
+  copy:
+    src: /usr/share/graphite-web/apache2-graphite.conf
+    dest: /etc/apache2/sites-available/graphite-web.conf
+    remote_src: True
+    force: False
+  notify: Reload apache2
+
+- name: Prepare icingaweb modules directory
+  file:
+    path: "/etc/icingaweb2/modules/"
+    state: directory
+    owner: www-data
+    group: icingaweb2
+    mode: '2770'
+
+- name: Prepare icingaweb config directories
+  file:
+    path: "/etc/icingaweb2/{{ item }}"
+    state: directory
+    owner: www-data
+    group: icingaweb2
+    mode: '2770'
+  loop:
+    - enabledModules
+    - modules/graphite
+    
+- name: Copy graphite icingaweb2 config
+  copy:
+    src: graphite-config.ini
+    dest: /etc/icingaweb2/modules/graphite/config.ini
+  notify: Restart icinga
+
+- name: Configure graphite listen port
+  lineinfile:
+    path: /etc/apache2/sites-available/graphite-web.conf
+    line: Listen localhost:8080
+    insertbefore: "<VirtualHost"
+  notify: Reload apache2
+
+- name: Configure graphite wsgi port
+  replace:
+    path: /etc/apache2/sites-available/graphite-web.conf
+    regexp: "\\*:80>"
+    replace: "localhost:8080>"
+  notify: Reload apache2
+
+- name: Configure graphite with mariaDB
+  template:
+    src: local_settings.py.yaml
+    dest: /etc/graphite/local_settings.py
+    backup: True
+  notify: Reload apache2
+
+- name: Initialize graphite django
+  command: su -s /bin/bash _graphite -c 'graphite-manage migrate --run-syncdb'
+  when: dbsetup.changed
+
+- name: Enable graphite
+  command: a2ensite graphite-web
+  args:
+    creates: /etc/apache2/sites-enabled/graphite-web.conf
+  notify: Reload apache2
+
+- name: Configure carbon
+  blockinfile:
+    path: /etc/carbon/storage-schemas.conf
+    insertbefore: '^\[default\]'
+    block: |
+      [icinga2_default]
+      pattern = ^icinga2\.
+      retentions = 1m:2d,5m:10d,15m:30d,30m:90d,360m:4y
+  notify: Restart carbon-cache
+
+
+- name: Fix graphite.wsgi
+  replace:
+    path: /usr/share/graphite-web/graphite.wsgi
+    regexp: graphite.local_settings
+    replace: local_settings

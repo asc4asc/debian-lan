@@ -1,0 +1,9 @@
+---
+kdc_master_pwd: "{{ lookup('password', '/tmp/kdc_master.pwd chars=ascii_letters,digits length=32') }}"
+kdc_master_pwd_file: "/root/kdc-master.pwd"
+
+kdc_service_pwd: "{{ lookup('password', '/tmp/kdc-service.pwd chars=ascii_letters,digits length=32') }}"
+kadmin_service_pwd: "{{ lookup('password', '/tmp/kadmin-service.pwd chars=ascii_letters,digits length=32') }}"
+
+kadmin_pwd: "{{ lookup('password', '/tmp/kadmin.pwd chars=ascii_letters,digits length=32') }}"
+kadmin_pwd_file: "/root/kadmin.pwd"

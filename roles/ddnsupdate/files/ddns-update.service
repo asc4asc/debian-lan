@@ -1,0 +1,6 @@
+[Unit]
+Description=Update ddns
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ddns-update

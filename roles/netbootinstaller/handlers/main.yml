@@ -1,0 +1,15 @@
+- name: bind mount images
+  mount:
+    path: "{{ tftp_root }}/d-i/n-pkg/"
+    src: /usr/lib/debian-installer/
+    fstype: none
+    state: mounted
+    opts: bind
+  listen: bind mount images
+
+- name: rebuild di-netboot-assistant menu
+  command: "{{ item }}"
+  with_items:
+    - di-netboot-assistant rebuild-menu
+    - di-netboot-assistant rebuild-grub
+  listen: rebuild di-netboot-assistant menu

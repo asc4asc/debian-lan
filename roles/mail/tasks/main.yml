@@ -1,0 +1,205 @@
+---
+- name: Preseed postfix
+  ansible.builtin.debconf:
+    name: postfix
+    question: "{{ item.q }}"
+    value: "{{ item.v }}"
+    vtype: "{{ item.t }}"
+  loop:
+    - { q: postfix/main_mailer_type, v: Internet Site, t: select }
+    - { q: postfix/mailname, v: "{{ ansible_domain }}", t: string }
+    - { q: postfix/root_address, v: "{{ root_alias }}", t: string }
+
+- name: Install postfix and dovecot packages
+  ansible.builtin.apt:
+    name:
+      - postfix-ldap
+      - dovecot-ldap
+      - dovecot-imapd
+      - dovecot-lmtpd
+    state: latest # noqa package-latest
+    autoremove: true
+
+## postfix
+- name: Configure postfix main.cf
+  ansible.builtin.blockinfile:
+    dest: /etc/postfix/main.cf
+    block: |
+      smtpd_sasl_type = dovecot
+      smtpd_sasl_path = private/auth
+      smtpd_sasl_auth_enable = yes
+
+      smtpd_recipient_restrictions =
+        permit_mynetworks
+        reject_unknown_recipient_domain
+        reject_unverified_recipient
+
+      mailbox_transport = lmtp:unix:private/dovecot-lmtp
+      virtual_transport = lmtp:unix:private/dovecot-lmtp
+      local_recipient_maps =
+
+  notify: Reload postfix
+
+- name: Configure postfix master.cf
+  ansible.builtin.blockinfile:
+    dest: /etc/postfix/master.cf
+    block: |
+      # FIXME: is this a good idea?
+      #      smtps inet n - y - - smtpd
+      #        -o smtpd_tls_wrappermode=yes
+      #        -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,reject_unverified_recipient
+      submission inet n - y - - smtpd
+        -o syslog_name=postfix/submission
+        -o smtpd_tls_security_level=encrypt
+        -o smtpd_sasl_auth_enable=yes
+        -o smtpd_sasl_type=dovecot
+        -o smtpd_sasl_path=private/auth
+        -o smtpd_sasl_security_options=noanonymous
+        -o smtpd_sasl_local_domain={{ ansible_domain }}
+        -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+        -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,reject_unverified_recipient,permit_sasl_authenticated,reject
+        # FIXME  -o smtpd_sender_login_maps=$sender_login_maps
+        #        -o smtpd_sender_restrictions=reject_sender_login_mismatch
+  notify: Reload postfix
+
+## dovecot
+- name: Ensure group vmail exists
+  ansible.builtin.group:
+    name: vmail
+    system: true
+  notify: Reload dovecot
+
+- name: Prepare vmail system user
+  ansible.builtin.user:
+    name: vmail
+    comment: User managing virtual mails
+    system: true
+    home: "{{ vmail_home }}"
+    skeleton: /dev/null
+    shell: /usr/sbin/nologin
+    group: vmail
+  notify: Reload dovecot
+
+- name: Configure Dovecot LDAP authentication
+  ansible.builtin.copy:
+    dest: /etc/dovecot/dovecot-ldap.conf.ext
+    content: |
+      uris = ldapi:///
+      auth_bind = yes
+      auth_bind_userdn = uid=%n,ou=people,{{ basedn }}
+      base = ou=people,{{ basedn }}
+      pass_attrs = mail=user
+      scope = onelevel
+    backup: true
+    mode: '0664'
+  notify: Reload dovecot
+
+- name: Configure Dovecot LDAP userdb
+  ansible.builtin.copy:
+    dest: /etc/dovecot/dovecot-ldap-userdb.conf.ext
+    content: |
+      uris = ldapi:///
+      base = ou=people,{{ basedn }}
+      user_filter = (&(objectClass=posixAccount)(uid=%n))
+      pass_attrs = =uid=vmail =gid=vmail
+      user_attrs = =home={{ vmail_home }}/%n
+      scope = onelevel
+    backup: true
+    mode: '0664'
+  notify: Reload dovecot
+
+- name: Configure Dovecot passdb and userdb
+  ansible.builtin.copy:
+    dest: /etc/dovecot/conf.d/auth-ldap.conf.ext
+    content: |
+      passdb {
+        driver = ldap
+        args = /etc/dovecot/dovecot-ldap.conf.ext
+      }
+      userdb {
+        driver = passwd
+      }
+      userdb {
+        driver = static
+        args = uid=vmail gid=vmail home={{ vmail_home }}/%n
+      }
+      userdb {
+        driver = ldap
+        args = /etc/dovecot/dovecot-ldap-userdb.conf.ext
+      }
+    backup: true
+    mode: '0664'
+  notify: Reload dovecot
+
+- name: Activate LDAP authentication
+  ansible.builtin.lineinfile:
+    dest: /etc/dovecot/conf.d/10-auth.conf
+    line: "!include auth-ldap.conf.ext"
+    regexp: '^#\!include auth-ldap\.conf\.ext'
+    state: present
+  notify: Reload dovecot
+
+- name: Configure dovecot lmtp and auth for postfix
+  ansible.builtin.copy:
+    dest: /etc/dovecot/local.conf
+    content: |
+      mail_uid = vmail
+      mail_gid = vmail
+      auth_username_format = %Ln
+      mail_location = maildir:~/Maildir
+
+      service lmtp {
+        unix_listener /var/spool/postfix/private/dovecot-lmtp {
+          mode = 0660
+          group = postfix
+          user = postfix
+        }
+      }
+      service auth {
+        unix_listener /var/spool/postfix/private/auth {
+          mode = 0660
+          user = postfix
+          group = postfix
+        }
+      }
+    mode: '0644'
+  notify:
+    - Reload dovecot
+    - Reload postfix
+
+## firewalld
+- name: Configure firewalld when not installing
+  when: not run_in_installer|default(false)|bool
+  block:
+    - name: Allow mail services in firewalld
+      ansible.posix.firewalld:
+        zone: public
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - smtp
+        - smtp-submission
+        - imap
+        - imaps
+        # - smtps
+    - name: Add interface to public zone
+      ansible.posix.firewalld:
+        zone: public
+        interface: "{{ public_if }}"
+        permanent: true
+        immediate: true
+        state: enabled
+
+- name: Allow mail services in firewalld and add interface to zone
+  when: run_in_installer|default(false)|bool # noqa no-changed-when
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+  loop:
+    - firewall-offline-cmd --zone=public --add-service=smtp
+    - firewall-offline-cmd --zone=public --add-service=smtp-submission
+    - firewall-offline-cmd --zone=public --add-service=imap
+    - firewall-offline-cmd --zone=public --add-service=imaps
+    - firewall-offline-cmd --zone=public --add-interface={{ public_if }}
+    # - firewall-offline-cmd --zone=public --add-service=smtps

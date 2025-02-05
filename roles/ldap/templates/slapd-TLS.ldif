@@ -1,0 +1,9 @@
+#### ENABLE LDAP TLS ####
+dn: cn=config
+changetype: modify
+add: olcTLSCertificateFile
+olcTLSCertificateFile: {{ certpub }}
+-
+add: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: {{ certpriv }}
+-

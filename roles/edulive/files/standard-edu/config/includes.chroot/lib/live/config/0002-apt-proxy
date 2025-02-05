@@ -1,0 +1,2 @@
+#!/bin/sh
+echo 'Acquire::http::Proxy "http://livebox:3142";' >> /etc/apt/apt.conf.d/10proxy

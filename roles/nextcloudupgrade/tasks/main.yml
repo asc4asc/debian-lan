@@ -1,0 +1,24 @@
+---
+- name: Check/run upgrade
+  ansible.builtin.command: sudo -u www-data php updater.phar --no-interaction
+  args:
+    chdir: "{{ nc_dir }}/updater"
+  register: upgrade_result
+  changed_when: upgrade_result.stdout is not search('Nothing to do.')
+  notify: update and fix data base
+
+- name: Update apps
+  ansible.builtin.command: "sudo -u www-data php ./occ app:update --all"
+  args:
+    chdir: "{{ nc_dir }}"
+  register: cmd_result
+  changed_when: cmd_result.stdout | length > 0
+
+- name: Install extra apps
+  ansible.builtin.command: "sudo -u www-data php ./occ app:install {{ item }}"
+  args:
+    chdir: "{{ nc_dir }}"
+  with_items: "{{ nc_apps }}"
+  register: cmd_result
+  changed_when: cmd_result.stdout is not search('already installed')
+  failed_when: cmd_result.stdout is not search('already installed') and cmd_result.rc != 0

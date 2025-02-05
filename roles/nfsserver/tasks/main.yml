@@ -1,0 +1,94 @@
+## Install and configure nfs-server
+---
+- name: check if ansible domain is nonempty
+  fail: msg="The machine's domain must not be empty."
+  when: ansible_domain | length == 0
+
+- name: check if we are installing
+  stat: path=/etc/exports
+  register: exports
+
+- name: install nfs-kernel-server
+  apt:
+    name:
+      - nfs-kernel-server
+    state: latest # noqa package-latest # noqa package-latest
+
+- name: make sure the export paths exists
+  file: path={{ export_root }}/home/ state=directory recurse=yes
+
+- name: make sure the lan homes exists
+  file: path={{ lan_homes }} state=directory recurse=yes
+  notify: "bind mount exported dirs"
+
+- name: configure exports
+  blockinfile:
+    dest: /etc/exports
+    insertbefore: EOF
+    block: |
+      {{ export_root }}         {{ ipaddr_lan | ipaddr('subnet') }}(sec=krb5p,rw,fsid=0,crossmnt,no_subtree_check)
+      {{ export_root }}/home/   {{ ipaddr_lan | ipaddr('subnet') }}(sec=krb5p,rw,no_subtree_check)
+  notify: "restart nfs-kernel-server"
+
+- name: "make 'nfs' an alias hostname resolvable from the LAN"
+  replace:
+    path: /etc/hosts
+    regexp: "^({{ ipaddr_lan | ipaddr('address') }}\\s.+)$"
+    replace: '\1 nfs'
+  when: not exports.stat.exists
+
+- name: check if there is a local kadmin
+  stat: path=/usr/sbin/kadmin.local
+  register: kadmin
+
+- name: create machine principal
+  command: kadmin.local -q "addprinc -randkey nfs/{{ ansible_hostname }}.{{ ansible_domain }}"
+  when: kadmin.stat.exists and not exports.stat.exists
+
+- name: add principal to the keytab
+  command: kadmin.local -q "ktadd nfs/{{ ansible_hostname }}.{{ ansible_domain }}"
+  notify: "restart rpc-svcgssd"
+  when: kadmin.stat.exists and not exports.stat.exists
+
+- name: install sssd-krb5
+  apt:
+    name:
+      - sssd-krb5
+      - sssd-ldap
+      - sssd-tools     ##  sss_cache -U -G
+    state: latest # noqa package-latest
+  when: kadmin.stat.exists
+
+- name: provide identities from directory
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: 0600
+  notify: restart sssd
+  when: kadmin.stat.exists
+
+- name: copy home from /etc/skel for dummy user foo
+  shell: cp -r /etc/skel {{ lan_homes }}/foo && chmod -R o-rwx {{ lan_homes }}/foo && chown -R {{ min_id }}:{{ min_id }} {{ lan_homes }}/foo
+  args:
+    creates: "{{ lan_homes }}/foo"
+  when: foo_pwd is defined and foo_pwd | length > 0
+
+- name: check if our dnsmasq is used
+  stat: path=/etc/dnsmasq.d/dnsmasq-dhcp
+  register: dnsmasq
+
+- name: send domain to clients
+  template:
+    src: dhcp-send-domain.j2
+    dest: /etc/dnsmasq.d/dhcp-send-domain
+    mode: 0644
+  notify: "restart dnsmasq"
+  when: dnsmasq.stat.exists
+
+- name: allow nfs service in firewalld
+  firewalld:
+    zone: internal
+    service: nfs
+    permanent: true
+    immediate: true
+    state: enabled

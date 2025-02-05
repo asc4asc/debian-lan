@@ -1,0 +1,12 @@
+- name: Reload lighttpd
+  ansible.builtin.systemd:
+    name: lighttpd
+    state: reloaded
+    enabled: True
+
+- name: Restart aria2 service
+  ansible.builtin.systemd:
+    name: aria2
+    state: restarted
+    daemon_reload: True
+    enabled: True

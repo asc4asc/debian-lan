@@ -1,0 +1,14 @@
+[Unit]
+Description=Start Git Daemon
+
+[Service]
+ExecStart=/usr/bin/git daemon --reuseaddr --export-all --base-path={{ repo_dir }}
+
+Restart=always
+RestartSec=500ms
+
+SyslogIdentifier=git-daemon
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target

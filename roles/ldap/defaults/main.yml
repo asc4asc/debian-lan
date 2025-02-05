@@ -1,0 +1,9 @@
+ldap_admin_pwd: "{{ lookup('password', '/tmp/ldap_admin.pwd chars=ascii_letters,digits length=32') }}"
+ldap_admin_pwd_file: "/root/ldap-admin.pwd"
+basedn: "{{ 'dc=' + (ansible_domain | replace('^.', '') | replace('.$', '') | replace('.', ',dc=')) }}"
+certpub: "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+certpriv: "/etc/ssl/private/ssl-cert-snakeoil.key"
+lan_homes: /home/lan
+min_id: 10000
+max_id: 20000
+ldapuser_gid: 8000

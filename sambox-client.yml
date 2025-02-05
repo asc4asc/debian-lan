@@ -1,0 +1,20 @@
+---
+# This playbook deploys a client for the kerberox LAN.
+
+- name: apply configuration to the machines
+  hosts: all
+  remote_user: ansible
+  become: true
+  vars:
+    extra_pkgs:
+      - webext-privacy-badger
+      - webext-ublock-origin
+    extra_pkgs_bpo: []  # [ libreoffice ]
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - up2date_debian
+    - smbsshfsclient
+    ## Choose either gnome or KDE:
+    # - gnome
+    # - kde

@@ -1,0 +1,6 @@
+[Unit]
+Description=Run backup script
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/backup

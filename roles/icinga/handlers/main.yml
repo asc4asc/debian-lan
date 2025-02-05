@@ -1,0 +1,28 @@
+- name: Reload apache2
+  systemd:
+    name: apache2
+    state: reloaded
+
+- name: restart php-fpm
+  systemd:
+    name: php{{ php_ver.stdout }}-fpm
+    state: restarted
+  listen: "restart php-fpm"
+
+- name: Restart icinga
+  systemd:
+    name: icinga2
+    state: restarted
+    enabled: true
+
+- name: Enable and start icingadb
+  systemd:
+    name: icingadb
+    state: started
+    enabled: true
+
+- name: Restart carbon-cache
+  systemd:
+    name: carbon-cache
+    state: restarted
+    enabled: true

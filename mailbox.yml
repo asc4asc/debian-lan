@@ -1,0 +1,21 @@
+---
+## This playbook deploys the mailbox server.  Add 'hostname=XXX' and 'domain=YYY'
+## to the installer boot parameters to set hostname and domain.
+##
+
+
+- name: Apply configuration to the ldapbox server
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+#    ansible_connection: local
+    gw_if: "{{ ansible_default_ipv4.interface }}"
+    public_if: "{{ gw_if }}"
+    internal_if: "{{ ansible_interfaces | difference([gw_if, 'lo']) | sort | first | default(gw_if) }}"
+
+  roles:
+    - up2date_debian
+    - ldap
+    - mail

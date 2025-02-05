@@ -1,0 +1,33 @@
+- name: install borg
+  apt:
+    name: borgbackup
+    state: latest # noqa package-latest
+
+- name: check if borg password is available
+  stat: path="{{ borg_pwd_file }}"
+  register: borg
+
+- name: dump borg password
+  shell: echo -n "{{ borg_pwd }}" > "{{ borg_pwd_file }}" ; chmod 0600 "{{ borg_pwd_file }}"
+  no_log: true
+  when: not borg.stat.exists
+
+- name: provide backup script
+  template:
+    src: "backup"
+    dest: "/usr/local/bin/backup"
+    mode: "0750"
+
+- name: provide backup.service and .timer
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: 0644
+  with_items:
+    - backup.service
+    - backup.timer
+  notify: "enable backup.timer"
+
+- name: run first backup
+  command: /usr/local/bin/backup
+  when: not borg.stat.exists

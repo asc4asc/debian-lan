@@ -1,0 +1,4 @@
+allow_download: true
+backup_dirs_extra:
+  - /home
+backup_opts_extra: ""

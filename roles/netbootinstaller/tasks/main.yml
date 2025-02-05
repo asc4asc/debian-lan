@@ -1,0 +1,30 @@
+- name: make preseed directory available
+  file:
+    path: "{{ tftp_root }}/d-i/{{ di_dist }}"
+    state: directory
+    mode: 0755
+
+- name: install di-netboot-assistant and installer package
+  apt:
+    name:
+      - di-netboot-assistant
+      - "{{ di_pkg }}"
+    state: latest # noqa package-latest
+  notify:
+    - bind mount images
+    - rebuild di-netboot-assistant menu
+
+- name: provide preseed file
+  copy:
+    src: /usr/share/doc/di-netboot-assistant/examples/preseed.cfg
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}"
+    mode: 0644
+    force: false
+    remote_src: true
+
+- name: make the hostname resolvable from the LAN
+  replace:
+    path: /etc/hosts
+    regexp: '^(127\.0\.1\.1.*)$'
+    replace: '#\1\n{{ ipaddr_lan | ipaddr("address") }} {{ ansible_hostname }}.{{ ansible_domain }} {{ ansible_hostname }}'
+  when: ipaddr_lan is defined

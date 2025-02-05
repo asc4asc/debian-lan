@@ -1,0 +1,3 @@
+- name: start apt-cacher-ng
+  service: name=apt-cacher-ng state=started enabled=yes
+  listen: "start apt-cacher-ng"

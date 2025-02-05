@@ -1,0 +1,68 @@
+---
+## This playbook deploys a series of minimal systemd-nspawn containers
+## for educational use on a host, for example to learn ansible!
+## All containers use an apt cache on the host system and forward port
+## 22 (ssh), 80 (http) and 443 (https) to ports >= 10000, 10100 and 10200
+## respectively.  A user 'ansi' in the 'sudo' group is prepared,
+## either with empty password or an initial password to be set below.
+##
+## Modifications of the initial containers are kept in an overlay
+## directory next to the container images in '/var/lib/machines/'.
+## This allows to visit and compare the work of students on the host.
+## To manage the containers after installation, run the playbook with
+## one of the the following tags:
+##
+##    --tags=start    start all containers
+##    --tags=stop     stop all containers
+##    --tags=restart  stop, then start all containers
+##    --tags=reset    reset all containers to the initial image
+##    --tags=purge    purge all containers
+##    --tags=setup    purge all containers and setup again
+##
+
+- name: apply configuration to the edubox
+  hosts: all # eduboxes
+  remote_user: ansible
+  become: true
+  vars:
+    contname: cont
+    ## User name for the user in the container:
+    contuser: ansi
+    ## Password for the user 'ansible' in the container,
+    ## leave empty to log in without password:
+    contpwd: ""
+    ## Adjust the number of containers here:
+    containers: "{{ range(0, 9 + 1) | list }}"
+    ## Additional packages to be installed in the container:
+    cont_packages_extra:
+      - bind9-dnsutils
+      - file
+      - locales
+      - xz-utils
+      - lsof
+      - wget
+      - bind9-host
+      - libc-l10n
+      - traceroute
+      - bzip2
+      - netcat-traditional
+      - telnet
+
+  pre_tasks:
+    - name: install apt-cacher-ng
+      apt:
+        name:
+          - apt-cacher-ng
+          - auto-apt-proxy
+        state: latest # noqa package-latest
+
+    - name: enable and start systemd-networkd on the host
+      systemd:
+        name: systemd-networkd
+        state: started
+        enabled: true
+
+  roles:
+    - up2date_debian
+    - educontainer
+    - networkdresolved

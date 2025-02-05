@@ -1,0 +1,20 @@
+{
+   "Dhcp6": {
+      "interfaces-config": {
+         "interfaces": [ "{{ if_lan }}" ]
+      },
+      "option-data": [
+         {
+            "name": "bootfile-url",
+            "data": "tftp://[2001:db8:b001::1]/d-i/n-a/grubx64.efi"
+         }
+      ],
+      "subnet6": [
+         {
+            "subnet": "2001:db8:b001::/64",
+            "pools": [ { "pool": "2001:db8:b001::2 - 2001:db8:b001::ffff" } ],
+            "interface": "enp1s0"
+         }
+      ]
+   }
+}

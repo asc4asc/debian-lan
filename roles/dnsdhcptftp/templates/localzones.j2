@@ -1,0 +1,17 @@
+include "/etc/bind/rndc.key";
+
+zone "{{ ipaddr_lan_ptr[:-1] }}" {
+        type master;
+        notify no;
+        file "/etc/bind/db.{{ ipaddr_lan_threeoct }}";
+        journal "/var/lib/bind/db.{{ ipaddr_lan_threeoct }}.jnl";
+        allow-update { key rndc-key; };
+};
+
+zone "{{ ansible_domain }}" {
+        type master;
+        notify no;
+        file "/etc/bind/db.{{ ansible_domain }}";
+        journal "/var/lib/bind/db.{{ ansible_domain }}.jnl";
+        allow-update { key rndc-key; };
+};

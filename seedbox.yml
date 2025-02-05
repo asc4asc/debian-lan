@@ -1,0 +1,12 @@
+---
+- name: apply configuration to the seedbox
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+    extra_pkgs: []
+    extra_pkgs_bpo: []
+  roles:
+    - up2date_debian
+    - seedbox

@@ -1,0 +1,5 @@
+basedn: "{{ 'dc=' + ( ansible_domain | replace('^.','') | replace('.$','') | replace('.',',dc=')) }}"
+ldap_server: ldap
+home_server: homes
+min_id_sssd: 5000
+max_id_sssd: 20000

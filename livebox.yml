@@ -1,0 +1,125 @@
+## This playbook deploys the LiveBox.
+##
+## The LiveBox provides Debian Live and Installer images on top
+## of an already existing network with minimal modifications to
+## existing infrastructure.  It does not provide DHCP; the idea
+## is to chainload the LiveBox' menu (iPXE or Grub) from PXE
+## infrastructure already in place.
+##
+##     Simple Setup Instructions (no ansible host needed)
+##    ----------------------------------------------------
+## After installation of Debian stable (no desktop needed) login
+## and run:
+##
+##  • sudo apt install git ansible
+##  • git clone https://salsa.debian.org/andi/debian-lan-ansible.git
+##  • cd debian-lan-ansible
+##
+## Uncomment the line 'ansible_connection: local' in 'livebox.yml'
+## and adjust the playbook to your needs. You might want to remove
+## some of the live DVD images in 'live_desktop' to keep the
+## download small and/or adjust the 'build_images' list.
+##
+## Now, run the playbook as:
+##
+##  • ansible-playbook livebox.yml -vbK -i localhost,
+##
+## Finally, you might want to trigger the first build of the
+## customized *-edu images with:
+##
+##  • sudo livebuilder.sh
+##
+## A systemd-timer will do this every week automatically.
+##
+##     Providing the LiveBox Boot Menu
+##    ---------------------------------
+## To chainload the LiveBox in iPXE use:
+##  > item livebox Chainload Menu from LiveBox
+##  > …
+##  > :livebox chain tftp://livebox.lan/d-i/n-a/menu.ipxe
+##
+## To chainload the LiveBox in Grub use:
+##  > menuentry 'Chainload Menu from LiveBox' {
+##  >   configfile (tftp,livebox.lan)/d-i/n-a/grub/grub.cfg
+##  > }
+##
+---
+- name: apply configuration to the livebox
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+#    ansible_connection: local
+    extra_pkgs:
+      - lighttpd
+      - nfs-kernel-server
+      - atftpd
+      - di-netboot-assistant
+      - apt-cacher-ng
+    extra_pkgs_bpo: []
+
+    ## NFS rootfs might fail for multiple images:
+    ## https://lists.debian.org/debian-live/2023/06/msg00034.html
+    live_desktop: # [] # use an empty list to skip iso images
+      - gnome
+      - kde
+      - standard
+
+    live_url: 'https://cdimage.debian.org/cdimage/release/current-live/amd64/iso-hybrid/'
+
+    # The edulive role generates customized Debian-Live images.
+    # Make sure you have sufficient disk space available (~30GiB?).
+    build_images:
+      - gnome-edu
+      - kde-edu
+      - standard-edu
+
+    di_dist: "{{ ansible_distribution_release }}"
+    di_version: "{{ ansible_distribution_major_version }}"
+    di_pkg: "debian-installer-{{ di_version }}-netboot-amd64"
+    boot_params:
+      - boot=live
+      - components
+      - locales=de_DE.UTF-8
+      - keyboard-layouts=de
+      - live-config.timezone=Europe/Berlin
+      - swap=true
+      - quiet
+      - splash
+      - user-default-groups=audio,cdrom,dip,video,plugdev,netdev,dialout,libvirt
+      - modprobe.blacklist=nvme
+#      - libata.force=disable
+#      - noroot
+
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  pre_tasks:
+    - name: preseed atftpd
+      debconf:
+        name: atftpd
+        question: atftpd/basedir
+        value: /var/lib/tftpboot
+        vtype: string
+
+    - name: find available iso images
+      uri:
+        url: "{{ live_url }}"
+        return_content: true
+      register: idx
+
+    - name: find and set ISO image version
+      set_fact:
+        version: "{{ idx.content | regex_findall('debian-live-(\\d+\\.\\d+\\.\\d+)-amd64-', '\\1') | first }}"
+
+    - name: define ISO image map
+      set_fact:
+        live_iso: "{{ live_iso | default({}) | combine({ item: 'debian-live-' + version + '-amd64-' + item + '.iso' }) }}"
+      loop: "{{ live_desktop }}"
+
+  roles:
+    - up2date_debian
+    - netbootinstaller
+    - aptcacher
+    - debianlive
+    - edulive

@@ -1,0 +1,7 @@
+#!/bin/sh
+# Fix deployed VM config
+
+set -eu
+
+NIC="$(ip route | grep -m1 default | sed -E "s/.+dev (\w+).*/\1/")"
+sed -i -e "s/INTERFACE/$NIC/g" /etc/libvirt/qemu/netboot.xml

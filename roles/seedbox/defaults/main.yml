@@ -1,0 +1,6 @@
+dht_port: 6789
+wwwdir: /var/www/html
+aria2dir: aria2
+input_file: "{{ wwwdir }}/{{ aria2dir }}/seeds.txt"
+sslkey: /etc/ssl/private/ssl-cert-snakeoil.key
+sslcert: /etc/ssl/certs/ssl-cert-snakeoil.pem

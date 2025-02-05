@@ -1,0 +1,5 @@
+icingadb_pwd: "{{ lookup('password', '/tmp/icingadb.pwd chars=ascii_letters,digits length=32') }}"
+icingawebuser_pwd: "{{ lookup('password', '/tmp/icingawebuser.pwd chars=ascii_letters,digits length=32') }}"
+graphite_pwd: "{{ lookup('password', '/tmp/graphite.pwd chars=ascii_letters,digits length=32') }}"
+icinga_api_pwd: "{{ lookup('password', '/tmp/api_pwd.pwd chars=ascii_letters,digits length=32') }}"
+icinga_pwd_file: "/root/icinga.pwd"

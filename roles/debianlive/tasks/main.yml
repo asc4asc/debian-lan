@@ -1,0 +1,124 @@
+---
+- name: download debian-live images
+  get_url:
+    url: "{{ live_url }}{{ item.value }}"
+    dest: "/var/cache/di-netboot-assistant/{{ item.value }}"
+    checksum: "sha256:{{ live_url }}/SHA256SUMS"
+  register: new_iso
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"
+
+- name: umount old iso images
+  mount:
+    path: "/var/lib/tftpboot/d-i/n-live/{{ item.key }}"
+    state: unmounted
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"
+  when: new_iso.changed
+
+- name: prepare live image base directory
+  file:
+    path: "/var/lib/tftpboot/d-i/n-live/"
+    state: directory
+    mode: 0755
+
+- name: prepare live image directories
+  file:
+    path: "/var/lib/tftpboot/d-i/n-live/{{ item.key }}"
+    state: directory
+    mode: 0755
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"
+
+- name: make sure loop module is loaded
+  modprobe:
+    name: loop
+    state: present
+
+- name: loop mount iso images
+  mount:
+    path: "/var/lib/tftpboot/d-i/n-live/{{ item.key }}"
+    src: "/var/cache/di-netboot-assistant/{{ item.value }}"
+    fstype: iso9660
+    opts: loop,ro,nofail
+    state: mounted
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"
+  notify: rebuild di-netboot menu
+
+- name: prepare http downloads
+  file:
+    src: "/var/lib/tftpboot/d-i/"
+    dest: "/var/www/html/d-i"
+    state: link
+
+- name: export live image squashfs
+  lineinfile:
+    path: /etc/exports
+    line: "/var/lib/tftpboot/d-i/n-live/ *(ro,crossmnt,no_subtree_check)"
+  notify: export nfs
+
+- name: configure ipxe boot menu address and headline
+  replace:
+    path: /etc/di-netboot-assistant/ipxemenu.HEAD
+    regexp: "{{ item.reg }}"
+    replace: "{{ item.rep }}"
+  loop:
+    - reg: '^set 210:string .+$'
+      rep: 'set 210:string http://{{ ansible_default_ipv4.address }}/'
+    - reg: '^#(item --gap -- -- Customized Boot Entries.*)$'
+      rep: '\1'
+  notify: rebuild di-netboot menu
+
+- name: configure grub boot menu addresses
+  lineinfile:
+    path: /etc/di-netboot-assistant/grub.cfg.HEAD
+    line: "{{ item.line }}"
+    regexp: "{{ item.reg }}"
+  loop:
+    - line: "set root=(http,{{ ansible_default_ipv4.address }})"
+      reg: "^set root="
+    - line: "set pxe_default_server={{ ansible_default_ipv4.address }}"
+      reg: "^set pxe_default_server="
+  notify: rebuild di-netboot menu
+
+- name: prepare debian live nfs boot entry title
+  lineinfile:
+    path: /etc/di-netboot-assistant/ipxemenu.HEAD
+    insertafter: '-- Customized Boot Entries --'
+    line: "item {{ item.key }} Debian GNU/Linux {{ item.key }} NFS"
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"
+  notify: rebuild di-netboot menu
+
+- name: prepare debian live boot loader ipxe
+  blockinfile:
+    path: /etc/di-netboot-assistant/ipxemenu.HEAD
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.key }}"
+    block: |
+      :{{ item.key }}
+          echo Booting Debian GNU/Linux {{ item.key }} NFS
+          kernel ${210:string}d-i/n-live/{{ item.key }}/live/vmlinuz \
+          initrd=initrd.img netboot=nfs {{ boot_params|join(' ') }} \
+          nfsroot={{ ansible_default_ipv4.address }}:/var/lib/tftpboot/d-i/n-live/{{ item.key }}/
+          initrd ${210:string}d-i/n-live/{{ item.key }}/live/initrd.img
+          boot
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"
+  notify: rebuild di-netboot menu
+
+- name: prepare debian live boot loader grub
+  blockinfile:
+    path: /etc/di-netboot-assistant/grub.cfg.HEAD
+    insertbefore: "^menuentry 'Boot from local disk..'"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.key }}"
+    block: |
+      menuentry 'Debian GNU/Linux Live {{ item.key }} NFS' {
+          linux (http,{{ ansible_default_ipv4.address }})/d-i/n-live/{{ item.key }}/live/vmlinuz \
+          netboot=nfs {{ boot_params|join(' ') }} \
+          nfsroot={{ ansible_default_ipv4.address }}:/var/lib/tftpboot/d-i/n-live/{{ item.key }}/
+          initrd (http,{{ ansible_default_ipv4.address }})/d-i/n-live/{{ item.key }}/live/initrd.img
+      }
+  loop:
+    "{{ live_iso | default({}) | dict2items }}"    
+  notify: rebuild di-netboot menu

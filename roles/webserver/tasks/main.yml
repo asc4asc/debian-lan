@@ -1,0 +1,6 @@
+- name: install some packages
+  apt: name={{ item }} state=latest # noqa package-latest
+  with_items:
+    - unattended-upgrades
+    - screen
+    - python-certbot-apache

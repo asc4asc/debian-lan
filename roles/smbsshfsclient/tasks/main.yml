@@ -1,0 +1,77 @@
+---
+- name: install needed packages
+  apt:
+    name:
+      - sssd-ldap
+      - libpam-mount
+      - cifs-utils
+      - sshfs
+      - hxtools
+    state: latest # noqa package-latest
+
+- name: add URI to ldap.conf
+  lineinfile:
+    dest: /etc/ldap/ldap.conf
+    line: "URI ldap://ldap/"
+    insertafter: "#URI.*"
+
+- name: add BASE to ldap.conf
+  lineinfile:
+    dest: /etc/ldap/ldap.conf
+    line: "BASE {{ basedn }}"
+    insertafter: "#BASE.*"
+
+- name: enable pam_umask
+  lineinfile:
+    dest: /etc/pam.d/common-session
+    line: "session optional pam_umask.so usergroups"
+
+- name: provide identities from directory
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: 0600
+  notify: restart sssd
+
+- name: configure pam_mount # interesting options: posix,mfsymlinks,nomapposix,noperm
+  blockinfile:
+    dest: /etc/security/pam_mount.conf.xml
+    block: |
+      <!-- volume
+        fstype="cifs"
+        server="{{ home_server }}"
+        path="%(USER)"
+        mountpoint="/home/lan/%(USER)"
+        options="idsfromsid,modefromsid,mfsymlinks"
+      ><not><or><user>root</user><user>ansible</user><user>Debian-gdm</user></or></not></volume -->
+      <volume
+        fstype="fuse"
+        path="sshfs#%(USER)@{{ home_server }}:"
+        mountpoint="/home/lan/%(USER)"
+        options="allow_other,default_permissions,reconnect,password_stdin"
+        ssh="0" noroot="0"
+      ><not><or><user>root</user><user>ansible</user><user>Debian-gdm</user></or></not></volume>
+    insertafter: "<!-- Volume definitions -->"
+
+- name: make sure umount is not blocked
+  replace:
+    path: /etc/security/pam_mount.conf.xml
+    regexp: '<logout wait="0".*'
+    replace: '<logout wait="3000" hup="yes" term="yes" kill="yes"/>'
+
+- name: make sure .ssh exists
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: '0700'
+
+- name: fetch homes server host key for sshfs
+  shell:
+    cmd: ssh-keyscan -H {{ home_server }} >> /root/.ssh/known_hosts
+    creates: /root/.ssh/known_hosts
+
+## gnome-keyring fails with sshfs:
+- name: disable gnome-keyring-daemon
+  command:
+    cmd: dpkg-divert --divert /usr/bin/gnome-keyring-daemon.distrib --rename /usr/bin/gnome-keyring-daemon
+    creates: /usr/bin/gnome-keyring-daemon.distrib

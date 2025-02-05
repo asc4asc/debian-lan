@@ -1,0 +1,37 @@
+- name: install apt-cacher-ng package
+  apt:
+    name:
+      - apt-cacher-ng
+      - auto-apt-proxy
+    state: latest # noqa package-latest
+
+- name: check if preseeded installer is available
+  stat: path={{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg
+  register: preseedcfg
+
+- name: enable apt-cacher-ng for install-clients
+  replace:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    regexp: '^d-i mirror/http/proxy string$'
+    replace: 'd-i mirror/http/proxy string http://{{ ansible_hostname }}:3142/'
+  when: preseedcfg.stat.exists
+
+- name: test if firewalld is available
+  stat: path=/usr/sbin/firewalld
+  register: firewalld
+
+- name: allow apt-cacher-ng service in firewalld
+  firewalld:
+    zone: internal
+    port: 3142/tcp
+    permanent: true
+    immediate: true
+    state: enabled
+  when: not run_in_installer|default(false)|bool and firewalld.stat.exists
+
+- name: allow apt-cacher-ng service in firewalld, offline
+  command: "firewall-offline-cmd --zone=internal --add-port=3142/tcp"
+  when: run_in_installer|default(false)|bool and firewalld.stat.exists
+
+- name: flush handler to make apt-cacher available
+  meta: flush_handlers

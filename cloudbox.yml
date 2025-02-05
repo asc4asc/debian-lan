@@ -1,0 +1,53 @@
+---
+# This playbook deploys the cloudbox on a minimal installation.
+
+- name: apply configuration to the cloudbox
+  # hosts: cloudboxes ## 'all' is needed to make ansible-pull work
+  hosts: all
+  remote_user: ansible
+  become: true
+  vars:
+    if_lan: "enp1s0"
+    ipaddr: "192.168.2.50/24"
+    gateway: "192.168.2.1"
+    dns: "192.168.2.1"
+    ddns_domain: "something.ddnss.de"
+    ddns_updkey: "138638.some.key.here.635620"
+    ## 'nc_download' and 'nc_checksum' are only
+    ## used for ansible-pull during installation:
+    nc_download: "https://download.nextcloud.com/server/releases/latest.tar.bz2"
+    nc_checksum: "sha256:d32a8f6c4722a45cb67de7018163cfafcfa22a871fbac0f623c3875fa4304e5a"
+    nc_apps:
+      - calendar
+      - notes
+    backup_opts: "--exclude-caches -e '*/updater-*/' -e '*/preview/*' -e '*/files_trashbin/*'"
+    backup_dirs:
+      - "/etc"
+      - "{{ nc_dir }}"
+      - "{{ data_dir }}"
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - up2date_debian
+#    - ddnsupdate
+#    - lowpower
+    - nextcloud
+    - nextcloudupgrade
+#    - backup
+
+## Hosts in the the 'only_nextcloud'-group are only upgraded:
+
+- name: upgrade nextcloud only
+  hosts: only_nextcloud
+  remote_user: ansible
+  become: true
+  vars:
+    nc_dir: "/var/www/nextcloud"
+    nc_apps:
+      - calendar
+      - notes
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - up2date_debian
+    - nextcloudupgrade

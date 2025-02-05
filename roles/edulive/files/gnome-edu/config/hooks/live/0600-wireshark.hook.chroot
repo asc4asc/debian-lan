@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+## allow everybody to run wireshark:
+chmod 0755 /usr/bin/dumpcap

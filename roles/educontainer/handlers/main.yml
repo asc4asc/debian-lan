@@ -1,0 +1,7 @@
+- name: enable and restart containers
+  systemd:
+    name: systemd-nspawn@{{ contname }}{{ "%02d" | format(item|int) }}.service
+    state: restarted
+    enabled: true
+  loop: "{{ containers }}"
+  listen: enable and restart containers

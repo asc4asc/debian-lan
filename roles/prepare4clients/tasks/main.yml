@@ -1,0 +1,241 @@
+- name: make sure ansible is available
+  apt:
+    name: ansible
+    state: latest # noqa package-latest
+
+- name: generate ssh key
+  command: "su -l {{ ansible_user }} -c \"ssh-keygen -t rsa -f /home/{{ ansible_user }}/.ssh/id_rsa -P ''\""
+  args:
+    creates: "/home/{{ ansible_user }}/.ssh/id_rsa"
+    warn: false
+
+- name: slurp public key
+  slurp:
+    src: "/home/{{ ansible_user }}/.ssh/id_rsa.pub"
+  register: sshpubkey
+
+# The following seems to be necessary to get rid of a newline:
+- name: define variable
+  set_fact:
+    sshpubkey: "{{ sshpubkey['content'] | b64decode | replace('\n', '') }}"
+
+- name: enable backports in preseed file
+  replace:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    regexp: '^#(apt-setup-udeb.*)$'
+    replace: '\1'
+
+- name: preseed client - add firmware-linux, ansible and git
+  replace:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    regexp: '^(d-i pkgsel/include string firmware-linux)$'
+    replace: '#\1\nd-i pkgsel/include string firmware-linux ansible git'
+
+- name: insert start of managed block
+  replace:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    regexp: '^(### This command is run just before the install finishes:)'
+    replace: '#\1\n# BEGIN ANSIBLE MANAGED BLOCK preseed/late_command'
+
+- name: insert end of managed block
+  replace:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    regexp: '^(## When installing.*)'
+    replace: '# END ANSIBLE MANAGED BLOCK preseed/late_command\n#\1'
+
+- name: insert block
+  blockinfile:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    insertafter: "^### This command is run just before the install finishes:"
+    block: |
+      d-i preseed/late_command string \
+      mkdir -p /target/home/ansible/.ssh && \
+      echo "{{ sshpubkey }}" >> /target/home/ansible/.ssh/authorized_keys ; \
+      in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
+      in-target chmod -R og= /home/ansible/.ssh/ ; \
+      [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
+                             -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
+    marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
+
+- name: add pxe boot entries to di-netboot-assistant
+  blockinfile:
+    dest: /etc/di-netboot-assistant/pxelinux.HEAD
+    insertbefore: EOF
+    block: |
+      TIMEOUT 100
+      # Use a temporary package cache during installation, install etckeeper.
+      LABEL tmp pkg cache
+         MENU LABEL Debian stable (amd64) + temporary package cache
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz mirror/http/proxy?=http://{{ ansible_hostname }}:3142/ pkgsel/include=etckeeper preseed/late_command="rm -fv /target/etc/apt/apt.conf" ---
+
+      LABEL kiosk
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=kiosk auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=kiosk.yml ---
+
+      LABEL cloudbox
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + cloudbox.yml
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=cloudbox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=cloudbox.yml ---
+
+      LABEL edubox
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + edubox.yml
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=edubox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=edubox.yml ---
+
+         #LABEL daily
+         #MENU LABEL Debian daily (amd64) + preseed + kiosk.yml
+         #kernel ::/d-i/n-a/daily/amd64/linux
+         #append initrd=::/d-i/n-a/daily/amd64/initrd.gz auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=kiosk.yml ---
+    marker: "# {mark} ANSIBLE MANAGED BLOCK default"
+  notify: "rebuild di-netboot-assistant menu"
+
+- name: add efi boot entries to di-netboot-assistant
+  blockinfile:
+    dest: /etc/di-netboot-assistant/grub.cfg.HEAD
+    insertbefore: EOF
+    block: |
+      # Use a temporary package cache during installation, install etckeeper.
+      menuentry 'Debian stable (amd64) + temporary package cache' {
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   mirror/http/proxy?=http://{{ ansible_hostname }}:3142/ pkgsel/include=etckeeper \
+                   preseed/late_command="rm -fv /target/etc/apt/apt.conf" ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+      menuentry 'Debian {{ di_version }} (amd64) + preseed + kiosk.yml' {
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   hostname=kiosk auto=true priority=critical \
+                   url=tftp://{{ ansible_hostname }} playbook=kiosk.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+      menuentry 'Debian {{ di_version }} (amd64) + preseed + cloudbox.yml' {
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   hostname=cloudbox auto=true priority=critical \
+                   url=tftp://{{ ansible_hostname }} playbook=cloudbox.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+      menuentry 'Debian {{ di_version }} (amd64) + preseed + edubox.yml' {
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   hostname=edubox auto=true priority=critical \
+                   url=tftp://{{ ansible_hostname }} playbook=edubox.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+      #menuentry 'Debian daily (amd64) + preseed + kiosk.yml' {
+      #   linux   /d-i/n-a/daily/amd64/linux auto=true priority=critical \
+      #             url=tftp://{{ ansible_hostname }} playbook=kiosk.yml ---
+      #   initrd  /d-i/n-a/daily/amd64/initrd.gz
+      #}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK default"
+  notify: "rebuild di-netboot-assistant menu"
+
+########  kerberox-client #######
+
+- name: check if we operate on kerberox
+  stat: path=/usr/sbin/krb5kdc
+  register: krb5kdc
+
+- name: add kerberox-client auto pxe boot entry to di-netboot-assistant
+  blockinfile:
+    dest: /etc/di-netboot-assistant/pxelinux.HEAD
+    insertbefore: EOF
+    block: |
+      LABEL autoinstall
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + kerberox-client.yml
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=kerberox-client.yml ---
+    marker: "# {mark} ANSIBLE MANAGED BLOCK kerberox-client"
+  notify: "rebuild di-netboot-assistant menu"
+  when: krb5kdc.stat.exists
+
+- name: add kerberox-client auto efi boot entry to di-netboot-assistant
+  blockinfile:
+    dest: /etc/di-netboot-assistant/grub.cfg.HEAD
+    insertbefore: EOF
+    block: |
+      menuentry 'Debian {{ di_version }} (amd64) + preseed + kerberox-client.yml' {
+         regexp --set=1:oct4 --set=2:oct5 --set=3:oct6 "\:([[:xdigit:]]+)\:([[:xdigit:]]+)\:([[:xdigit:]]+)\$" $net_default_mac
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   hostname=${oct4}${oct5}${oct6} domain={{ ansible_domain }} \
+                   auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=kerberox-client.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+    marker: "# {mark} ANSIBLE MANAGED BLOCK kerberox-client"
+  notify: "rebuild di-netboot-assistant menu"
+  when: krb5kdc.stat.exists
+
+########  sambox-client #######
+
+- name: check if we operate on sambox
+  stat: path=/etc/samba/smb.conf
+  register: samba
+
+- name: add sambox-client auto pxe boot entry to di-netboot-assistant
+  blockinfile:
+    dest: /etc/di-netboot-assistant/pxelinux.HEAD
+    insertbefore: EOF
+    block: |
+      LABEL autoinstall
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + sambox-client.yml
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz auto=true priority=critical domain={{ ansible_domain }} url=tftp://{{ ansible_hostname }} playbook=sambox-client.yml ---
+    marker: "# {mark} ANSIBLE MANAGED BLOCK sambox-client"
+  notify: "rebuild di-netboot-assistant menu"
+  when: samba.stat.exists
+
+- name: add sambox-client auto efi boot entry to di-netboot-assistant
+  blockinfile:
+    dest: /etc/di-netboot-assistant/grub.cfg.HEAD
+    insertbefore: EOF
+    block: |
+      menuentry 'Debian {{ di_version }} (amd64) + preseed + sambox-client.yml' {
+         regexp --set=1:oct4 --set=2:oct5 --set=3:oct6 "\:([[:xdigit:]]+)\:([[:xdigit:]]+)\:([[:xdigit:]]+)\$" $net_default_mac
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   auto=true priority=critical hostname=${oct4}${oct5}${oct6} url=tftp://{{ ansible_hostname }} \
+                   playbook=sambox-client.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+      menuentry 'Debian daily (amd64) + preseed + sambox-client.yml' {
+         regexp --set=1:oct4 --set=2:oct5 --set=3:oct6 "\:([[:xdigit:]]+)\:([[:xdigit:]]+)\:([[:xdigit:]]+)\$" $net_default_mac
+         linux   /d-i/n-a/daily/amd64/linux auto=true priority=critical hostname=${oct4}${oct5}${oct6} \
+                   url=tftp://{{ ansible_hostname }} playbook=sambox-client.yml ---
+         initrd  /d-i/n-a/daily/amd64/initrd.gz
+      }
+    marker: "# {mark} ANSIBLE MANAGED BLOCK sambox-client"
+  notify: "rebuild di-netboot-assistant menu"
+  when: samba.stat.exists
+
+######################
+
+- name: provide git repo if not available already # noqa git-latest
+  git:
+    repo: 'https://salsa.debian.org/andi/debian-lan-ansible.git'
+    dest: "{{ repo_dir }}"
+    update: false
+  become_user: "{{ ansible_user }}"
+  when: not run_in_installer|default(false)|bool
+
+- name: start git-repo
+  template:
+    src: git-repo.j2
+    dest: "/etc/systemd/system/git-repo.service"
+    mode: 0644
+  notify: start git-repo
+  when: not run_in_installer|default(false)|bool
+
+######################
+
+- name: add clients to inventory
+  blockinfile:
+    dest: /etc/ansible/hosts
+    create: true
+    mode: 0644
+    block: |
+      [kerberoxclient]
+      {{ in_inventory }}
+  when: krb5kdc.stat.exists or samba.stat.exists

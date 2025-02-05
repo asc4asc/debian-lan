@@ -1,0 +1,26 @@
+## Modify at least rpc-secret if used in production!
+rpc-secret={{ rpc_secret | default('insecure') }}
+rpc-secret=insecure
+rpc-private-key={{ sslkey }}
+rpc-certificate={{ sslcert }}
+rpc-secure=true
+rpc-listen-all=true
+enable-rpc=true
+
+bt-external-ip={{ ansible_default_ipv4['address'] }}
+dht-listen-port={{ dht_port }}
+dir={{ wwwdir }}/{{ aria2dir }}
+input-file={{ input_file }}
+
+on-bt-download-complete=/usr/local/bin/addseed
+bt-enable-hook-after-hash-check=false
+
+allow-overwrite=true
+check-integrity=true
+dht-file-path={{ wwwdir }}/{{ aria2dir }}/.cache/dht.dat
+
+summary-interval=600
+show-console-readout=false
+console-log-level=notice
+max-concurrent-downloads=50
+seed-ratio=0.0

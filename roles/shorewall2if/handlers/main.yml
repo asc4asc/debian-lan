@@ -1,0 +1,7 @@
+- name: restart networking
+  systemd: name=networking state=restarted enabled=yes
+  listen: restart networking
+
+- name: restart shorewall
+  systemd: name=shorewall state=restarted enabled=yes
+  listen: restart shorewall

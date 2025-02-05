@@ -1,0 +1,9 @@
+---
+# This playbook does almost nothing.  Useful for testing only preseeding.
+
+- name: apply a minimal configuration to the machine
+  hosts: all
+  remote_user: ansible
+  become: true
+  roles:
+    - up2date_debian

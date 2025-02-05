@@ -1,0 +1,63 @@
+- name: install squid package
+  apt:
+    name: squid
+    state: latest # noqa package-latest
+
+- name: configure squid extra lines
+  lineinfile:
+    dest: /etc/squid/squid.conf
+    line: "{{ item.line }}"
+    insertafter: "{{ item.insertafter }}"
+  with_items:
+    - line: "http_access allow localnet"
+      insertafter: "#http_access allow localnet"
+    - line: "http_port 3129 intercept"
+      insertafter: "http_port 3128"
+    - line: "maximum_object_size_in_memory 10240 KB"
+      insertafter: "# maximum_object_size_in_memory"
+    - line: "maximum_object_size 512 MB"
+      insertafter: "# maximum_object_size"
+    - line: "cache_dir aufs /var/spool/squid 20000 16 256"
+      insertafter: "#cache_dir ufs /var/spool/squid"
+  notify: "restart squid"
+
+- name: configure squid store IDs
+  blockinfile:
+    dest: /etc/squid/squid.conf
+    insertbefore: "TAG: store_miss"
+    block: |
+      store_id_program /usr/lib/squid/storeid_file_rewrite /etc/squid/store_id_regex.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK store_id"
+  notify: "restart squid"
+
+- name: provide store_id_regex.conf
+  copy:
+    src: store_id_regex.conf
+    dest: /etc/squid/store_id_regex.conf
+    mode: 0644
+  notify: "restart squid"
+
+- name: configure squid as package cache
+  blockinfile:
+    dest: /etc/squid/squid.conf
+    insertbefore: "# Add any of your own refresh_pattern entries above these."
+    block: |
+      # refresh pattern for debs and udebs
+      refresh_pattern deb$ 129600 100% 129600
+      refresh_pattern udeb$ 129600 100% 129600
+      refresh_pattern tar.gz$ 129600 100% 129600
+      refresh_pattern tar.xz$ 129600 100% 129600
+      refresh_pattern tar.bz2$ 129600 100% 129600
+      # always refresh Packages and Release files
+      refresh_pattern \/(Packages|Sources)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
+      refresh_pattern \/Release(|\.gpg)$ 0 0% 0 refresh-ims
+      refresh_pattern \/InRelease$ 0 0% 0 refresh-ims
+      refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 0 0% 0
+    marker: "# {mark} ANSIBLE MANAGED BLOCK refresh_pattern"
+  notify: "restart squid"
+
+- name: redirect www traffic in shorewall
+  lineinfile:
+    dest: /etc/shorewall/rules
+    line: "REDIRECT loc 3129 tcp www"
+  notify: "restart shorewall"

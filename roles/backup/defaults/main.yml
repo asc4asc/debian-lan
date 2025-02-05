@@ -1,0 +1,15 @@
+borg_pwd: "{{ lookup('password', '/tmp/borg.pwd chars=ascii_letters,digits length=32') }}"
+borg_pwd_file: "/root/borg.pwd"
+borg_key_backup: "/root/borg-key.backup"
+
+## alternative: "ssh://user@host:port/path/to/repo"
+backup_repo: "/var/backups/mnt/backup/borg"
+
+backup_dirs_extra: ""
+
+backup_opts: "--exclude-caches"
+backup_opts_extra: ""
+
+www_root: "/var/www"
+nc_dir: "{{ www_root }}/nextcloud"
+data_dir: "/var/nc-data"

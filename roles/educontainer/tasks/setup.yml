@@ -1,0 +1,181 @@
+---
+
+- name: install packages
+  apt:
+    name:
+      - systemd-container
+      - debootstrap
+      - auto-apt-proxy
+    state: latest # noqa package-latest
+
+- name: prepare machine directory
+  file:
+    path: /var/lib/machines/
+    state: directory
+    mode: 0700
+
+- name: debootstrap base system
+  command:
+    cmd: >
+      auto-apt-proxy debootstrap
+      --include={{ cont_packages | union(cont_packages_extra) | join(',') }}
+      --components=main,contrib,non-free stable
+      {{ contname }}00 http://deb.debian.org/debian
+  args:
+    chdir: /var/lib/machines/
+    creates: /var/lib/machines/{{ contname }}00
+  notify: enable and restart containers
+
+- name: provide complete apt sources
+  copy:
+    src: /etc/apt/sources.list
+    dest: /var/lib/machines/{{ contname }}00/etc/apt/sources.list
+    mode: 0644
+    remote_src: true
+
+- name: configure locale
+  lineinfile:
+    path: /var/lib/machines/{{ contname }}00/etc/profile
+    line: 'export LANG=C'
+
+## Use 'chroot' here instead of 'systemd-nspawn -D …' to make it work
+## with ansible-pull in the preseed debian installer:
+- name: upgrade container
+  command:
+    cmd: "{{ item }}"
+  args:
+    chdir: /var/lib/machines/{{ contname }}00
+  loop:
+    - mount --bind /proc proc
+    - mount --bind /sys sys
+    - mount --bind /dev/pts dev/pts
+    - chroot . sh -c '/usr/bin/apt-get update && DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get full-upgrade --yes'
+    - umount proc sys dev/pts
+  register: cmd_result
+  changed_when: cmd_result.stdout is not search('0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.')
+
+- name: provide {{ contuser }} user account
+  command:
+    cmd: >
+      chroot . sh -c '/usr/sbin/useradd -m -s /bin/bash
+      -c "User {{ contuser }},,," -G sudo {{ contuser }}'
+  args:
+    chdir: /var/lib/machines/{{ contname }}00
+    creates: /var/lib/machines/{{ contname }}00/home/{{ contuser }}
+  register: user_account
+
+- name: provide empty password for {{ contuser }} user
+  command:
+    cmd: chroot . sh -c "passwd -d {{ contuser }}"
+  args:
+    chdir: /var/lib/machines/{{ contname }}00
+  when: user_account.changed | default(false) and contpwd | length == 0
+
+- name: provide password for container {{ contuser }} user
+  command:
+    cmd: chroot . sh -c "echo {{ contuser }}:{{ contpwd }} | chpasswd"
+  args:
+    chdir: /var/lib/machines/{{ contname }}00
+  when: user_account.changed | default(true) and contpwd | length > 0
+
+- name: allow empty passwords in ssh
+  lineinfile:
+    path: /var/lib/machines/{{ contname }}00/etc/ssh/sshd_config
+    insertafter: '#PermitEmptyPasswords no'
+    line: 'PermitEmptyPasswords yes'
+  when: user_account.changed | default(false) and contpwd | length == 0
+
+- name: prepare directories
+  file:
+    path: /var/lib/machines/{{ contname }}00/etc/systemd/system/{{ item }}
+    state: directory
+    mode: 0755
+  loop:
+    - multi-user.target.wants
+    - sockets.target.wants
+    - network-online.target.wants
+  notify: enable and restart containers
+
+- name: enable systemd-networkd service
+  file:
+    src: /lib/systemd/system/{{ item.src }}
+    dest: /var/lib/machines/{{ contname }}00/etc/systemd/system/{{ item.dest }}
+    state: link
+    follow: false
+    force: true
+  loop:
+    - src: systemd-networkd.service
+      dest: dbus-org.freedesktop.network1.service
+    - src: systemd-networkd.service
+      dest: multi-user.target.wants/systemd-networkd.service
+    - src: systemd-networkd.socket
+      dest: sockets.target.wants/systemd-networkd.socket
+    - src: systemd-networkd-wait-online.service
+      dest: network-online.target.wants/systemd-networkd-wait-online.service
+  notify: enable and restart containers
+
+- name: enable systemd-resolved in containers
+  file:
+    src: /lib/systemd/system/{{ item.src }}
+    dest: /var/lib/machines/{{ contname }}00/etc/systemd/system/{{ item.dest }}
+    state: link
+    follow: false
+    force: true
+  loop:
+    - src: systemd-resolved.service
+      dest: dbus-org.freedesktop.resolve1.service
+    - src: systemd-resolved.service
+      dest: multi-user.target.wants/systemd-resolved.service
+  notify: enable and restart containers
+
+########
+- name: prepare local sysctl config file
+  copy:
+    content: "# Avoid 'too many open files' error:"
+    dest: /etc/sysctl.d/inotify.conf
+    mode: 0644
+    force: false
+
+- name: fix too many open files error
+  sysctl:
+    name: fs.inotify.max_user_instances
+    value: '1024'
+    sysctl_file: /etc/sysctl.d/inotify.conf
+
+- name: generate links to the initial container
+  file:
+    src: "{{ contname }}00"
+    dest: /var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}
+    state: link
+  loop: "{{ containers[1:] }}"
+  notify: enable and restart containers
+
+- name: prepare nspawn config directory
+  file:
+    path: /etc/systemd/nspawn
+    state: directory
+    mode: 0755
+
+- name: provide container configuration
+  template:
+    src: contcfg.nspawn.j2
+    dest: /etc/systemd/nspawn/{{ contname }}{{ "%02d" | format(item|int) }}.nspawn
+    mode: 0644
+  loop: "{{ containers }}"
+  notify: enable and restart containers
+
+- name: provide container hostname file
+  template:
+    src: hostname.j2
+    dest: /var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}.hostname
+    mode: 0644
+  loop: "{{ containers }}"
+  notify: enable and restart containers
+
+- name: provide container hosts file
+  template:
+    src: hosts.j2
+    dest: /var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}.hosts
+    mode: 0644
+  loop: "{{ containers }}"
+  notify: enable and restart containers

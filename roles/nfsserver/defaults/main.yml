@@ -1,0 +1,6 @@
+export_root: /srv/nfs4
+lan_homes: /home/lan
+basedn: "{{ 'dc=' + ( ansible_domain | replace('^.','') | replace('.$','') | replace('.',',dc=')) }}"
+min_id: 10000
+min_id_sssd: 5000
+max_id_sssd: 20000

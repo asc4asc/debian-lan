@@ -1,0 +1,6 @@
+[Unit]
+Description=Run powertop --auto-tune
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/powertop --auto-tune

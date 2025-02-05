@@ -1,0 +1,17 @@
+- name: install some packages
+  apt: name={{ item }} state=latest # noqa package-latest
+  with_items:
+    - powertop
+
+- name: install powertop.service
+  copy:
+    src: powertop.service
+    dest: /etc/systemd/system/powertop.service
+    mode: 0644
+
+- name: install powertop.timer
+  copy:
+    src: powertop.timer
+    dest: /etc/systemd/system/powertop.timer
+    mode: 0644
+  notify: enable powertop timer

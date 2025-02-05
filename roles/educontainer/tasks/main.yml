@@ -1,0 +1,70 @@
+## Prepare minimal systemd-nspawn containers for educational use.
+##
+## Port mapping to the host:
+##
+##  container 0: ssh → host port 10000,  HTTP → 10100
+##  container 1: ssh → host port 10001,  HTTP → 10101
+##     ...                        ...            ...
+##
+##  User '{{ contuser }}' in the sudo group.  Password is '{{ contpwd }}'.
+##
+
+- name: stop all containers
+  systemd:
+    name: systemd-nspawn@{{ contname }}{{ "%02d" | format(item|int) }}.service
+    state: stopped
+  loop: "{{ containers | reverse }}"
+  tags:
+    - never
+    - stop
+    - reset
+    - purge
+    - setup
+    - restart
+
+- name: purge all containers
+  command:
+    cmd: machinectl remove {{ contname }}{{ "%02d" | format(item|int) }}
+    removes: /var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}
+  loop: "{{ containers | reverse }}"
+  tags:
+    - never
+    - purge
+    - setup
+
+- name: remove container overlay
+  file:
+    path: /var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}-delta
+    state: absent
+  loop: "{{ containers | reverse }}"
+  tags:
+    - never
+    - reset
+    - purge
+    - setup
+
+- name: start all containers
+  systemd:
+    name: systemd-nspawn@{{ contname }}{{ "%02d" | format(item|int) }}.service
+    state: started
+  loop: "{{ containers | reverse }}"
+  tags:
+    - never
+    - start
+    - reset
+    - restart
+
+###########
+
+- name: check if container template exists
+  ansible.builtin.stat:
+    path: "/var/lib/machines/{{ contname }}00"
+  register: cont
+  tags:
+    - always
+
+- name: import setup.yml tasks
+  import_tasks: setup.yml
+  when: cont.stat.isdir is not defined
+  tags:
+    - always

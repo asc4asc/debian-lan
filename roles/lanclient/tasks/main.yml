@@ -1,0 +1,99 @@
+---
+- name: check if domain name is available
+  fail: msg="The machine's domain must not be empty."
+  when: ansible_domain | length == 0
+
+- name: preseed krb5-config realm
+  debconf:
+    name: krb5-config
+    question: krb5-config/default_realm
+    value: "{{ ansible_domain | upper }}"
+    vtype: string
+
+- name: preseed krb5-config kerberos servers
+  debconf:
+    name: krb5-config
+    question: krb5-config/kerberos_servers
+    value: "{{ krb_server }}"
+    vtype: string
+
+- name: preseed krb5-config admin server
+  debconf:
+    name: krb5-config
+    question: krb5-config/admin_server
+    value: "{{ krb_server }}"
+    vtype: string
+
+- name: install needed packages
+  apt:
+    name:
+      - krb5-config
+      - krb5-user
+      - sssd-krb5
+      - sssd-ldap
+      - nfs-common
+    state: latest # noqa package-latest
+
+- name: add URI to ldap.conf
+  lineinfile:
+    dest: /etc/ldap/ldap.conf
+    line: "URI ldap://ldap/"
+    insertafter: "#URI.*"
+
+- name: add BASE to ldap.conf
+  lineinfile:
+    dest: /etc/ldap/ldap.conf
+    line: "BASE {{ basedn }}"
+    insertafter: "#BASE.*"
+
+- name: enable pam_umask
+  lineinfile:
+    dest: /etc/pam.d/common-session
+    line: "session optional pam_umask.so usergroups"
+
+## oddjob-mkhomedir works only with sec=sys for the NFSv4 share
+
+- name: provide identities from directory
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: 0600
+  notify: restart sssd
+
+## Activate machine after installation:
+- name: create machine principals
+  command: kadmin -p root/admin -w {{ kadmin_pwd }} -q "addprinc -randkey {{ item }}/{{ ansible_hostname }}.{{ ansible_domain }}"
+  register: kerberize_result
+  with_items:
+    - nfs
+    - host
+  changed_when: kerberize_result.stderr is not search('already exists while creating')
+  no_log: true
+  when: not run_in_installer|default(false)|bool and kadmin_pwd | length > 0
+
+- name: remove old keytab
+  file:
+    path: /etc/krb5.keytab
+    state: absent
+  when: not run_in_installer|default(false)|bool and kadmin_pwd | length > 0
+
+- name: add principals to keytab
+  command: kadmin -p root/admin -w {{ kadmin_pwd }} -q "ktadd {{ item }}/{{ ansible_hostname }}.{{ ansible_domain }}"
+  with_items:
+    - nfs
+    - host
+  args:
+  no_log: true
+  notify: "restart rpc-gssd"
+  when: not run_in_installer|default(false)|bool and kadmin_pwd | length > 0
+
+
+- name: make sure the home mount directory exists
+  file: path={{ lan_homes }} state=directory recurse=yes
+
+- name: automount
+  lineinfile:
+    dest: /etc/fstab
+    line: "{{ nfs_server }}:/home  {{ lan_homes }}  nfs4  sec=krb5p,_netdev,x-systemd.automount,x-systemd.idle-timeout=60  0  0"
+  notify: reload systemd
+  when: not run_in_installer|default(false)|bool

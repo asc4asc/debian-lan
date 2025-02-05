@@ -1,0 +1,7 @@
+- name: restart sssd
+  service: name=sssd state=restarted enabled=yes
+  listen: "restart sssd"
+
+- name: restart smbd
+  service: name=smbd state=restarted enabled=yes
+  listen: "restart smbd"

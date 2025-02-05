@@ -1,0 +1,13 @@
+## generate most of this list with 'tasksel --task-packages standard'
+cont_packages:
+  - systemd-container
+  - openssh-server
+  - sudo
+  - python3
+  - auto-apt-proxy
+  - bash-completion
+  - ca-certificates
+  - man-db
+  - manpages
+
+cont_packages_extra: []

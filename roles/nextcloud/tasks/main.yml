@@ -1,0 +1,322 @@
+## Install and configure nextcloud.
+
+- name: check if we are installing
+  stat: path="{{ nc_dir }}"
+  register: nextcloud
+
+- name: check for nextcloud archive
+  stat:
+    path: nextcloud.tar.bz2
+  become: false
+  delegate_to: localhost
+  register: nc_archive
+  when: not nextcloud.stat.exists
+
+- name: stop if nextcloud archive is unavailable
+  fail:
+    msg: >
+      The nextcloud archive nextcloud.tar.bz2 is not available.
+      Download the latest stable release from 'nextcloud.com',
+      check the signature, rename it and copy it next to 'cloudbox.yml'.
+  when: >
+    not nextcloud.stat.exists and not nc_archive.stat.exists and
+    not run_in_installer|default(false)|bool
+
+## We can start with the installation now:
+
+- name: install apache, firewalld, php- and db-packages
+  apt:
+    name:
+      - apache2
+      - firewalld
+      - mariadb-server
+      - python3-pymysql
+      - php-apcu
+      - php-bcmath
+      - php-fpm
+      - php-curl
+      - php-gd
+      - php-gmp
+      - php-imagick
+      - libmagickcore-6.q16-6-extra
+      - php-intl
+      - php-json
+      - php-ldap
+      - php-mbstring
+      - php-mysql
+      - php-xml
+      - php-zip
+      - unzip
+    state: latest # noqa package-latest
+
+- name: disable apache modules
+  apache2_module:
+    state: absent
+    name: "{{ item }}"
+  with_items:
+    - mpm_prefork
+    - mpm_worker
+  notify: "restart apache2"
+
+- name: enable apache modules
+  apache2_module:
+    name: "{{ item }}"
+  with_items:
+    - proxy_fcgi
+    - mpm_event
+    - rewrite
+    - headers
+    - ssl
+    - http2
+  notify: "restart apache2"
+
+- name: find php version # noqa risky-shell-pipe
+  shell: ls /etc/php/ | sort | tail -1
+  register: php_ver
+  changed_when: false
+
+- name: enable php-fpm conf
+  command: a2enconf php{{ php_ver.stdout }}-fpm
+  args:
+    creates: /etc/apache2/conf-enabled/php{{ php_ver.stdout }}-fpm.conf
+  notify: "restart apache2"
+
+- name: tune php-fpm
+  replace:
+    dest: /etc/php/{{ php_ver.stdout }}/fpm/pool.d/www.conf
+    regexp: "{{ item.regex }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - regex: "^pm.max_children = .*$"
+      replace: "pm.max_children = 10"
+    - regex: "^pm.start_servers = .*$"
+      replace: "pm.start_servers = 4"
+    - regex: "^pm.min_spare_servers = .*$"
+      replace: "pm.min_spare_servers = 2"
+    - regex: "^pm.max_spare_servers = .*$"
+      replace: "pm.max_spare_servers = 6"
+  notify: "restart php-fpm"
+
+- name: increase php memory limit
+  replace:
+    dest: "/etc/php/{{ php_ver.stdout }}/fpm/php.ini"
+    regexp: "^memory_limit = .*"
+    replace: "memory_limit = 512M"
+  notify: "restart apache2"
+
+- name: provide nextcloud site
+  copy:
+    src: nextcloud.conf
+    dest: /etc/apache2/sites-available/nextcloud.conf
+    mode: 0644
+  notify: "restart apache2"
+
+- name: enable nextcloud site
+  command: a2ensite nextcloud.conf
+  args:
+    creates: /etc/apache2/sites-enabled/nextcloud.conf
+  notify: "restart apache2"
+
+- name: enable https
+  shell: 'grep -q "VirtualHost .*:443" * || a2ensite default-ssl.conf'
+  args:
+    chdir: /etc/apache2/sites-enabled/
+    creates: default-ssl.conf
+  notify: "restart apache2"
+  register: cmd_result
+  changed_when: cmd_result.stdout != '' and cmd_result.stdout is not search('skipped')
+
+- name: make sure data directory exists
+  file:
+    path: "{{ data_dir }}"
+    state: directory
+    mode: 0770
+    owner: www-data
+    group: www-data
+
+## install nextcloud:
+- name: download nextcloud archive
+  get_url:
+    url: "{{ nc_download }}"
+    dest: /tmp/nextcloud.tar.bz2
+    checksum: "{{ nc_checksum }}"
+  when: run_in_installer|default(false)|bool
+
+- name: unpack downloaded nextcloud archive
+  unarchive:
+    src: /tmp/nextcloud.tar.bz2
+    dest: "{{ www_root }}"
+    owner: www-data
+    group: www-data
+    remote_src: true
+  when: not nextcloud.stat.exists and run_in_installer|default(false)|bool
+
+- name: unpack provided nextcloud archive
+  unarchive:
+    src: nextcloud.tar.bz2
+    dest: "{{ www_root }}"
+    owner: www-data
+    group: www-data
+  when: not nextcloud.stat.exists and not run_in_installer|default(false)|bool
+
+- name: start mariadb during installation
+  command: /etc/init.d/mariadb start
+  when: run_in_installer|default(false)|bool
+
+- name: create database with name 'nextcloud'
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: nextcloud
+    state: present
+  when: not nextcloud.stat.exists
+
+- name: create database user 'nextcloud'
+  mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: nextcloud
+    password: "{{ db_nextcloud_pwd }}"
+    priv: 'nextcloud.*:ALL'
+    state: present
+  when: not nextcloud.stat.exists
+
+- name: initialize nextcloud
+  command:
+    cmd: >
+      sudo -u www-data php ./occ maintenance:install
+      --database "mysql"
+      --database-name "nextcloud"
+      --database-user "nextcloud"
+      --database-pass "{{ db_nextcloud_pwd }}"
+      --admin-user "nc-admin"
+      --admin-pass "{{ nc_admin_pwd }}"
+      --data-dir "{{ data_dir }}"
+  args:
+    chdir: "{{ nc_dir }}"
+  no_log: true
+  when: not nextcloud.stat.exists
+
+- name: dump nc-admin password
+  shell: echo -n "{{ nc_admin_pwd }}" > "{{ nc_admin_pwd_file }}" ; chmod 0600 "{{ nc_admin_pwd_file }}"
+  no_log: true
+  when: not nextcloud.stat.exists
+
+- name: enable APCu memcache
+  command: sudo -u www-data php ./occ config:system:set memcache.local --value='\OC\Memcache\APCu'
+  args:
+    chdir: "{{ nc_dir }}"
+    warn: false
+  when: not nextcloud.stat.exists
+
+- name: enable acpu for nextcloud updates
+  lineinfile:
+    path: /etc/php/{{ php_ver.stdout }}/mods-available/apcu.ini
+    line: "apc.enable_cli=1"
+
+- name: allow access from LAN
+  command: sudo -u www-data php ./occ config:system:set trusted_domains {{ item[0] }} --value='{{ item[1] }}'
+  args:
+    chdir: "{{ nc_dir }}"
+    warn: false
+  when: not nextcloud.stat.exists
+  loop:
+    - [1, '192.168.*.*']
+    - [2, '10.*.*.*']
+    - [3, '172.16.*.*']
+
+## nextcloudcron
+- name: provide nextcloudcron.service and .timer
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: 0644
+  with_items:
+    - nextcloudcron.service
+    - nextcloudcron.timer
+  notify: "enable nextcloudcron.timer"
+
+- name: add default NIC to public zone
+  firewalld:
+    interface: "{{ ansible_default_ipv4.interface }}"
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
+  when: not run_in_installer|default(false)|bool
+
+- name: add default NIC to public zone, offline
+  command: "firewall-offline-cmd --add-interface={{ ansible_default_ipv4.interface }} --zone=public"
+  when: run_in_installer|default(false)|bool
+
+- name: allow https in firewalld
+  firewalld:
+    zone: public
+    service: https
+    permanent: true
+    immediate: true
+    state: enabled
+  when: not run_in_installer|default(false)|bool
+
+- name: allow https in firewalld, offline
+  command: "firewall-offline-cmd --add-service=https"
+  when: run_in_installer|default(false)|bool
+
+#################################################################
+## kerberox integration:
+
+- name: install libapache2-mod-auth-gssapi
+  apt:
+    name: libapache2-mod-auth-gssapi
+    state: latest # noqa package-latest
+  when: "'kerberize' in role_names"
+  notify: "restart apache2"
+
+- name: copy keytab for www-data
+  copy:
+    src: /etc/krb5.keytab
+    dest: /etc/krb5.keytab.http
+    group: www-data
+    mode: "0640"
+    remote_src: true
+    force: false
+  when: "'kerberize' in role_names"
+  notify: "restart apache2"
+
+- name: provide kerberos SSO config
+  copy:
+    src: krb5-nextcloud.conf
+    dest: /etc/apache2/sites-available/krb5-nextcloud.conf
+    mode: 0644
+  when: "'kerberize' in role_names"
+  notify: "restart apache2"
+
+- name: enable kerberos access to nextcloud site
+  command: a2ensite krb5-nextcloud.conf
+  args:
+    creates: /etc/apache2/sites-enabled/krb5-nextcloud.conf
+  notify: "restart apache2"
+  when: "'kerberize' in role_names"
+
+- name: allow https in firewalld
+  firewalld:
+    zone: internal
+    service: https
+    permanent: true
+    immediate: true
+    state: enabled
+  when: not run_in_installer|default(false)|bool and 'kerberize' in role_names
+
+- name: allow https in firewalld, offline
+  command: "firewall-offline-cmd --add-service=https --zone=internal"
+  when: run_in_installer|default(false)|bool and 'kerberize' in role_names
+
+- name: allow access from kerberized LAN
+  command: sudo -u www-data php ./occ config:system:set trusted_domains 2 --value='{{ ansible_hostname }}.{{ ansible_domain }}'
+  args:
+    chdir: "{{ nc_dir }}"
+    warn: false
+  when: not nextcloud.stat.exists and 'kerberize' in role_names
+
+
+# sudo -u www-data php ./occ app:enable user_ldap
+# sudo -u www-data php ./occ app:install user_saml
+# sudo -u www-data php ./occ ldap

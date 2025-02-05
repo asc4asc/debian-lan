@@ -1,0 +1,24 @@
+##
+## packages for CLI programs
+##
+console-setup
+emacs-nox
+git
+htop
+mc
+minicom
+ncdu
+netcat-openbsd
+net-tools
+nfs-common
+nmap
+screen
+shellcheck
+sl
+systemd-journal-remote
+tcpdump
+tmux
+tree
+vim
+xterm
+

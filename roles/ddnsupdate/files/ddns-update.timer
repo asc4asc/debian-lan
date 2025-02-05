@@ -1,0 +1,11 @@
+[Unit]
+Description=Update ddns IP-address
+
+[Timer]
+OnBootSec=0
+OnUnitActiveSec=20min
+AccuracySec=3min
+
+
+[Install]
+WantedBy=timers.target

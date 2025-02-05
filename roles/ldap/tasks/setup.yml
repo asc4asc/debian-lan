@@ -1,0 +1,109 @@
+## Install and configure slapd.
+---
+- name: Preseed ldap domain
+  ansible.builtin.debconf:
+    name: slapd
+    question: slapd/domain
+    value: "{{ ansible_domain }}"
+    vtype: string
+
+- name: Preseed slapd admin password1
+  ansible.builtin.debconf:
+    name: slapd
+    question: slapd/password1
+    value: "{{ ldap_admin_pwd }}"
+    vtype: password
+  no_log: true
+
+- name: Preseed slapd admin password2
+  ansible.builtin.debconf:
+    name: slapd
+    question: slapd/password2
+    value: "{{ ldap_admin_pwd }}"
+    vtype: password
+  no_log: true
+
+- name: Dump admin password
+  ansible.builtin.shell:
+    cmd: echo -n "{{ ldap_admin_pwd }}" > "{{ ldap_admin_pwd_file }}" ; chmod 0600 "{{ ldap_admin_pwd_file }}"
+    creates: "{{ ldap_admin_pwd_file }}"
+  no_log: true
+
+- name: Install packages for LDAP
+  ansible.builtin.apt:
+    name:
+      - slapd
+      - ldap-utils
+      - ldapvi
+      - python3-ldap
+      - ssl-cert
+      - python3-firewall
+      - firewalld
+    state: latest # noqa package-latest
+
+- name: Add openldap to the ssl-cert group
+  ansible.builtin.user:
+    name: openldap
+    groups: ssl-cert
+    append: true
+
+- name: Restart slapd with access to ssl-cert
+  ansible.builtin.systemd:
+    name: slapd
+    state: restarted
+
+- name: Make initial slapd configuration available
+  ansible.builtin.copy:
+    src: slapd-config.ldif
+    dest: /etc/ldap/slapd.d/
+    mode: "0644"
+
+- name: Make slapd TLS configuration available
+  ansible.builtin.template:
+    src: slapd-TLS.ldif
+    dest: /etc/ldap/slapd.d/
+    mode: "0644"
+
+- name: Start slapd if run in installer
+  command:
+    cmd: /usr/sbin/slapd -h "ldapi:///" -u openldap -g openldap -F /etc/ldap/slapd.d/
+  when: run_in_installer|default(false)|bool
+
+- name: Initialize slapd if it has just been installed
+  ansible.builtin.command:
+    cmd: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/slapd-config.ldif # noqa no-changed-when
+
+- name: Configure LDAP TLS
+  ansible.builtin.command:
+    cmd: ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/slapd-TLS.ldif # noqa no-changed-when
+
+- name: Add URI to ldap.conf
+  ansible.builtin.lineinfile:
+    dest: /etc/ldap/ldap.conf
+    line: "URI ldapi:///"
+    insertafter: "#URI.*"
+
+- name: Add BASE to ldap.conf
+  ansible.builtin.lineinfile:
+    dest: /etc/ldap/ldap.conf
+    line: "BASE {{ basedn }}"
+    insertafter: "#BASE.*"
+
+- name: Check against self signed certificate
+  ansible.builtin.replace:
+    path: /etc/ldap/ldap.conf
+    regexp: "^(TLS_CACERT\\s+/etc/ssl/certs/ca-certificates.crt)$"
+    replace: '#\1\nTLS_CACERT\t{{ certpub }}'
+
+- name: Make 'ldap' an alias hostname
+  ansible.builtin.replace:
+    path: /etc/hosts
+    regexp: "^({{ ipaddr_lan | ansible.utils.ipaddr('address') }}\\s.+)$"
+    replace: '\1 ldap'
+  when: ipaddr_lan is defined
+
+- name: Enable pam-mkhomedir
+  ansible.builtin.command: pam-auth-update --enable mkhomedir # noqa no-changed-when
+  when: foo_pwd is defined and foo_pwd | length > 0
+
+## Use 'sudo ldapvi -Y EXTERNAL -h ldapi:/// -b "cn=config"' to modify certificate and key.

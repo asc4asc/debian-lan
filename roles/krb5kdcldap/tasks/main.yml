@@ -1,0 +1,34 @@
+## Install and configure krb5-kdc-ldap.
+---
+- name: check that domain name is available
+  fail: msg="The machine's domain must not be empty."
+  when: ansible_domain | length == 0
+
+- name: check if krb5kdc is already there
+  stat: path=/usr/sbin/krb5kdc
+  register: krb5kdc
+
+- name: install and configure krb5-kdc-ldap
+  include_tasks: setup.yml
+  when: not krb5kdc.stat.exists
+
+######################################################
+
+- name: allow services in firewalld
+  firewalld:
+    zone: internal
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - kerberos
+    - kadmin
+    - kpasswd
+
+- name: kerberize dummy user foo
+  command: kadmin.local -q 'add_principal -pw "{{ foo_pwd }}" -x dn="uid=foo,ou=people,{{ basedn }}" foo'
+  register: kerberize_result
+  changed_when: kerberize_result.stderr is not search('already exists while creating')
+  no_log: true
+  when: foo_pwd is defined and foo_pwd | length > 0

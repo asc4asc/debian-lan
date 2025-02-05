@@ -1,0 +1,11 @@
+$TTL 500
+@               IN      SOA     {{ ansible_fqdn }}. root.{{ ansible_domain }}. (
+                                1          ; Serial
+                                3600       ; Refresh
+                                1800       ; Retry
+                                720000     ; Expire
+                                6400 )     ; Negative Cache TTL
+;
+@                       NS      {{ ansible_fqdn }}.
+                        MX      10 {{ ansible_fqdn }}.
+{{ ipaddr_lan | ipaddr("address") | regex_replace("^.*\.(.+$)", "\\1") }}                      PTR     {{ ansible_fqdn }}.

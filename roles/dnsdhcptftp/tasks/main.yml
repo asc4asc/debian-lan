@@ -1,0 +1,100 @@
+---
+- name: preseed tftpd-hpa
+  debconf:
+    name: tftpd-hpa
+    question: tftpd-hpa/directory
+    value: /var/lib/tftpboot
+    vtype: string
+
+- name: install tftpd, dhcpd and named packages
+  apt:
+    name:
+      - isc-dhcp-server
+      - tftpd-hpa
+      - bind9
+    state: latest # noqa package-latest
+
+## FIXME: preseeding seems to be ignored
+- name: configure TFTP root directory
+  replace:
+    path: /etc/default/tftpd-hpa
+    regexp: '^TFTP_DIRECTORY=".*"$'
+    replace: 'TFTP_DIRECTORY="/var/lib/tftpboot"'
+  notify: restart tftpd-hpa
+
+- name: serve dhcp on LAN interface
+  replace:
+    path: /etc/default/isc-dhcp-server
+    regexp: '^INTERFACESv4=".*"$'
+    replace: 'INTERFACESv4="{{ if_lan }}"'
+  notify: restart isc-dhcp-server
+
+- name: deploy config files for isc-dhcp-server
+  template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    mode: 0644
+    backup: true
+  notify: restart isc-dhcp-server
+
+- name: deploy config files for bind9
+  template:
+    src: "{{ item.src }}.j2"
+    dest: "/etc/bind/{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: db.RR
+      dest: "db.{{ ansible_domain }}"
+    - src: db.RRinv
+      dest: "db.{{ ipaddr_lan_threeoct }}"
+    - src: localzones
+      dest: localzones
+  notify: restart bind
+
+- name: link zone files to writeable directory for DDNS
+  file:
+    src: "/etc/bind/{{ item }}"
+    dest: "/var/lib/bind/{{ item }}"
+    state: link
+  loop:
+    - "db.{{ ansible_domain }}"
+    - "db.{{ ipaddr_lan_threeoct }}"
+  notify: restart bind
+
+- name: enable local bind config
+  lineinfile:
+    path: /etc/bind/named.conf.local
+    line: 'include "/etc/bind/localzones";'
+  notify: restart bind
+
+- name: adapt resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: 0644
+  notify: restart isc-dhcp-server
+
+## stop dhclient from overwriting /etc/resolv.conf:
+- name: supersede dhcp client data
+  blockinfile:
+    dest: /etc/dhcp/dhclient.conf
+    block: |
+      supersede domain-search "{{ ansible_domain }}";
+      supersede domain-name-servers 127.0.0.1;
+    insertbefore: "#send dhcp-client-identifier.*"
+  notify: restart dhcp-client
+
+- name: generate rndc key
+  command:
+    cmd: rndc-confgen -a
+    creates: /etc/bind/rndc.key
+
+- name: copy rndc key
+  copy:
+    src: /etc/bind/rndc.key
+    dest: /etc/dhcp/
+    owner: root
+    group: root
+    mode: 0640
+    remote_src: true
+  notify: restart isc-dhcp-server

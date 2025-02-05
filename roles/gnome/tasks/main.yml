@@ -1,0 +1,64 @@
+# - name: gnome hibernate by default
+#   apt: name=gnome-shell-extension-suspend-button state=latest # noqa package-latest
+
+- name: gnome desktop
+  apt:
+    name:
+      - task-gnome-desktop
+      - gnome-shell-extension-desktop-icons
+      - gnome-shell-extension-dashtodock
+      - cups
+    state: latest # noqa package-latest
+
+- name: make sure /etc/dconf/profile/ exists
+  file:
+    path: /etc/dconf/profile/
+    state: directory
+    recurse: true
+
+- name: prepare for gnome customized defaults
+  copy:
+    src: user
+    dest: /etc/dconf/profile/user
+    mode: 0644
+  notify: update dconf
+
+- name: make sure /etc/dconf/db/local.d/ exists
+  file:
+    path: /etc/dconf/db/local.d/
+    state: directory
+    recurse: true
+
+- name: modify gnome defaults
+  copy:
+    src: defaults
+    dest: /etc/dconf/db/local.d/defaults
+    mode: 0644
+  notify: update dconf
+
+- name: configure gdm3
+  replace:
+    dest: /etc/gdm3/greeter.dconf-defaults
+    regexp: "{{ item.rex }}"
+    replace: "{{ item.rep }}"
+  loop:
+    - rex: "# disable-user-list=.*"
+      rep: "disable-user-list=true"
+    - rex: "# sleep-inactive-ac-timeout=.*"
+      rep: "sleep-inactive-ac-timeout=600"
+    - rex: "# sleep-inactive-ac-type=.*"
+      rep: "sleep-inactive-ac-type='interactive'\npower-button-action='interactive'"
+
+## Bug #698504
+- name: allow print job management
+  replace:
+    dest: "/etc/cups/cups-files.conf"
+    regexp: '^(SystemGroup lpadmin)$'
+    replace: '\1 root'
+
+- name: enable splash screen
+  replace:
+    dest: "/etc/default/grub"
+    regexp: '"quiet"$'
+    replace: '"quiet splash"'
+  notify: update grub

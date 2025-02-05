@@ -1,0 +1,19 @@
+- name: run update-grub
+  command: update-grub
+  listen: update grub
+
+- name: reload NetworkManager
+  when: not run_in_installer|default(false)|bool
+  systemd:
+    daemon_reload: true
+    name: NetworkManager
+    state: reloaded
+    enabled: true
+  listen: reload NetworkManager
+
+- name: enable tmp.mount
+  systemd:
+    daemon_reload: true
+    name: tmp.mount
+    enabled: true
+  listen: enable tmp.mount

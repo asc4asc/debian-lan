@@ -1,0 +1,100 @@
+---
+- name: Install packages needed
+  ansible.builtin.apt:
+    name:
+      - aria2
+      - lighttpd
+      - ssl-cert
+      - acl
+    state: latest
+
+- name: Prepare download directory
+  ansible.builtin.file:
+    path: "{{ wwwdir }}/{{ aria2dir }}"
+    owner: root
+    group: www-data
+    mode: '0775'
+    state: directory
+
+- name: Deploy initial aria2 input file
+  ansible.builtin.copy:
+    dest: "{{ input_file }}"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+    force: False
+    content: |
+      ## List of files seeded on startup:
+
+- name: Deploy download/upload instructions README
+  ansible.builtin.template:
+    src: README.txt
+    dest: "{{ wwwdir }}/{{ aria2dir }}/00-README.txt"
+    mode: '0644'
+
+- name: Deploy upload script
+  ansible.builtin.copy:
+    src: uploadseed
+    dest: "{{ wwwdir }}/{{ aria2dir }}/"
+    mode: '0644'
+
+- name: Copy certificate to web server
+  ansible.builtin.copy:
+    src: "{{ sslcert }}"
+    dest: "{{ wwwdir }}/{{ aria2dir }}/RPC-cert.pem"
+    mode: '0644'
+    remote_src: True
+
+- name: Configure lighttpd
+  ansible.builtin.blockinfile:
+    path: /etc/lighttpd/lighttpd.conf
+    block: |
+      $HTTP["url"] =~ "^/{{ aria2dir }}($|/)" {
+         dir-listing.activate = "enable"
+      }
+  notify: Reload lighttpd
+
+- name: Deploy aria2 configuration
+  ansible.builtin.template:
+    src: aria2.conf.j2
+    dest: /etc/aria2.conf
+    owner: root
+    group: www-data
+    mode: '0640'
+  notify: Restart aria2 service
+
+
+- name: Allow aria2 access to private key directory
+  ansible.posix.acl:
+    path: /etc/ssl/private/
+    entity: www-data
+    etype: user
+    permissions: x
+    state: present
+
+- name: Allow aria2 access to private key
+  ansible.posix.acl:
+    path: "{{ sslkey }}"
+    entity: www-data
+    etype: user
+    permissions: r
+    state: present
+
+
+- name: Deploy addseed script
+  ansible.builtin.copy:
+    src: addseed
+    dest: /usr/local/bin/
+    mode: '0755'
+
+- name: Deploy rmseed script
+  ansible.builtin.template:
+    src: rmseed.j2
+    dest: /usr/local/sbin/rmseed
+    mode: '0755'
+
+- name: Deploy aria2 service
+  ansible.builtin.copy:
+    src: aria2.service
+    dest: /etc/systemd/system/
+  notify: Restart aria2 service

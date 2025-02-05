@@ -1,0 +1,115 @@
+## Check which display manager is used:
+- name: check if gdm3 is installed
+  stat: path=/etc/gdm3/daemon.conf
+  register: gdm3
+
+- name: check if sddm is installed
+  stat: path=/usr/bin/sddm
+  register: sddm
+
+## gdm3:
+- name: enable auto login in gdm3
+  lineinfile:
+    dest: /etc/gdm3/daemon.conf
+    insertafter: '^#\s*AutomaticLoginEnable = true'
+    line: 'AutomaticLoginEnable = true'
+  when: gdm3.stat.exists
+
+- name: auto login user in gdm3
+  lineinfile:
+    dest: /etc/gdm3/daemon.conf
+    insertafter: '^#\s*AutomaticLogin = '
+    line: 'AutomaticLogin = {{ auto_user }}'
+  when: gdm3.stat.exists
+
+## sddm/KDE:
+- name: enable auto login in sddm
+  when: sddm.stat.exists
+  template:
+    src: sddm.conf.j2
+    dest: /etc/sddm.conf
+    mode: 0644
+
+- name: kde global defaults
+  when: sddm.stat.exists
+  copy:
+    src: kde5rc
+    dest: /etc/kde5rc
+    mode: 0644
+
+- name: modify kde screen lock
+  when: sddm.stat.exists
+  copy:
+    src: kscreenlockerrc
+    dest: /etc/xdg/kscreenlockerrc
+    mode: 0644
+
+########
+
+- name: graphics quirk
+  when: ansible_product_name == "HP 500" or ansible_product_name == "HP 550"
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX=)""'
+    line: '\1"video=SVIDEO-1:d"'
+    backrefs: true
+  notify: update grub
+
+- name: grub timeout
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: '^(GRUB_TIMEOUT=).*'
+    line: '\g<1>1'
+    backrefs: true
+  notify: update grub
+
+- name: keyboard compose key
+  lineinfile:
+    dest: /etc/default/keyboard
+    regexp: '^(XKBOPTIONS=).*'
+    line: '\1"compose:caps"'
+    backrefs: true
+
+- name: hibernate when lid is closed
+  lineinfile:
+    dest: /etc/systemd/logind.conf
+    insertafter: '^#\s*HandleLidSwitch='
+    line: 'HandleLidSwitch=hibernate'
+
+- name: tmp on tmpfs
+  copy:
+    src: /usr/share/systemd/tmp.mount
+    dest: /etc/systemd/system/tmp.mount
+    mode: 0644
+    remote_src: true
+  notify: enable tmp.mount
+
+- name: mount tmpfs on /home/{{ auto_user }}
+  mount:
+    name: /home/{{ auto_user }}
+    src: tmpfs
+    fstype: tmpfs
+    opts: uid=1001,gid=1001,mode=755,size=4G
+    state: mounted
+
+- name: add autologin user
+  user:
+    name: "{{ auto_user }}"
+    comment: "Autologin Debian User,,,"
+    shell: /bin/bash
+    createhome: false
+    password: '*'
+
+- name: check if NetworkManager is installed
+  stat: path=/etc/NetworkManager/system-connections
+  register: networkmanager
+
+- name: add wifi config
+  template:
+    src: wifi.j2
+    dest: /etc/NetworkManager/system-connections/{{ wifi_ssid }}
+    owner: root
+    group: root
+    mode: 0600
+  when: networkmanager.stat.exists
+  notify: reload NetworkManager

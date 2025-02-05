@@ -1,0 +1,10 @@
+---
+- name: rebuild di-netboot assistant menu
+  command:
+    cmd: di-netboot-assistant rebuild-menu
+  listen: rebuild di-netboot menu
+
+- name: export nfs
+  command:
+    cmd: exportfs -ra
+  listen: export nfs

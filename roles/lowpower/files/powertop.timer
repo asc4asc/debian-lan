@@ -1,0 +1,9 @@
+[Unit]
+Description=Run powertop --auto-tune after boot
+
+[Timer]
+OnBootSec=1min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

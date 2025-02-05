@@ -1,0 +1,15 @@
+- name: restart sssd
+  service: name=sssd state=restarted enabled=yes
+  listen: "restart sssd"
+
+- name: reload systemd
+  systemd:
+    daemon_reload: true
+  listen: "reload systemd"
+
+- name: restart rpc-gssd
+  systemd:
+    name: rpc-gssd
+    daemon_reload: true
+    state: restarted
+  notify: "restart rpc-gssd"

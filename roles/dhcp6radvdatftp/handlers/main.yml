@@ -1,0 +1,20 @@
+---
+- name: restart radvd
+  systemd:
+    name: radvd.service
+    state: restarted
+    enabled: true
+  listen: restart radvd
+
+- name: restart kea-dhcp6-server
+  systemd:
+    name: kea-dhcp6-server.service
+    state: restarted
+    enabled: true
+  listen: restart kea-dhcp6-server
+
+- name: restart network interfaces
+  systemd:
+    name: networking
+    state: restarted
+  listen: reconfigure network

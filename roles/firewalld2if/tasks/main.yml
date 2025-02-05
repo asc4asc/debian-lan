@@ -1,0 +1,80 @@
+- name: add if_lan with static address
+  template:
+    src: interfaces-static.j2
+    dest: /etc/network/interfaces.d/static
+    mode: 0644
+  notify: "bring up LAN interface"
+
+- name: install firewalld package
+  apt: name=firewalld state=latest # noqa package-latest
+  notify: "start firewalld"
+
+- name: flush all handlers
+  meta: flush_handlers
+
+
+## Do not run the following in the installer:
+
+- name: add WAN interface to zone public
+  firewalld:
+    zone: public
+    interface: "{{ if_wan }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  when: not run_in_installer|default(false)|bool
+
+- name: enable masquerading
+  firewalld:
+    zone: public
+    masquerade: 'yes'
+    permanent: true
+    state: enabled
+    immediate: true
+  when: not run_in_installer|default(false)|bool
+
+- name: add LAN interface to internal zone
+  firewalld:
+    zone: internal
+    interface: "{{ if_lan }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  when: not run_in_installer|default(false)|bool
+
+- name: enable services
+  firewalld:
+    zone: internal
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  with_items:
+    - dhcp
+    - dns
+    - tftp
+    - git
+  when: not run_in_installer|default(false)|bool
+
+## Use firewall-offline-cmd when run during installation:
+
+- name: add WAN interface to zone public
+  command: "firewall-offline-cmd --zone=public --add-interface={{ if_wan }}"
+  when: run_in_installer|default(false)|bool
+
+- name: enable masquerading
+  command: "firewall-offline-cmd --zone=public --add-masquerade"
+  when: run_in_installer|default(false)|bool
+
+- name: add LAN interface to zone intern
+  command: "firewall-offline-cmd --zone=internal --add-interface={{ if_lan }}"
+  when: run_in_installer|default(false)|bool
+
+- name: enable services
+  command: >-
+    firewall-offline-cmd --zone=internal
+    --add-service=dhcp
+    --add-service=dns
+    --add-service=tftp
+    --add-service=git
+  when: run_in_installer|default(false)|bool

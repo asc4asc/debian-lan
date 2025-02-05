@@ -1,0 +1,5 @@
+- name: enable powertop timer
+  systemd:
+    name: powertop.timer
+    enabled: true
+  listen: "enable powertop timer"

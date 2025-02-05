@@ -1,0 +1,74 @@
+{
+    "policies": {
+        "Proxy": {
+            "Mode": "system"
+        },
+        "OverrideFirstRunPage": "https://www.debian.org",
+        "Homepage": {
+            "URL": "https://www.debian.org",
+            "Locked": false,
+            "StartPage": "previous-session"
+        },
+        "DisplayBookmarksToolbar": true,
+        "ManagedBookmarks": [
+            {
+                "toplevel_name": "Debian"
+            },
+            {
+                "url": "https://www.debian.org",
+                "name": "Debian Homepage"
+            },
+            {
+                "url": "https://wiki.debian.org",
+                "name": "Debian Wiki"
+            },
+            {
+                "name": "Debian Development",
+                "children": [
+                    {
+                        "url": "https://bugs.debian.org",
+                        "name": "Debian Bug Tracker"
+                    },
+                    {
+                        "url": "https://packages.debian.org",
+                        "name": "Debian Packages"
+                    },
+                    {
+                        "url": "https://salsa.debian.org",
+                        "name": "Debian Salsa"
+                    },
+                    {
+                        "url": "https://tracker.debian.org",
+                        "name": "Package Tracker"
+                    }
+                ]
+            },
+            {
+                "name": "Debian LAN/Live",
+                "children": [
+                    {
+                        "url": "https://salsa.debian.org/andi/debian-lan-ansible",
+                        "name": "Debian LAN Ansible"
+                    },
+                    {
+                        "url": "https://wiki.debian.org/DebianLive",
+                        "name": "Debian Live"
+                    }
+                ]
+            }
+        ],
+        "SearchEngines": {
+            "Add": [
+                {
+                    "Name": "Startpage",
+                    "URLTemplate": "https://www.startpage.com/sp/search?query={searchTerms}",
+                    "Method": "GET",
+                    "IconURL": "https://www.startpage.com/sp/cdn/favicons/favicon--default.ico",
+                    "Alias": "sp",
+                    "Description": "Startpage Search Engine"
+                }
+            ],
+            "Default": "Startpage"
+        }
+    }
+}

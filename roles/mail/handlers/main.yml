@@ -1,0 +1,11 @@
+- name: Reload postfix
+  ansible.builtin.systemd:
+    name: postfix
+    state: reloaded
+  when: not run_in_installer|default(false)|bool
+
+- name: Reload dovecot
+  ansible.builtin.systemd:
+    name: dovecot
+    state: reloaded
+  when: not run_in_installer|default(false)|bool

@@ -1,0 +1,6 @@
+[Unit]
+Description=Run livebuilder script
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/livebuilder.sh

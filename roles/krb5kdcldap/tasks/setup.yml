@@ -1,0 +1,197 @@
+## Install and configure krb5-kdc-ldap.
+---
+- name: prepare krb5.conf
+  template:
+    src: krb5.conf.j2
+    dest: /etc/krb5.conf
+    mode: 0644
+
+- name: make sure krb5kdc exists
+  file:
+    path: /etc/krb5kdc
+    state: directory
+    mode: 0755
+
+- name: prepare kdc.conf
+  template:
+    src: kdc.conf.j2
+    dest: /etc/krb5kdc/kdc.conf
+    mode: 0644
+
+- name: prepare kadm5.acl
+  template:
+    src: kadm5.acl.j2
+    dest: /etc/krb5kdc/kadm5.acl
+    mode: 0644
+  notify: "restart krb5-admin-server"
+
+- name: install krb5-kdc-ldap and krb5-admin-server
+  apt:
+    name:
+      - krb5-kdc-ldap
+      - krb5-admin-server
+    state: latest # noqa package-latest
+
+- name: prepare kerberos.openldap.ldif
+  shell: gunzip -c /usr/share/doc/krb5-kdc-ldap/kerberos.openldap.ldif.gz > /etc/ldap/schema/kerberos.openldap.ldif
+  args:
+    creates: /etc/ldap/schema/kerberos.openldap.ldif
+
+- name: activate kerberos.openldap.ldif schema # noqa no-changed-when
+  command: ldapadd  -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/kerberos.openldap.ldif
+
+- name: make sure we have a kerberos container
+  ldap_entry:
+    dn: "cn=kerberos,{{ basedn }}"
+    objectClass: krbContainer
+    bind_dn: "cn=admin,{{ basedn }}"
+    bind_pw: "{{ ldap_admin_pwd['content'] | b64decode | replace('\n', '') }}"
+
+- name: make sure we have a kdc object
+  ldap_entry:
+    dn: "cn=kdc,cn=kerberos,{{ basedn }}"
+    objectClass:
+      - organizationalRole
+      - simpleSecurityObject
+    attributes:
+      userPassword: "{{ kdc_service_pwd }}"
+    bind_dn: "cn=admin,{{ basedn }}"
+    bind_pw: "{{ ldap_admin_pwd['content'] | b64decode | replace('\n', '') }}"
+
+- name: make sure we have a kadmin object
+  ldap_entry:
+    dn: "cn=kadmin,cn=kerberos,{{ basedn }}"
+    objectClass:
+      - organizationalRole
+      - simpleSecurityObject
+    attributes:
+      userPassword: "{{ kadmin_service_pwd }}"
+    bind_dn: "cn=admin,{{ basedn }}"
+    bind_pw: "{{ ldap_admin_pwd['content'] | b64decode | replace('\n', '') }}"
+
+- name: modify ACLs to account for KDC
+  ldap_attrs:
+    dn: "olcDatabase={1}mdb,cn=config"
+    attributes:
+      olcAccess:
+        - >-
+          to attrs=userPassword
+          by self write
+          by anonymous auth
+          by * none
+        - >-
+          to attrs=shadowLastChange
+          by self write
+          by * read
+        - >-
+          to dn.subtree="cn=kerberos,{{ basedn }}"
+          by dn.exact="cn=kdc,cn=kerberos,{{ basedn }}" read
+          by dn.exact="cn=kadmin,cn=kerberos,{{ basedn }}" write
+          by * none
+        - >-
+          to attrs=krbPrincipalName,krbLastPwdChange,krbPrincipalKey,krbExtraData
+          by dn.exact="cn=kdc,cn=kerberos,{{ basedn }}" read
+          by dn.exact="cn=kadmin,cn=kerberos,{{ basedn }}" write
+          by self read
+          by * auth
+        - >-
+          to *
+          by dn.exact="cn=kadmin,cn=kerberos,{{ basedn }}" write
+          by * read
+    ordered: true
+    state: exact
+
+- name: add KDC indexes to LDAP
+  ldap_attrs:
+    dn: "olcDatabase={1}mdb,cn=config"
+    attributes:
+      olcDbIndex:
+        - objectClass eq
+        - cn,uid eq
+        - uidNumber,gidNumber eq
+        - member,memberUid eq
+        - krbPrincipalName pres,sub,eq
+    state: exact
+
+- name: add AuthzRegexp to map access via kerberos/GSSAPI
+  ldap_attrs:
+    dn: "cn=config"
+    attributes:
+      olcAuthzRegexp:
+        - "{0}uid=([^,]*),cn=gssapi,cn=auth     uid=$1,ou=people,{{ basedn }}"
+        - "{1}uid=([^,]*),cn=gs2-iakerb,cn=auth uid=$1,ou=people,{{ basedn }}"
+    state: exact
+
+- name: prepare password for kdc # noqa risky-shell-pipe no-changed-when
+  shell:
+    >-
+      echo "cn=kdc,cn=kerberos,{{ basedn }}#{HEX}$(echo -n {{ kdc_service_pwd }} |
+      xxd -g0 -ps -c 256 | sed 's/0a$//')" > /etc/krb5kdc/service.keyfile ;
+      chmod 0600 /etc/krb5kdc/service.keyfile
+  no_log: true
+
+- name: prepare password for kadmin # noqa risky-shell-pipe no-changed-when
+  shell:
+    >-
+      echo "cn=kadmin,cn=kerberos,{{ basedn }}#{HEX}$(echo -n {{ kadmin_service_pwd }} |
+      xxd -g0 -ps -c 256 | sed 's/0a$//')" >> /etc/krb5kdc/service.keyfile ;
+      chmod 0600 /etc/krb5kdc/service.keyfile
+  no_log: true
+
+- name: dump kdc master password # noqa no-changed-when
+  shell:
+    >-
+      echo -n "{{ kdc_master_pwd }}" > "{{ kdc_master_pwd_file }}" ;
+      chmod 0600 "{{ kdc_master_pwd_file }}"
+  no_log: true
+
+- name: initialize KDC # noqa no-changed-when
+  command:
+    >-
+      kdb5_ldap_util
+      -D cn=admin,"{{ basedn }}"
+      -w "{{ ldap_admin_pwd['content'] | b64decode | replace('\n', '') }}"
+      -H ldapi:///
+      create -s -subtrees "{{ basedn }}"
+      -P "{{ kdc_master_pwd }}"
+      -r "{{ ansible_domain | upper }}"
+  no_log: true
+  notify: "restart krb5-kdc"
+
+- name: add root/admin as kadmin # noqa no-changed-when
+  command: kadmin.local -q 'addprinc -pw "{{ kadmin_pwd }}" root/admin'
+
+- name: dump kadmin password # noqa no-changed-when
+  shell: echo -n "{{ kadmin_pwd }}" > "{{ kadmin_pwd_file }}" ; chmod 0600 "{{ kadmin_pwd_file }}"
+  no_log: true
+
+- name: add default policy to silence warning when using kadmin # noqa no-changed-when
+  command: kadmin.local -q "add_policy default"
+
+- name: create machine principals # noqa no-changed-when
+  command: kadmin.local -q 'addprinc -randkey {{ item }}/{{ ansible_hostname }}.{{ ansible_domain }}'
+  with_items:
+    - host
+    - ldap
+    - HTTP
+
+- name: add principal to the default keytab # noqa no-changed-when
+  command: kadmin.local -q 'ktadd {{ item }}/{{ ansible_hostname }}.{{ ansible_domain }}'
+  with_items:
+    - host
+    - ldap
+    - HTTP
+
+- name: allow slapd to read the keytab
+  file:
+    path: /etc/krb5.keytab
+    owner: root
+    group: openldap
+    mode: '0640'
+  notify: restart slapd
+
+- name: "make 'kerberos' an alias hostname"
+  replace:
+    path: /etc/hosts
+    regexp: "^({{ ipaddr_lan | ipaddr('address') }}\\s.+)$"
+    replace: '\1 kerberos'

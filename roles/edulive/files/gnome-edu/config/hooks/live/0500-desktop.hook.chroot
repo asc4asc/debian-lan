@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Tweaks and fine tuning of some settings
+#
+set -e
+
+## get rid of setup wizard:
+apt-get purge gnome-initial-setup --yes --autoremove
+
+##
+dconf update
+#sed -i "s/^/#/" /etc/xdg/user-dirs.defaults
+#sed -i "s/^#WaylandEnable=false$/WaylandEnable=false/" /etc/gdm3/daemon.conf
+
+## shared directory:
+mkdir /media/tmpshare
+echo "livebox:/srv/tmpshare /media/tmpshare nfs rw,auto,nofail,nolock 0 0" >> /etc/fstab
+
+## remote journal:
+echo "URL=http://livebox" >> /etc/systemd/journal-upload.conf
+ln -s /lib/systemd/system/systemd-journal-upload.service \
+   /etc/systemd/system/multi-user.target.wants/systemd-journal-upload.service
+
+## workaround https://bugzilla.gnome.org/show_bug.cgi?id=730587
+#dpkg-divert --divert /usr/bin/gnome-keyring-daemon.bak --rename /usr/bin/gnome-keyring-daemon

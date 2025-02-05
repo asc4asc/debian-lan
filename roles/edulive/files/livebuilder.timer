@@ -1,0 +1,11 @@
+[Unit]
+Description=Run livebuilder script weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+AccuracySec=3h
+RandomizedDelaySec=3h
+
+[Install]
+WantedBy=timers.target

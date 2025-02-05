@@ -1,0 +1,13 @@
+---
+## DB fixes (only on upgrade)
+- name: Add missing indices, columns and convert filecache
+  ansible.builtin.command: "{{ item }}"
+  args:
+    chdir: "{{ nc_dir }}"
+  register: cmd_result
+  changed_when: cmd_result.stdout is search("updated successfully")
+  with_items:
+    - "sudo -u www-data php ./occ db:add-missing-indices"
+    - "sudo -u www-data php ./occ db:add-missing-columns"
+    - "sudo -u www-data php ./occ -n db:convert-filecache-bigint"
+  listen: update and fix data base

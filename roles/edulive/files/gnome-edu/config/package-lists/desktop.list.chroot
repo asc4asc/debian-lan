@@ -1,0 +1,13 @@
+task-gnome-desktop
+
+gnome-shell-extension-dashtodock
+gnome-shell-extension-dash-to-panel
+
+plymouth
+plymouth-x11
+
+gstreamer1.0-vaapi
+i965-va-driver
+
+## this confuses apt-cacher-ng:
+#auto-apt-proxy

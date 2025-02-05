@@ -1,0 +1,10 @@
+[Unit]
+Description=Run backup script daily
+
+[Timer]
+OnCalendar=*-*-* 4:00:00
+Persistent=true
+AccuracySec=15min
+
+[Install]
+WantedBy=timers.target

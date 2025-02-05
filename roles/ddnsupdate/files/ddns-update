@@ -1,0 +1,35 @@
+#!/bin/bash
+set -eu
+
+. /etc/ddns-update/ddns-update.conf
+
+DDHOST="https://www.ddnss.de/upd.php"
+
+if ! DNSRESULT="$(host $DDNSNAME)" ; then
+    echo "Could not resolve IP address for '$DDNSNAME', no update."
+    exit 0
+fi
+
+DNSIP4="$(echo "$DNSRESULT" | grep -m 1 -oE '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$' || true )"
+DNSIP6="$(echo "$DNSRESULT" | grep -m 1 -oE '[0-9a-f]{1,4}:.+:[0-9a-f]{1,4}' || true )"
+
+REALIP4="$(wget -q -O - https://ip4.ddnss.de/meineip.php | \
+               grep -m 1 -oE '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' || true )"
+REALIP6="$(wget -q -O - https://ip6.ddnss.de/meineip.php | \
+                grep -m 1 -oE '[0-9a-f]{1,4}:.+:[0-9a-f]{1,4}' || true )"
+
+if [ -z "$REALIP4" -a -z "$REALIP6" ] ; then
+    echo "Could not detect real IP addresses, exiting."
+    exit 0
+fi
+
+echo "Current DNS: IPv4=$DNSIP4, IPv6=$DNSIP6."
+echo "Detected:    IPv4=$REALIP4, IPv6=$REALIP6."
+
+if [ "$REALIP4" == "$DNSIP4" -a "$REALIP6" == "$DNSIP6" ] ; then
+    echo "IP address unchanged, no update."
+else
+    echo "IP address changed: $DNSIP4 → ${REALIP4}, $DNSIP6 → ${REALIP6}, updating ddns."
+    wget -q -O - $DDHOST'?key='$KEYAUTH'&host='$DDNSNAME'&ip='$REALIP4'&ip6='$REALIP6 \
+        | grep -oE "Updated .+ hostname." || echo "Update not confirmed, it might have failed."
+fi

@@ -1,0 +1,37 @@
+[org/gnome/shell]
+enabled-extensions=['apps-menu@gnome-shell-extensions.gcampax.github.com', 'window-list@gnome-shell-extensions.gcampax.github.com', 'places-menu@gnome-shell-extensions.gcampax.github.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'dash-to-dock@micxgx.gmail.com']
+
+[org/gnome/desktop/input-sources]
+sources=[('xkb', 'de'), ('xkb', 'us')]
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'
+
+[org/gnome/desktop/peripherals/touchpad]
+natural-scroll=false
+edge-scrolling-enabled=true
+tap-to-click=true
+
+[org/gnome/nautilus/preferences]
+default-folder-viewer='list-view'
+
+[org/gnome/nautilus/list-view]
+use-tree-view=true
+
+[org/gnome/settings-daemon/plugins/power]
+power-button-action='interactive'
+sleep-inactive-battery-timeout=600
+sleep-inactive-battery-type='hibernate'
+sleep-inactive-ac-timeout=6000
+sleep-inactive-ac-type='nothing'
+
+[org/gnome/desktop/screensaver]
+lock-enabled=false
+
+[org/gnome/desktop/interface]
+clock-show-date=true
+clock-show-seconds=true
+clock-show-weekday=true
+
+[org/gnome/shell/extensions/dash-to-dock]
+dock-position='LEFT'

@@ -1,0 +1,14 @@
+[Unit]
+Description=aria2c bittorrent seeder
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/aria2c --conf-path=/etc/aria2.conf
+TimeoutStopSec=20
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

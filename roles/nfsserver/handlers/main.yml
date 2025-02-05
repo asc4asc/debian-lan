@@ -1,0 +1,24 @@
+- name: bind mount exported dir
+  mount:
+    path: "{{ export_root }}/home/"
+    src: "{{ lan_homes }}"
+    fstype: none
+    state: mounted
+    opts: bind
+  listen: "bind mount exported dirs"
+
+- name: restart nfs-kernel-server
+  service: name=nfs-kernel-server state=restarted enabled=yes
+  listen: "restart nfs-kernel-server"
+
+- name: restart rpc-svcgssd
+  service: name=rpc-svcgssd state=restarted enabled=yes
+  listen: "restart rpc-svcgssd"
+
+- name: restart sssd
+  service: name=sssd state=restarted enabled=yes
+  listen: "restart sssd"
+
+- name: restart dnsmasq
+  service: name=dnsmasq state=restarted enabled=yes
+  listen: "restart dnsmasq"

@@ -1,0 +1,56 @@
+---
+## This playbook deploys the sambox server.  Add 'hostname=XXX' and 'domain=YYY'
+## to the installer boot parameters to set hostname and domain.
+##
+
+- name: apply configuration to the sambox server
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  vars:
+    ## This interface provides the default route:
+    if_wan: "{{ ansible_default_ipv4.interface }}"
+
+    ## Use the first remaining interface for the LAN:
+    if_lan: "{{ ansible_interfaces | difference([if_wan, 'lo']) | first }}"
+
+    ## LAN IP address range:
+    ipaddr_lan: 192.168.0.10/24
+    ipaddr_lan_threeoct: "{{ ipaddr_lan.split('.')[0:3] | join('.') }}"
+    ipaddr_lan_ptr: "{{ (ipaddr_lan | ipaddr('revdns')).split('.')[1:] | join('.') }}"
+    ipaddr_lan_ptr_threeoct: "{{ ipaddr_lan_ptr.split('.')[0:3] | join('.') }}"
+    dhcp_start: 192.168.0.50
+    dhcp_stop: 192.168.0.150
+    in_inventory: 192.168.0.[50:150]
+
+    di_dist: "{{ ansible_distribution_release }}"
+    di_version: "{{ ansible_distribution_major_version }}"
+    di_pkg: "debian-installer-{{ di_version }}-netboot-amd64"
+
+    ansible_user: ansible
+    repo_dir: "/home/{{ ansible_user }}/debian-lan"
+    ansible_python_interpreter: "/usr/bin/python3"  ## needed for firewalld module
+
+  vars_prompt:
+    - name: "foo_pwd"
+      prompt:
+        In case you would like to prepare a test user 'foo' and have
+        not done so yet, provide foo's password here.  Leave empty to
+        just continue
+      private: true
+
+  pre_tasks:
+    - name: validate if interfaces are available
+      fail:
+        msg: "Interfaces {{ ansible_interfaces }} found. WAN: '{{ if_wan }}', LAN: '{{ if_lan }}'.  Two NICs needed."
+      when: (if_lan not in ansible_interfaces) or (if_wan not in ansible_interfaces) or (if_lan == if_wan)
+
+  roles:
+    - up2date_debian
+    - firewalld2if
+    - netbootinstaller
+    - dnsdhcptftp
+    - aptcacher
+    - sambaldap
+    - prepare4clients

@@ -1,0 +1,8 @@
+[org/gnome/login-screen]
+disable-user-list=true
+logo='/usr/share/desktop-base/debian-logos/logo-text-64.png'
+
+[org/gnome/settings-daemon/plugins/power]
+power-button-action='interactive'
+sleep-inactive-ac-timeout=600
+sleep-inactive-ac-type='interactive'

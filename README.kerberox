@@ -1,0 +1,14 @@
+## After installation of the clients, prepare and copy all machine
+## credentials to the machines in the following way:
+
+## Log into the Kerberos KDC (kerberox).
+
+## Find the kadmin password to be used soon:
+     sudo cat /root/kadmin.pwd
+
+## Then:
+     cd /home/ansible/debian-lan/
+     ansible-playbook --ask-become-pass kerberox-client.yml \
+                      --ssh-common-args='-o StrictHostKeyChecking=no'
+
+## Enter the 'BECOME' password and the kadmin password obtained above.

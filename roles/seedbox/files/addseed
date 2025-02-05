@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+#
+# Maintenance script run after upload.
+# Rename torrent file and clean up failed uploads.
+set -eu
+
+[[ $1 != 1 ]] || exit 1
+
+file="$(basename "$3")"
+sdir="$(dirname "$3")"
+seeds="seeds.txt"
+
+echo -e "\nFile '$file' has been uploaded, rename torrent file."
+while IFS= read -r -d '' file ; do
+    tn="$sdir/$(aria2c -S "$file" | sed -nE "s/^Name: (.+)$/\1/p")"
+    if [[ -e "$tn" ]] ; then
+	mv -v "$file" "$tn.torrent"
+	## Remember seeds after restart of aria2.service:
+	if ! grep -q "$tn.torrent" "$sdir/$seeds" ; then
+	    echo "Remember '$tn.torrent' in '$sdir/$seeds'."
+	    echo "$tn.torrent" >> "$sdir/$seeds"
+	fi
+    else
+	## An ealier upload failed, remove torrent file:
+	rm -v "$file"
+    fi
+done <  <(find "$sdir" -maxdepth 1 -regextype posix-extended \
+	       -regex '.+/[[:xdigit:]]{40}\.torrent' -print0)

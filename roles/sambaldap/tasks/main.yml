@@ -1,0 +1,133 @@
+## Install and configure samba-ldap.
+---
+- name: check if samba is already there
+  stat: path=/etc/ldap/schema/samba.ldif
+  register: samba_ldap
+
+- name: install samba and provide samba schema
+  apt:
+    name:
+      - samba
+      - sssd-ldap
+    state: latest # noqa package-latest
+
+- name: provide identities from LDAP
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: 0600
+  notify: restart sssd
+
+- name: prepare samba schema
+  command: cp /usr/share/doc/samba/examples/LDAP/samba.ldif /etc/ldap/schema/
+  args:
+    creates: /etc/ldap/schema/samba.ldif
+
+- name: activate samba.ldif schema
+  command: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/samba.ldif
+  when: not samba_ldap.stat.exists
+
+- name: add indexes to LDAP
+  ldap_attrs:
+    dn: "olcDatabase={1}mdb,cn=config"
+    attributes:
+      olcDbIndex:
+        - sambaSID eq
+        - sambaPrimaryGroupSID eq
+        - sambaGroupType eq
+        - sambaSIDList eq
+        - sambaDomainName eq
+    state: present
+
+- name: modify ACLs to account for Samba
+  ldap_attrs:
+    dn: "olcDatabase={1}mdb,cn=config"
+    attributes:
+      olcAccess:
+        - >-
+          to attrs=userPassword
+          by self write
+          by anonymous auth
+          by * none
+        - >-
+          to attrs=shadowLastChange
+          by self write
+          by * read
+        - >-
+          to attrs=sambaNTPassword
+          by dn.exact=cn=admin,{{ basedn }} write
+          by self write
+          by * none
+        - >-
+          to * by * read
+    ordered: true
+    state: exact
+
+- name: configure smb ldap backend
+  blockinfile:
+    dest: /etc/samba/smb.conf
+    insertafter: '^\s*server role ='
+    block: |
+      ####### LDAP Settings #######
+      passdb backend = ldapsam:ldapi:///
+      ldap suffix = {{ basedn }}
+      ldap user suffix = ou=people
+      ldap group suffix = ou=groups
+      ldap machine suffix = ou=computers
+      ldap idmap suffix = ou=idmap
+      ldap admin dn = cn=admin,{{ basedn }}
+      ldap ssl = no
+      ldap passwd sync = yes
+  notify: restart smbd
+
+- name: make smb homes writable
+  replace:
+    path: /etc/samba/smb.conf
+    regexp: '^(\s*read only =) yes$'
+    replace: '\1 no'
+    after: '\[homes\]'
+    before: '\[.+\]'
+  notify: restart smbd
+
+- name: modify samba default create mask
+  replace:
+    path: /etc/samba/smb.conf
+    regexp: '^(\s*create mask =) 0700'
+    replace: '\1 0600'
+    after: '\[homes\]'
+    before: '\[.+\]'
+  notify: restart smbd
+
+- name: slurp admin password for samba setup
+  slurp:
+    src: "{{ ldap_admin_pwd_file }}"
+  register: ldap_admin_pwd
+  no_log: true
+  when: not samba_ldap.stat.exists
+
+- name: make samba admin password available to smbd
+  command: smbpasswd -w "{{ ldap_admin_pwd['content'] | b64decode | replace('\n', '') }}"
+  no_log: true
+  notify: restart smbd
+  when: not samba_ldap.stat.exists
+
+- name: flush all handlers
+  meta: flush_handlers
+
+- name: add samba attributes to dummy user foo
+  command:
+    cmd: smbpasswd -s -a foo
+    stdin: "{{ foo_pwd }}\n{{ foo_pwd }}"
+  when: foo_pwd is defined and foo_pwd | length > 0
+
+########################
+
+- name: allow services in firewalld
+  firewalld:
+    zone: internal
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - samba

@@ -1,0 +1,15 @@
+[Exec]
+Capability=CAP_NET_ADMIN
+ResolvConf=copy-host
+
+[Network]
+Port=10{{ "%03d" | format(item|int) }}:22
+Port=10{{ "%03d" | format(item|int + 100) }}:80
+Port=10{{ "%03d" | format(item|int + 200) }}:443
+
+[Files]
+ReadOnly=yes
+Overlay=+/:/var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}-delta:/
+PrivateUsersChown=false
+BindReadOnly=/var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}.hostname:/etc/hostname
+BindReadOnly=/var/lib/machines/{{ contname }}{{ "%02d" | format(item|int) }}.hosts:/etc/hosts

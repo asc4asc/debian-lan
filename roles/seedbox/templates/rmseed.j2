@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+#
+# Remove a seed
+set -eu
+
+if [[ $# = 0 ]] ; then
+    echo "Error: File to remove from seedbox missing."
+    exit 1
+fi
+sdir="{{ wwwdir }}/{{ aria2dir }}/"
+seeds="seeds.txt"
+
+systemctl stop aria2
+for f in "$@" ; do
+    file="$(basename "$f")"
+    sed -i "\|^${sdir}${file}.torrent|d" "$sdir/$seeds"
+    rm -vf "$sdir/$file" "$sdir/${file}.torrent" "$sdir/${file}.aria2"
+done
+systemctl start aria2

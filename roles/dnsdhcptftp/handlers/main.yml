@@ -1,0 +1,15 @@
+- name: restart isc-dhcp-server
+  systemd: name=isc-dhcp-server state=restarted enabled=yes
+  listen: restart isc-dhcp-server
+
+- name: restart bind
+  systemd: name=bind9 state=restarted enabled=yes
+  listen: restart bind
+
+- name: restart tftpd-hpa
+  systemd: name=tftpd-hpa state=restarted enabled=yes
+  listen: restart tftpd-hpa
+
+- name: restart dhcp-client
+  systemd: name=ifup@{{ if_wan }} state=restarted enabled=yes
+  listen: restart dhcp-client

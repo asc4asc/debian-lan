@@ -1,0 +1,22 @@
+---
+# This playbook deploys a kiosk-computer
+
+- name: apply configuration to the machines
+  hosts: all
+  remote_user: ansible
+  become: true
+  vars:
+    auto_user: debi
+    wifi_ssid: "YOUR SSID HERE"
+    wifi_passwd: "YOUR WIFI-PW HERE"
+    extra_pkgs:
+      - webext-privacy-badger
+      - webext-ublock-origin
+    extra_pkgs_bpo: []  # [ libreoffice ]
+
+  roles:
+    - up2date_debian
+    ## Choose either gnome or KDE:
+    - gnome
+    # - kde
+    - kiosk
