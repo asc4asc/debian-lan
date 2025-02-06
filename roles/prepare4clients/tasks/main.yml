@@ -86,6 +86,12 @@
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
+      LABEL minimal
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=mini auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=minimal.yml ---
+
+
       LABEL kiosk
          MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
@@ -127,10 +133,10 @@
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed simple.yml' {
+      menuentry 'Debian {{ di_version }} (amd64) + preseed minimal.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=kiosk auto=true priority=critical \ 
-                   url=tftp://{{ ansible_hostname }} playbook=simple.yml ---
+                   url=tftp://{{ ansible_hostname }} playbook=minimal.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
