@@ -11,15 +11,15 @@
 
 # alternate the ansible way?
 - name: Generate SSH key
-      ansible.builtin.openssh_keypair:
-        path: /home/ansible/.ssh/id_rsa
-        type: rsa
-        size: 2048
-        owner: ansible
-        group: ansible
-        mode: '0600'
-      become: yes
-      become_user: ansible
+  ansible.builtin.openssh_keypair:
+    path: /home/ansible/.ssh/id_rsa
+    type: rsa
+    size: 2048
+    owner: ansible
+    group: ansible
+    mode: '0600'
+  become: yes
+  become_user: ansible
 
 - name: slurp public key
   slurp:
