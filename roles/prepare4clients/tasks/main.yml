@@ -3,11 +3,11 @@
     name: ansible
     state: latest # noqa package-latest
 
-- name: generate ssh key
-  command: "su -l {{ ansible_user }} -c \"ssh-keygen -t rsa -f /home/{{ ansible_user }}/.ssh/id_rsa -P ''\""
-  args:
-    creates: "/home/{{ ansible_user }}/.ssh/id_rsa"
-    warn: false
+#- name: generate ssh key
+#  command: "su -l {{ ansible_user }} -c \"ssh-keygen -t rsa -f /home/{{ ansible_user }}/.ssh/id_rsa -P ''\""
+#  args:
+#    creates: "/home/{{ ansible_user }}/.ssh/id_rsa"
+#    warn: false
 
 - name: slurp public key
   slurp:
@@ -53,8 +53,9 @@
       echo "{{ sshpubkey }}" >> /target/home/ansible/.ssh/authorized_keys ; \
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
-      [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
-                             -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
+      exit 0
+      # [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
+      #                        -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
