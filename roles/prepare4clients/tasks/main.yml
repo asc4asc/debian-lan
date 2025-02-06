@@ -127,6 +127,13 @@
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
+      menuentry 'Debian {{ di_version }} (amd64) + preseed simple.yml' {
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   hostname=kiosk auto=true priority=critical \ 
+                   url=tftp://{{ ansible_hostname }} playbook=simple.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
       menuentry 'Debian {{ di_version }} (amd64) + preseed + kiosk.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=kiosk auto=true priority=critical \
