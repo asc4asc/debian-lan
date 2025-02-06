@@ -65,9 +65,8 @@
       echo "{{ sshpubkey }}" >> /target/home/ansible/.ssh/authorized_keys ; \
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
-      exit 0
-      # [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
-      #                        -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
+      [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
+       -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
