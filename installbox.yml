@@ -39,7 +39,7 @@
 
   roles:
     - up2date_debian
-    - firewalld2if
+    # - firewalld2if
     - dnsmasq
     - netbootinstaller
     - aptcacher
