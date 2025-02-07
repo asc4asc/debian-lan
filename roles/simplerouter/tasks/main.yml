@@ -24,7 +24,7 @@
       table ip nat {
           chain postrouting {
               type nat hook postrouting priority 100; policy accept;
-              oifname "eth1" masquerade
+              oifname "eth0" masquerade
           }
       }
 - name: Enable and start nftables service
