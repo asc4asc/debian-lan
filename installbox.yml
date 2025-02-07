@@ -40,6 +40,7 @@
   roles:
     - up2date_debian
     # - firewalld2if
+    - simplerouter
     - dnsmasq
     - netbootinstaller
     - aptcacher

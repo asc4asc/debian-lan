@@ -1,0 +1,9 @@
+- name: add if_lan with static address
+  template:
+    src: interfaces-static.j2
+    dest: /etc/network/interfaces.d/static
+    mode: 0644
+  notify: "bring up LAN interface"
+
+- name: flush all handlers
+  meta: flush_handlers

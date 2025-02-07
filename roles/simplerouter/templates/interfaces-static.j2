@@ -1,0 +1,4 @@
+auto {{ if_lan }}
+allow-hotplug {{ if_lan }}
+iface {{ if_lan }} inet static
+  address {{ ipaddr_lan }}
