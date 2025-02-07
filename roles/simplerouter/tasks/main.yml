@@ -27,6 +27,7 @@
               oifname "eth0" masquerade
           }
       }
+      
 - name: Enable and start nftables service
   systemd:
     name: nftables
