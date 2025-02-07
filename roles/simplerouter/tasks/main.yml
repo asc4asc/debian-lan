@@ -24,7 +24,7 @@
       table ip nat {
           chain postrouting {
               type nat hook postrouting priority 100; policy accept;
-              oifname " {{ if_wan }} " masquerade
+              oifname "{{ if_wan }}" masquerade
           }
       }
       
