@@ -4,11 +4,8 @@
     dest: /etc/network/interfaces.d/static
     mode: 0644
   notify: "bring up LAN interface"
- 
 
 - name: Configure NFTables Router
-  hosts: localhost
-  become: yes
   tasks:
     - name: Install nftables
       apt:
