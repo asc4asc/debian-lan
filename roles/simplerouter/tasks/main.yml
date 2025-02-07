@@ -5,34 +5,33 @@
     mode: 0644
   notify: "bring up LAN interface"
 
-  tasks:
-    - name: Install nftables
-      apt:
-        name: nftables
-        state: present
+- name: Install nftables
+  apt:
+    name: nftables
+    state: present
 
-    - name: Enable IP forwarding
-      sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
-        state: present
-        reload: yes
+- name: Enable IP forwarding
+    sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
 
-    - name: Configure NFTables rules
-      copy:
-        dest: /etc/nftables.conf
-        content: |
-          table ip nat {
-              chain postrouting {
-                  type nat hook postrouting priority 100; policy accept;
-                  oifname "eth1" masquerade
-              }
+- name: Configure NFTables rules
+  copy:
+    dest: /etc/nftables.conf
+    content: |
+      table ip nat {
+          chain postrouting {
+              type nat hook postrouting priority 100; policy accept;
+              oifname "eth1" masquerade
           }
-    - name: Enable and start nftables service
-      systemd:
-        name: nftables
-        enabled: yes
-        state: started
+      }
+- name: Enable and start nftables service
+  systemd:
+    name: nftables
+    enabled: yes
+    state: started
 
 - name: flush all handlers
   meta: flush_handlers
