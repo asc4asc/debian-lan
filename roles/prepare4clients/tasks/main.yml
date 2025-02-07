@@ -81,16 +81,15 @@
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz mirror/http/proxy?=http://{{ ansible_hostname }}:3142/ pkgsel/include=etckeeper preseed/late_command="rm -fv /target/etc/apt/apt.conf" ---
 
-      LABEL demo
+      LABEL demohost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
-      LABEL minimal
+      LABEL minihost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=mini auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=minimal.yml ---
-
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
       LABEL kiosk
          MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml
