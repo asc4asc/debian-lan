@@ -249,7 +249,7 @@
 
 - name: provide git repo if not available already # noqa git-latest
   git:
-    repo: 'https://salsa.debian.org/andi/debian-lan-ansible.git'
+    repo: 'https://github.com/asc4asc/debian-lan.git'
     dest: "{{ repo_dir }}"
     update: false
   become_user: "{{ ansible_user }}"
