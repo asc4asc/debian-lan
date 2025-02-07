@@ -65,6 +65,7 @@
       echo "{{ sshpubkey }}" >> /target/home/ansible/.ssh/authorized_keys ; \
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
+      echo 'ansible ALL=(ALL) NOPASSWD: ALL' >> /target/etc/sudoers.d/sudo_ansible ; \
       [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
        -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
