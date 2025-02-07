@@ -1,4 +1,4 @@
-- name: add if_lan with static address / Configure NFTables Router
+- name: Configure NFTables Router
   template:
     src: interfaces-static.j2
     dest: /etc/network/interfaces.d/static
