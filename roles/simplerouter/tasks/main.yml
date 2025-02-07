@@ -1,11 +1,10 @@
-- name: add if_lan with static address
+- name: add if_lan with static address / Configure NFTables Router
   template:
     src: interfaces-static.j2
     dest: /etc/network/interfaces.d/static
     mode: 0644
   notify: "bring up LAN interface"
 
-- name: Configure NFTables Router
   tasks:
     - name: Install nftables
       apt:
