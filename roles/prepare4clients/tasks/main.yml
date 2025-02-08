@@ -68,7 +68,7 @@
       in-target chmod -R og= /home/ansible/.ssh/ ; \
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' >> /target/etc/sudoers.d/sudo_ansible ; \
       [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
-       -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
+       -i localhost, --url=https://github.com/asc4asc/debian-lan.git $playbook
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
