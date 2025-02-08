@@ -7,8 +7,6 @@ copy of: https://salsa.debian.org/andi/debian-lan-ansible
 ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
 ```
 # Problems
-On the client i must make a sudo file for the user ansible. To start ansible from server
-
 Need a simple local start file and autologin.
 
 ### Later
