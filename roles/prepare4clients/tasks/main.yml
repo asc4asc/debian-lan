@@ -66,9 +66,8 @@
       echo {{ sshpubkey }} >> /target/home/ansible/.ssh/authorized_keys ; \
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
-      echo 'ansible ALL=(ALL) NOPASSWD: ALL' >> /target/etc/sudoers.d/sudo_ansible ; \
-      in-target ansible-pull --verbose --purge --extra-vars='run_in_installer=true'\
-       -i localhost, --url=https://github.com/asc4asc/debian-lan.git edubox.yml
+      echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo_ansible ; \
+      echo 'ansible-pull --verbose --purge --extra-vars='run_in_installer=true' -i localhost, --url=https://github.com/asc4asc/debian-lan.git edubox.yml' >/target/home/ansible/checkit
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
