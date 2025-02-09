@@ -12,6 +12,17 @@ offers ansible playbooks and instructions for the following machines:
      - automatic installs: preseeding and ansible playbooks
      - package cache
 
+• installbox2:  orchestration of automatic installs in the LAN
+     - set up as gateway to some external network (WAN)
+     - provides TFTP installations on the LAN interface
+     - automatic installs: preseeding and ansible playbooks
+     - package cache
+
+The second installbox is necasaary for install a installbox from installbox.
+
+----------------------------------------------------------------------------------
+If you need one of these boxes please go back to the original ansible-debian-lan
+
  • kerberox:  serving a minimalistic kerberized LAN
      - automatic TFTP installation of clients
      - centralized home directories on kerberized NFS
