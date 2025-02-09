@@ -1,7 +1,9 @@
-copy of: https://salsa.debian.org/andi/debian-lan-ansible !! 
-
         Run Debian in your Local Area Network
        =======================================
+
+copy of: https://salsa.debian.org/andi/debian-lan-ansible !! 
+
+Please check if the original fits your requirements more!
 
 The goal of the "Debian Local Area Network"-project is to make setting
 up Debian in a local area network as easy as possible.  This repository
