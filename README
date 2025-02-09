@@ -20,6 +20,9 @@ offers ansible playbooks and instructions for the following machines:
 
 The second installbox is necasaary for install a installbox from installbox.
 
+ • minimal:  for testing 
+ 
+
 ----------------------------------------------------------------------------------
 If you need one of these boxes please go back to the original ansible-debian-lan
 
