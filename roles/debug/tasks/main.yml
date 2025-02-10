@@ -41,4 +41,13 @@
     name: getty@tty1
     enabled: yes
     state: restarted
+ 
+- name: Ensure .bash_aliases file exists
+  copy:
+    dest: ~/.bash_aliases
+    content: |
+      alias ll='ls -la'
+      alias gs='git status'
+      alias gp='git pull'
+      alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
 
