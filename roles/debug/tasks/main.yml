@@ -51,7 +51,7 @@
     dest: /home/ansible/menu.txt 
     content: |
       Hier bitte ein paar Tips und Anweisungen einfuegen.
-      a) test a
+      clean-sda) clean hardisk sda for new install
 
 - name: Add a line to .bashrc
   lineinfile:
