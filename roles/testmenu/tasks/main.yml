@@ -78,5 +78,5 @@
 - name: Add a line to .bashrc
   lineinfile:
     path: /home/ansible/.bashrc
-    line: 'menu'
+    line: 'if [ -d todo ]; then run-parts todo; else menu; done'
     
