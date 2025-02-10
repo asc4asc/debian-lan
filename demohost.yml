@@ -8,4 +8,4 @@
   roles:
     - up2date_debian
     - debug 
-    - testmenu
+#    - testmenu
