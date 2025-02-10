@@ -1,0 +1,20 @@
+---
+- name: Install packages needed
+  ansible.builtin.apt:
+    name:
+      - ansible
+    state: latest
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: make-auto-login-console
+    dest: /usr/local/bin/
+    mode: '0755'
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: sudo4user
+    dest: /usr/local/bin/
+    mode: '0755'
+
+
