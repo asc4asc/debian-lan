@@ -54,7 +54,7 @@
 
 - name: Add a line to .bashrc
   lineinfile:
-    path: ~/.bashrc
+    path: /home/ansible/.bashrc
     line: 'menu'
     
 - name: Enable getty@tty1 service
