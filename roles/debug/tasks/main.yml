@@ -46,10 +46,9 @@
       alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
        
 - name: create a small file with instructions
-  ansible.builtin.blockinfile:
-    path: /home/ansible/menu.txt 
-    create: true
-    block: |
+  copy:
+    dest: /home/ansible/menu.txt 
+    content: |
       Hier bitte ein paar Tips und Anweisungen einfuegen.
       a) test a
 
