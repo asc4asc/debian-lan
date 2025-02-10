@@ -52,6 +52,12 @@
       Hier bitte ein paar Tips und Anweisungen einfuegen.
       a) test a
 
+- name: Add a line to .bashrc
+  lineinfile:
+    path: ~/.bashrc
+    line: 'menu'
+    insertafter: EOF
+
 - name: Enable getty@tty1 service
   ansible.builtin.systemd:
     name: getty@tty1
