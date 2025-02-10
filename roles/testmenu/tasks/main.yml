@@ -37,7 +37,7 @@
 
 - name: Deploy script
   ansible.builtin.copy:
-    src: 100-wait
+    src: 100-timeout-reboot
     dest: /home/ansible/
     mode: '0755'
 
