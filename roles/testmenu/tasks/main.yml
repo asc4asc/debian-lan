@@ -1,0 +1,59 @@
+---
+- name: Install packages needed
+  ansible.builtin.apt:
+    name:
+      - ansible
+    state: latest
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: make-auto-login-console
+    dest: /usr/local/bin/
+    mode: '0755'
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: sudo4user
+    dest: /usr/local/bin/
+    mode: '0755'
+
+- name: Create autologin service override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/getty@tty1.service.d
+    state: directory
+    mode: '0755'
+
+- name: Create autologin service override file
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/getty@tty1.service.d/override.conf
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=-/sbin/agetty --autologin ansible --noclear %I $TERM
+    mode: '0644'
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Ensure .bash_aliases file exists
+  copy:
+    dest: /home/ansible/.bash_aliases
+    content: |
+      alias ll='ls -la'
+      alias gs='git status'
+      alias gp='git pull'
+      alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
+       
+- name: create a small file with instructions
+  copy:
+    dest: /home/ansible/menu.txt 
+    content: |
+      Hier bitte ein paar Tips und Anweisungen einfuegen.
+      a) test a
+
+- name: Add a line to .bashrc
+  lineinfile:
+    path: /home/ansible/.bashrc
+    line: 'menu'
+    
