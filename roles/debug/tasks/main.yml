@@ -53,3 +53,11 @@
     become: yes
     become_user: ansible
 
+- name: create a small file with instructions 
+  copy:
+    dest: /home/ansible/menu.txt
+    content: |
+      Hier bitte ein paar Tips und Anweisungen einfuegen. 
+    become: yes
+    become_user: ansible
+
