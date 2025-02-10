@@ -52,12 +52,11 @@
       alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
     become: yes
     become_user: ansible
-
-- name: create a small file with instructions 
-  copy:
-    dest: /home/ansible/menu.txt
-    content: |
+    
+- name: create a small file with instructions
+  ansible.builtin.blockinfile:
+    path: /home/ansible/menu.txt 
+    create: true
+    block: |
       Hier bitte ein paar Tips und Anweisungen einfuegen.
       a) test a
-    
-
