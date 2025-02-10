@@ -86,7 +86,7 @@
       LABEL demohost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook demohost
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
       LABEL demohost1
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook demohost1
