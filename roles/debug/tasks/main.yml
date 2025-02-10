@@ -44,10 +44,12 @@
  
 - name: Ensure .bash_aliases file exists
   copy:
-    dest: ~/.bash_aliases
+    dest: /home/ansible/.bash_aliases
     content: |
       alias ll='ls -la'
       alias gs='git status'
       alias gp='git pull'
       alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
+    become: yes
+    become_user: ansible
 
