@@ -11,6 +11,10 @@
     dest: /usr/local/bin/
     mode: '0755'
 
+- name: run shell script 
+  command: /usr/local/bin/make-login-console 
+  become: yes
+
 - name: Deploy script
   ansible.builtin.copy:
     src: sudo4user
