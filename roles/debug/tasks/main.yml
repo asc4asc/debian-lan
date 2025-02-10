@@ -36,12 +36,6 @@
   ansible.builtin.systemd:
     daemon_reload: yes
 
-- name: Enable getty@tty1 service
-  ansible.builtin.systemd:
-    name: getty@tty1
-    enabled: yes
-    state: restarted
- 
 - name: Ensure .bash_aliases file exists
   copy:
     dest: /home/ansible/.bash_aliases
@@ -60,3 +54,10 @@
     block: |
       Hier bitte ein paar Tips und Anweisungen einfuegen.
       a) test a
+
+- name: Enable getty@tty1 service
+  ansible.builtin.systemd:
+    name: getty@tty1
+    enabled: yes
+    state: restarted
+ 
