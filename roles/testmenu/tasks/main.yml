@@ -26,13 +26,13 @@
 - name: Deploy script
   ansible.builtin.copy:
     src: p
-    dest: /usr/local/bin/
+    dest: /home/ansible/
     mode: '0755'
 
 - name: Deploy script
   ansible.builtin.copy:
     src: r
-    dest: /usr/local/bin/
+    dest: /home/ansible/
     mode: '0755'
 
 - name: Create autologin service override directory
