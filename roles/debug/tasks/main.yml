@@ -59,6 +59,5 @@
     content: |
       Hier bitte ein paar Tips und Anweisungen einfuegen.
       a) test a
-    become: yes
-    become_user: ansible
+    
 
