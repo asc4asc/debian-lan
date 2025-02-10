@@ -69,9 +69,7 @@
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
       echo "ansible-pull -i localhost, --url=https://github.com/asc4asc/debian-lan.git $playbook" >/target/home/{{ ansible_user }}/makeit ; \
       echo "ansible-pull --verbose --purge --extra-vars='run_in_installer=true' -i localhost, --url=https://github.com/asc4asc/debian-lan.git $playbook" >/target/home/{{ ansible_user }}/doit ; \
-      echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
-      in-target chown -R ansible:ansible /home/ansible/* ; \
-      in-target chmod a+x /home/ansible/* 
+      echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc 
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
