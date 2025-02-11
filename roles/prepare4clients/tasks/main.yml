@@ -72,8 +72,7 @@
       in-target chown -R ansible:ansible /home/ansible/makeit ; \
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/makeit ; \
-      in-target chmod -R a+x /home/ansible/get.misc ; \
-      in-target "/usr/bin/ansible-pull -i localhost, --url=https://github.com/asc4asc/debian-lan.git demohost"
+      in-target chmod -R a+x /home/ansible/get.misc ; 
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
