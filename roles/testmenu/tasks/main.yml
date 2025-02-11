@@ -41,6 +41,12 @@
     dest: /home/ansible/
     mode: '0755'
 
+- name: Deploy script
+  ansible.builtin.copy:
+    src: 100-timeout-powercycle
+    dest: /home/ansible/
+    mode: '0755'
+
 - name: Create autologin service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/getty@tty1.service.d
@@ -75,10 +81,10 @@
     dest: /home/ansible/menu.txt 
     content: |
       ---------------------------------------------------
-      Hier bitte ein paar Tips und Anweisungen einfuegen.
       clean-sda) clean hardisk sda for new install
       p) poweroff 
       r) reboot
+      Please copy 100-* to todo to get a endless test. 
       ---------------------------------------------------
       
 - name: Add a line to .bashrc
