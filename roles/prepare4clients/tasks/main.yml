@@ -90,7 +90,7 @@
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz mirror/http/proxy?=http://{{ ansible_hostname }}:3142/ pkgsel/include=etckeeper preseed/late_command="rm -fv /target/etc/apt/apt.conf" ---
 
       LABEL demohost
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
@@ -115,7 +115,7 @@
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
       LABEL installbox
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox 
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
@@ -125,17 +125,17 @@
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
       LABEL kiosk
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml (playbook does not work so)
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=kiosk auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=kiosk.yml ---
 
       LABEL cloudbox
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed + cloudbox.yml
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + cloudbox.yml (playbook does not work so)
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=cloudbox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=cloudbox.yml ---
 
       LABEL edubox
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed + edubox.yml
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed + edubox.yml (playbook does not work so)
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=edubox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=edubox.yml ---
 
