@@ -84,6 +84,7 @@
       clean-sda) clean hardisk sda for new install
       p) poweroff 
       r) reboot
+      clean.sda) Clean hardisk (only sda) for new Install over the net.
       Please copy 100-* to todo to get a endless test. 
       ---------------------------------------------------
       
