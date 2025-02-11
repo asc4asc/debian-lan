@@ -82,7 +82,7 @@
     insertbefore: EOF
     block: |
       DEFAULT demohost
-      TIMEOUT 800
+      TIMEOUT 100
       # Use a temporary package cache during installation, install etckeeper.
       LABEL tmp pkg cache
          MENU LABEL Debian stable (amd64) + temporary package cache
