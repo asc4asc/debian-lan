@@ -5,16 +5,7 @@
   hosts: all
   remote_user: ansible
   become: true
-  - name: Assemble boot parameters
-      set_fact:
-        boot_parameters: >-
-          auto=true
-          domain={{ target_domain }}
-          hostname={{ target_hostname }}
-          net.ifnames=0
-          netcfg/choose_interface={{ target_nic }}
-          priority=critical
-
+ 
   roles:
     - up2date_debian
     - testmenu
