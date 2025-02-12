@@ -1,10 +1,4 @@
 ---
-- name: Install packages needed
-  ansible.builtin.apt:
-    name:
-      - ansible
-    state: latest
-
 - name: Deploy script
   ansible.builtin.copy:
     src: make-auto-login-console
@@ -42,27 +36,4 @@
 - name: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: yes
-
-- name: Ensure .bash_aliases file exists
-  copy:
-    dest: /home/ansible/.bash_aliases
-    content: |
-      alias ll='ls -la'
-      alias gs='git status'
-      alias gp='git pull'
-      alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
-       
-- name: create a small file with instructions
-  copy:
-    dest: /home/ansible/menu.txt 
-    content: |
-      ---------------------------------------------------
-      Hier bitte ein paar Tips und Anweisungen einfuegen.
-      clean-sda) clean hardisk sda for new install
-      ---------------------------------------------------
-      
-- name: Add a line to .bashrc
-  lineinfile:
-    path: /home/ansible/.bashrc
-    line: 'menu'
-    
+     
