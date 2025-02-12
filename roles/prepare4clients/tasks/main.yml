@@ -73,8 +73,7 @@
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/makeit ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
-      [ -z "$playbook" ] || echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab ; \     
-      in-target sh -s /bin/sh
+      [ -z "$playbook" ] || echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab 
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: add pxe boot entries to di-netboot-assistant
