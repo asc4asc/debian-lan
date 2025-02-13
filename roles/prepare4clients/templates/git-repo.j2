@@ -3,10 +3,8 @@ Description=Start Git Daemon
 
 [Service]
 ExecStart=/usr/bin/git daemon --reuseaddr --export-all --base-path={{ repo_dir }}
-
 Restart=always
-RestartSec=500ms
-
+RestartSec=2s
 SyslogIdentifier=git-daemon
 DynamicUser=yes
 
