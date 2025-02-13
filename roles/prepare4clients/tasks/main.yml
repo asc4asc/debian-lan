@@ -151,6 +151,8 @@
     dest: /etc/di-netboot-assistant/grub.cfg.HEAD
     insertbefore: EOF
     block: |
+      set default='Debian {{ di_version }} (amd64) + preseed demohost.yml'
+      set timeout=10
       # Use a temporary package cache during installation, install etckeeper.
       menuentry 'Debian stable (amd64) + temporary package cache' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
