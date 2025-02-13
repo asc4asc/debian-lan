@@ -6,7 +6,7 @@ ExecStart=/usr/bin/git daemon --reuseaddr --export-all --base-path={{ repo_dir }
 Restart=always
 RestartSec=2s
 SyslogIdentifier=git-daemon
-DynamicUser=yes
+# DynamicUser=yes
 
 [Install]
 WantedBy=multi-user.target
