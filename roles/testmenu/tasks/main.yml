@@ -37,13 +37,13 @@
 
 - name: Deploy script
   ansible.builtin.copy:
-    src: 100-timeout-reboot
+    src: 900-timeout-reboot
     dest: /home/ansible/
     mode: '0755'
 
 - name: Deploy script
   ansible.builtin.copy:
-    src: 100-timeout-powercycle
+    src: 900-timeout-powercycle
     dest: /home/ansible/
     mode: '0755'
 
