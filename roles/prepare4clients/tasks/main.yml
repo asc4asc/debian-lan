@@ -175,7 +175,7 @@
       menuentry 'Debian {{ di_version }} (amd64) + preseed demohost.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=demohost auto=true priority=critical \ 
-                   url=tftp://{{ ansible_hostname }}/d-i/bookworm/preseed.cfg playbook=demohost.yml ---
+                   url=tftp://{{ ansible_hostname }}/d-i/bookworm playbook=demohost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
