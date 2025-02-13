@@ -168,14 +168,14 @@
 
       menuentry 'Debian {{ di_version }} (amd64) + preseed minimal.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
-                   hostname=minimal auto=true priority=critical \ 
+                   hostname=minimal auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=minimal.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
       menuentry 'Debian {{ di_version }} (amd64) + preseed demohost.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
-                   hostname=testhost auto=true priority=critical \
+                   hostname=demohost auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
