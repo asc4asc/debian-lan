@@ -175,11 +175,11 @@
 
       menuentry 'Debian {{ di_version }} (amd64) + preseed demohost.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
-                   hostname=demohost auto=true priority=critical \ 
-                   url=tftp://{{ ansible_hostname }} ---
+                   hostname=testhost auto=true priority=critical \
+                   url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
-
+      
       menuentry 'Debian {{ di_version }} (amd64) + preseed + kiosk.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=kiosk auto=true priority=critical \
