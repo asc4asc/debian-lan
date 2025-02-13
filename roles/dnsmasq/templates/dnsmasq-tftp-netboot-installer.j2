@@ -1,6 +1,13 @@
 enable-tftp
 tftp-root={{ tftp_root }}
 dhcp-boot=d-i/n-a/pxelinux.0
+# dhcp-match=set:x86-legacy,option:client-arch,0
 dhcp-match=set:efi-x86_64,option:client-arch,7
+# dhcp-match=set:x86_64-uefi,option:client-arch,9
+# dhcp-match=set:ipxe,77,"iPXE"
 dhcp-boot=tag:efi-x86_64,d-i/n-a/bootnetx64.efi
 dhcp-boot=tag:efi-x86_64,d-i/n-a/grubx64.efi
+# dhcp-boot=tag:x86-legacy,d-i/n-a/pxelinux.0
+# dhcp-boot=tag:x86_64-uefi,d-i/n-a/bootnetx64.efi
+# dhcp-boot=tag:x86_64-uefi,d-i/n-a/grubx64.efi
+# dhcp-boot=tag:ipxe,http://192.168.1.54/boot/boot.ipxe,pxe.lan,192.168.1.54
