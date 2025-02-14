@@ -73,8 +73,11 @@
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/makeit ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
-      [ -z "$playbook" ] || echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab 
+      [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
+                             -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
+
+# [ -z "$playbook" ] || echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab 
 
 - name: add pxe boot entries to di-netboot-assistant
   blockinfile:
