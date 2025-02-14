@@ -87,6 +87,11 @@
       clean.sda) Clean hardisk (only sda) for new Install over the net.
       Please copy 900-* to todo to get a endless test. 
       ---------------------------------------------------
+
+- name: Add a line to .bashrc
+  lineinfile:
+    path: /home/ansible/.bashrc
+    line: 'ip addr|grep global'
       
 - name: Add a line to .bashrc
   lineinfile:
