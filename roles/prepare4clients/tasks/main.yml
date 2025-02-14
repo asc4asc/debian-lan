@@ -75,7 +75,7 @@
       in-target chmod -R a+x /home/ansible/get.misc ; \
       [ -z "$playbook" ] ||echo '@reboot ansible sleep 4 && /home/ansible/makeit' >>/target/etc/crontab ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
-      [ -z "$playbook" ] ||in-target ansible-playbook  -i localhost, --purge --extra-vars="run_in_installer=true" /home/ansible/debian-lan/${playbook} ; \
+      [ -z "$playbook" ] ||in-target ansible-playbook  -i localhost, --connection=local --purge --extra-vars="run_in_installer=true" /home/ansible/debian-lan/${playbook} ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
