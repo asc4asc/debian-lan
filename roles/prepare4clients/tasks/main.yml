@@ -73,7 +73,10 @@
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/makeit ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
-      [ -z "$playbook" ] || echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab
+      [ -z "$playbook" ] ||echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab
+      [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/misc /root/misc 
+      # in-target chmod +x /root/yourrepo/myscript.sh; \
+      # in-target /root/yourrepo/myscript.sh
 #       [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
 #                              -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
