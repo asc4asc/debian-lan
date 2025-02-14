@@ -74,14 +74,14 @@
       in-target chmod -R a+x /home/ansible/makeit ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
       [ -z "$playbook" ] ||echo '@reboot ansible sleep 9 && /home/ansible/makeit' >>/target/etc/crontab ; \
-      [ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
-                               -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook ;\
+      [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/misc /home/ansible/misc ; \    
+      [ -z "$playbook" ] ||in-target chmod +x /home/ansible/misc/gen-new-hostname-ip.bash ; \
+      [ -z "$playbook" ] ||in-target /home/ansible/misc/gen-new-hostname-ip.bash ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
-# [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/misc /root/misc ; \
-# in-target chmod +x /root/yourrepo/myscript.sh ; \
-# in-target /root/yourrepo/myscript.sh ; \
+#[ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \
+#                              -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook ;\
 
 - name: add pxe boot entries to di-netboot-assistant
   blockinfile:
