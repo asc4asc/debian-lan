@@ -47,6 +47,12 @@
     dest: /home/ansible/
     mode: '0755'
 
+- name: Deploy script
+  ansible.builtin.copy:
+    src: gen-new-hostname-ip.bash
+    dest: /usr/local/bin/
+    mode: '0755'
+
 - name: Create autologin service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/getty@tty1.service.d
