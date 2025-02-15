@@ -1,3 +1,5 @@
+DEFAULT installbox
+
 LABEL installbox
    MENU LABEL Debian 12 (amd64) + preseed installbox
    kernel ::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/linux
