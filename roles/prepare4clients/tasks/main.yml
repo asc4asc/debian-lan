@@ -67,11 +67,11 @@
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
-      echo "ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook" >/target/home/{{ ansible_user }}/makeit ; \
+      [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook" >/target/home/{{ ansible_user }}/makeit ; \
       echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
-      in-target chown -R ansible:ansible /home/ansible/makeit ; \
+      [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit ; \
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
-      in-target chmod -R a+x /home/ansible/makeit ; \
+      [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/makeit ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
@@ -122,17 +122,17 @@
       LABEL minihost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook  minihost
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=minihost ---
 
       LABEL installbox
          MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox 
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox ---
 
       LABEL installbox2
          MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox2
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox2 ---
 
       LABEL kiosk
          MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml (playbook does not work so)
