@@ -1,0 +1,6 @@
+---
+- name: Copy config file
+  ansible.builtin.copy:
+    src: gen-new-hostname-ip.bash
+    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-01
+    mode: '0755'
