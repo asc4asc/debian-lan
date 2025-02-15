@@ -122,17 +122,17 @@
       LABEL minihost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook  minihost
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=minihost ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=minihost.yml ---
 
       LABEL installbox
          MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox 
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
 
       LABEL installbox2
          MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox2
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox2 ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox2.yml ---
 
       LABEL kiosk
          MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml (playbook does not work so)
