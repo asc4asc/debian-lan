@@ -1,5 +1,5 @@
 #! /bin/bash
 
-mkdir -p doit
+mkdir -p todo
 cp 900-timeout-powercycle todo/
 ./todo/900-timeout-powercycle 
