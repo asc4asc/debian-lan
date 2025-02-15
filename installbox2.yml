@@ -45,4 +45,5 @@
     - netbootinstaller
     - aptcacher
     - prepare4clients
+    - mac-ip-set 
     - debug
