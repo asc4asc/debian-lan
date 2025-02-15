@@ -66,6 +66,13 @@
     dest: /usr/local/bin/
     mode: '0755'
 
+- name: Copy config file
+  ansible.builtin.copy:
+    src: gen-new-hostname-ip.bash
+    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-01
+    mode: '0755'
+
+
 - name: Create autologin service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/getty@tty1.service.d
