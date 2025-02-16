@@ -67,7 +67,6 @@
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
-      cat /target/etc/ssh/ssh_host_rsa_key.pub >> /home/ansible/.ssh/known_hosts ; \
       [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook" >/target/home/{{ ansible_user }}/makeit ; \
       echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit ; \
