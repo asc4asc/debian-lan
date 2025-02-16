@@ -37,7 +37,7 @@
 
 
   roles:
-    - get_vars
+    - get_vars_for_installbox
     - up2date_debian
     # - firewalld2if
     - simplerouter
