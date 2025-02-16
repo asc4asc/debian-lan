@@ -20,7 +20,14 @@
     dhcp_start: 192.168.0.50
     dhcp_stop: 192.168.0.150
     in_inventory: 192.168.0.[50:150]
-
+    
+    ## LAN IP address range:
+    ipaddr_lan: 192.168.2.10/24
+    dhcp_start: 192.168.2.50
+    dhcp_stop: 192.168.2.150
+    in_inventory: 192.168.2.[50:150]
+    when: inventory_hostname == 'installhost2'
+     
     di_dist: "{{ ansible_distribution_release }}"
     di_version: "{{ ansible_distribution_major_version }}"
     di_pkg: "debian-installer-{{ di_version }}-netboot-amd64"
