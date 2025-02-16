@@ -9,6 +9,6 @@
   roles:
     - up2date_debian
     - role: testmenu
-      when: enable_testmenu_role | default(false)
+      when: enable_testmenu_role | default(true)
 
 #      when: not enable_testmenu_role | default(true)
