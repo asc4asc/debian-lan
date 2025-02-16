@@ -1,5 +1,5 @@
 ## LAN IP address range:
-ipaddr_lan: 192.168.0.10/24
-dhcp_start: 192.168.0.50
-dhcp_stop: 192.168.0.150
-in_inventory: 192.168.0.[50:150]
+ipaddr_lan: 192.168.2.10/24
+dhcp_start: 192.168.2.50
+dhcp_stop: 192.168.2.150
+in_inventory: 192.168.2.[50:150]
