@@ -16,10 +16,10 @@
     if_lan: "{{ ansible_interfaces | difference([if_wan, 'lo']) | first }}"
 
     ## LAN IP address range:
-    ipaddr_lan: 192.168.0.10/24
-    dhcp_start: 192.168.0.50
-    dhcp_stop: 192.168.0.150
-    in_inventory: 192.168.0.[50:150]
+#    ipaddr_lan: 192.168.0.10/24
+#    dhcp_start: 192.168.0.50
+#    dhcp_stop: 192.168.0.150
+#    in_inventory: 192.168.0.[50:150]
          
     di_dist: "{{ ansible_distribution_release }}"
     di_version: "{{ ansible_distribution_major_version }}"
