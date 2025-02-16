@@ -107,17 +107,17 @@
       LABEL demohost1
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook demohost1
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost1 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost1 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
       LABEL demohost2
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook demohost2
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost2 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost2 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
       
       LABEL demohost3
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook demohost3
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost3 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost3 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
       LABEL minihost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook  minihost
