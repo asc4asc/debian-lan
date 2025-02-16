@@ -1,0 +1,5 @@
+all:
+  hosts:
+    demohost3:
+  vars:
+    enable_testmenu_role: true
