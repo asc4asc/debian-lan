@@ -10,3 +10,4 @@
     - up2date_debian
     # - gnome
     - testmenu
+    when: enable_testmenu_role | default(false)
