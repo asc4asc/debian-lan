@@ -8,6 +8,5 @@
  
   roles:
     - up2date_debian
-    # - gnome
-    - testmenu
-    when: enable_testmenu_role | default(false)
+    - role: testmenu
+      when: not enable_testmenu_role | default(true)
