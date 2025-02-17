@@ -2,17 +2,17 @@
 - name: Copy the template file
   template:
     src: 01-bc-24-11-00-00-00.j2
-    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg
+    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-00
     mode: '0755'
 
 - name: Copy the template file
   template:
     src: 01-bc-24-11-00-00-01.j2
-    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg
+    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-01
     mode: '0755'
 
 - name: Copy the template file
   template:
     src: 01-bc-24-11-00-00-02.j2
-    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg
+    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-02
     mode: '0755'
