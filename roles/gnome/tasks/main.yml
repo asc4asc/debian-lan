@@ -5,10 +5,7 @@
   apt:
     name:
       - task-gnome-desktop
-      - gnome-shell-extension-dashtodock
-      - cups
     state: latest # noqa package-latest
-#    - gnome-shell-extension-desktop-icons
 
 - name: make sure /etc/dconf/profile/ exists
   file:
@@ -36,34 +33,12 @@
     mode: 0644
   notify: update dconf
 
-- name: configure gdm3
-  replace:
-    dest: /etc/gdm3/greeter.dconf-defaults
-    regexp: "{{ item.rex }}"
-    replace: "{{ item.rep }}"
-  loop:
-    - rex: "# disable-user-list=.*"
-      rep: "disable-user-list=true"
-    - rex: "# sleep-inactive-ac-timeout=.*"
-      rep: "sleep-inactive-ac-timeout=600"
-    - rex: "# sleep-inactive-ac-type=.*"
-      rep: "sleep-inactive-ac-type='interactive'\npower-button-action='interactive'"
-
-## Bug #698504
-- name: allow print job management
-  replace:
-    dest: "/etc/cups/cups-files.conf"
-    regexp: '^(SystemGroup lpadmin)$'
-    replace: '\1 root'
-
-- name: enable splash screen
+- name: disable splash screen
   replace:
     dest: "/etc/default/grub"
     regexp: '"quiet"$'
     replace: '" "'
   notify: update grub
-
-
 
 - name: Create autostart directory if it doesn't exist
   file:
@@ -88,16 +63,19 @@
     mode: '0644'
 
 
-- name: Ensure GDM custom.conf file exists
-  copy:
-    content: |
-      [daemon]
-      AutomaticLoginEnable=True
-      AutomaticLogin={{ ansible_user }}
-    dest: /etc/gdm/custom.conf
-    owner: root
-    group: root
-    mode: '0644'
+- name: Ensure GDM daemon.conf file exists
+  lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '^AutomaticLoginEnable='
+    line: 'AutomaticLoginEnable=True'
+    state: present
+
+- name: Set the automatic login user
+  lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '^AutomaticLogin='
+    line: 'AutomaticLogin={{ ansible_user }}'
+    state: present
 
 - name: Restart GDM to apply changes
   systemd:
