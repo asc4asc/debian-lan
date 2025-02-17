@@ -62,3 +62,44 @@
     regexp: '"quiet"$'
     replace: '" "'
   notify: update grub
+
+
+
+- name: Create autostart directory if it doesn't exist
+  file:
+    path: /home/{{ ansible_user }}/.config/autostart
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Create GNOME Terminal autostart .desktop file
+  copy:
+    content: |
+      [Desktop Entry]
+      Type=Application
+      Name=GNOME Terminal
+      Exec=gnome-terminal
+      OnlyShowIn=GNOME;
+      X-GNOME-Autostart-enabled=true
+    dest: /home/{{ ansible_user }}/.config/autostart/gnome-terminal.desktop
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+
+- name: Ensure GDM custom.conf file exists
+  copy:
+    content: |
+      [daemon]
+      AutomaticLoginEnable=True
+      AutomaticLogin={{ ansible_user }}
+    dest: /etc/gdm/custom.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restart GDM to apply changes
+  systemd:
+    name: gdm
+    state: restarted
