@@ -59,19 +59,13 @@
     group: "{{ ansible_user }}"
     mode: '0644'
 
-- name: Insert auto login
+- name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
-    regexp: '^[daemon]'
-    insertafter: '[daemon]'
+    search_string: 'AutomaticLoginEnable'
     line: AutomaticLoginEnable=True
 
-- name: Insert auto login
-  ansible.builtin.lineinfile:
-    path: /etc/gdm3/daemon.conf
-    regexp: '^[daemon]'
-    insertafter: '[daemon]'
-    line: AutomaticLogin={{ ansible_user }} 
+#   line: AutomaticLogin={{ ansible_user }} 
 
 #- name: Restart GDM to apply changes
 #  systemd:
