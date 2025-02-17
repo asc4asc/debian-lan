@@ -63,14 +63,14 @@
 - name: Ensure GDM daemon.conf file exists
   lineinfile:
     path: /etc/gdm3/daemon.conf
-    regexp: '^AutomaticLoginEnable='
+    regexp: '^#AutomaticLoginEnable='
     line: 'AutomaticLoginEnable=True'
     state: present
 
 - name: Set the automatic login user
   lineinfile:
     path: /etc/gdm3/daemon.conf
-    regexp: '^AutomaticLogin='
+    regexp: '^#AutomaticLogin='
     line: 'AutomaticLogin={{ ansible_user }}'
     state: present
 
