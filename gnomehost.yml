@@ -1,5 +1,5 @@
 ---
-# Useful for testing with menu and preseeding ..... 
+# Useful for testing ..... 
 
 - name: apply a minimal test configuration to the machine
   hosts: all
@@ -9,5 +9,4 @@
   roles:
     - up2date_debian
     - gnome
-    - testmenu
     
