@@ -59,17 +59,21 @@
     group: "{{ ansible_user }}"
     mode: '0644'
 
-- name: Ensure GDM daemon.conf file has correct settings
-  blockinfile:
+- name: Insert auto login
+  ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
-    block: |
-      [daemon]
-      AutomaticLoginEnable=True
-      AutomaticLogin={{ ansible_user }}
-    marker: "; ANSIBLE MANAGED BLOCK"
-    insertafter: "[daemon]"
+    regexp: '^[daemon]'
+    insertafter: '[daemon]'
+    line: AutomaticLoginEnable=True
 
-- name: Restart GDM to apply changes
-  systemd:
-    name: gdm
-    state: restarted
+- name: Insert auto login
+  ansible.builtin.lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '^[daemon]'
+    insertafter: '[daemon]'
+    line: AutomaticLogin={{ ansible_user }} 
+
+#- name: Restart GDM to apply changes
+#  systemd:
+#    name: gdm
+#    state: restarted
