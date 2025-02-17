@@ -9,4 +9,5 @@
   roles:
     - up2date_debian
     - gnome
+    - testmenu
     
