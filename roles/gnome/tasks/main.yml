@@ -1,6 +1,3 @@
-# - name: gnome hibernate by default
-#   apt: name=gnome-shell-extension-suspend-button state=latest # noqa package-latest
-
 - name: gnome desktop
   apt:
     name:
