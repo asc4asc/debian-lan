@@ -71,7 +71,7 @@
     regexp: '#.*AutomaticLogin'
     line: AutomaticLogin={{ ansible_user }} 
 
-#- name: Restart GDM to apply changes
-#  systemd:
-#    name: gdm
-#    state: restarted
+- name: Restart GDM to apply changes
+  systemd:
+    name: gdm
+    state: restarted
