@@ -60,5 +60,5 @@
   replace:
     dest: "/etc/default/grub"
     regexp: '"quiet"$'
-    replace: '"quiet splash"'
+    replace: '" "'
   notify: update grub

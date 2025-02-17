@@ -19,7 +19,7 @@ default-folder-viewer='list-view'
 use-tree-view=true
 
 [org/gnome/settings-daemon/plugins/power]
-power-button-action='hibernate'
+power-button-action='shutdown'
 sleep-inactive-battery-timeout=900
 sleep-inactive-battery-type='hibernate'
 sleep-inactive-ac-timeout=7200
