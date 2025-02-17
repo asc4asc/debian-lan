@@ -67,7 +67,7 @@
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
-      [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook" >/target/home/{{ ansible_user }}/makeit ; \
+      [ -z "$playbook" ] ||echo 'ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook $@' >/target/home/{{ ansible_user }}/makeit ; \
       echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit ; \
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
@@ -118,6 +118,11 @@
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook demohost3
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost3 auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
+
+      LABEL gnomehost
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook gnomehost
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=gnomehost auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=gnomehost.yml ---  
 
       LABEL minihost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook  minihost
