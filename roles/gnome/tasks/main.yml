@@ -62,16 +62,16 @@
 - name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
-    search_string: '#*AutomaticLoginEnable'
+    regexp: '#*AutomaticLoginEnable'
     line: AutomaticLoginEnable=True
 
 - name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
-    search_string: '#*AutomaticLogin'
+    regexp: '#*AutomaticLogin'
     line: AutomaticLogin={{ ansible_user }} 
 
-- name: Restart GDM to apply changes
-  systemd:
-    name: gdm
-    state: restarted
+#- name: Restart GDM to apply changes
+#  systemd:
+#    name: gdm
+#    state: restarted
