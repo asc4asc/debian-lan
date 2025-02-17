@@ -3,4 +3,4 @@ DEFAULT installbox2
 LABEL installbox2
    MENU LABEL Debian 12 (amd64) + preseed installbox
    kernel ::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/linux
-   append initrd=::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://installbox playbook=installbox2.yml ---
+   append initrd=::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 auto=true priority=critical url=tftp://installbox playbook=installbox.yml ---
