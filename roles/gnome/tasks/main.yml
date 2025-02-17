@@ -5,10 +5,10 @@
   apt:
     name:
       - task-gnome-desktop
-      - gnome-shell-extension-desktop-icons
       - gnome-shell-extension-dashtodock
       - cups
     state: latest # noqa package-latest
+#    - gnome-shell-extension-desktop-icons
 
 - name: make sure /etc/dconf/profile/ exists
   file:
