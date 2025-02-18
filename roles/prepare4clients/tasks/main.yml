@@ -157,8 +157,8 @@
     dest: /etc/di-netboot-assistant/grub.cfg.HEAD
     insertbefore: EOF
     block: |
-      {{ prep_default1 | default("set default='Debian {{ di_version }} (amd64) + preseed gnomehost.yml'") }}
-      {{ prep_timeout1 | default('set timeout=10') }}
+      {{ prep_default_efi | default("set default='Debian preseed demohost.yml'") }}
+      {{ prep_timeout_efi | default('# set timeout=10') }}
 
       # Use a temporary package cache during installation, install etckeeper.
       menuentry 'Debian stable (amd64) + temporary package cache' {
@@ -168,63 +168,63 @@
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed ohne playbook' {
+      menuentry 'Debian preseed ohne playbook' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=testhost auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed minimal.yml' {
+      menuentry 'Debian preseed minimal.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=minimal auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=minimal.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed demohost.yml' {
+      menuentry 'Debian preseed demohost.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=demohost auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed gnomehost.yml' {
+      menuentry 'Debian preseed gnomehost.yml' {
         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                   hostname=gnomehost auto=true priority=critical \
                   url=tftp://{{ ansible_hostname }} playbook=gnomehost.yml ---
         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed installbox1' {
+      menuentry 'Debian preseed installbox1' {
         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                   hostname=installbox1 auto=true priority=critical \
                   url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-       menuentry 'Debian {{ di_version }} (amd64) + preseed installbox2' {
+       menuentry 'Debian preseed installbox2' {
         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                   hostname=installbox2 auto=true priority=critical \
                   url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed + kiosk.yml' {
+      menuentry 'Debian preseed + kiosk.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=kiosk auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=kiosk.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed + cloudbox.yml' {
+      menuentry 'Debian preseed + cloudbox.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=cloudbox auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=cloudbox.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-      menuentry 'Debian {{ di_version }} (amd64) + preseed + edubox.yml' {
+      menuentry 'Debian preseed + edubox.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=edubox auto=true priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=edubox.yml ---
