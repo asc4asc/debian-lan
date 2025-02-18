@@ -37,6 +37,7 @@
 
 
   roles:
+    - setup
     - get_vars_for_installbox
     - up2date_debian
     # - firewalld2if
