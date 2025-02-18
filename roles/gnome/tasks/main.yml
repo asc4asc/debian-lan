@@ -70,6 +70,11 @@
     path: /etc/gdm3/daemon.conf
     regexp: '#.*AutomaticLogin'
     line: AutomaticLogin={{ ansible_user }} 
+    
+- name: Ensure gnome-initial-setup is removed
+  apt:
+    name: gnome-initial-setup
+    state: absent
 
 - name: Restart GDM to apply changes
   systemd:
