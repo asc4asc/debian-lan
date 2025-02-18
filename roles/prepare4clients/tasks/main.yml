@@ -194,6 +194,20 @@
         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
+      menuentry 'Debian {{ di_version }} (amd64) + preseed installhost1' {
+        linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                  hostname=installhost1 auto=true priority=critical \
+                  url=tftp://{{ ansible_hostname }} playbook=installhost.yml ---
+        initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+       menuentry 'Debian {{ di_version }} (amd64) + preseed installhost2' {
+        linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                  hostname=installhost2 auto=true priority=critical \
+                  url=tftp://{{ ansible_hostname }} playbook=installhost.yml ---
+        initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
       menuentry 'Debian {{ di_version }} (amd64) + preseed + kiosk.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=kiosk auto=true priority=critical \
