@@ -70,6 +70,16 @@
     path: /etc/gdm3/daemon.conf
     regexp: '#.*AutomaticLogin'
     line: AutomaticLogin={{ ansible_user }} 
+    
+- name: Ensure dconf is installed
+  apt:
+    name: dconf-cli
+    state: present
+
+- name: Disable initial setup for all users
+  command: >
+    dconf write /org/gnome/initial-setup/disable-user-setup true
+
 
 - name: Restart GDM to apply changes
   systemd:
