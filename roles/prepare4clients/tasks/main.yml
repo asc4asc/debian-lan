@@ -157,7 +157,7 @@
     dest: /etc/di-netboot-assistant/grub.cfg.HEAD
     insertbefore: EOF
     block: |
-      {{ prep_default1 | default('set default="Debian {{ di_version }} (amd64) + preseed gnomehost.yml"') }}
+      {{ prep_default1 | default('set default=Debian {{ di_version }} (amd64) + preseed gnomehost.yml') }}
       {{ prep_timeout1 | default('set timeout=10') }}
 
       # Use a temporary package cache during installation, install etckeeper.
