@@ -8,6 +8,7 @@
  
   roles:
     - up2date_debian
+    - setup
     - gnome
     - testmenu
     
