@@ -1,5 +1,9 @@
+boot_host: gnomehost
+boot_timeout: 10
+
+boot_timeout10: boot_timeout*10
 prep_default: DEFAULT gnomehost
-prep_timeout: TIMEOUT 100
+prep_timeout: TIMEOUT {{ boot_timeout10 }}
 
 prep_default_efi: set default='Debian preseed gnomehost.yml' 
-prep_timeout_efi: timeout=10
+prep_timeout_efi: timeout={{ boot_timeout }}
