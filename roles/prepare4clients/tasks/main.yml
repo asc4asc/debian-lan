@@ -186,7 +186,14 @@
                    url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
-      
+
+      menuentry 'Debian {{ di_version }} (amd64) + preseed gnomehost.yml' {
+        linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                  hostname=gnomehost auto=true priority=critical \
+                  url=tftp://{{ ansible_hostname }} playbook=gnomehost.yml ---
+        initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
       menuentry 'Debian {{ di_version }} (amd64) + preseed + kiosk.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=kiosk auto=true priority=critical \
