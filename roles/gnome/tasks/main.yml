@@ -71,15 +71,10 @@
     regexp: '#.*AutomaticLogin'
     line: AutomaticLogin={{ ansible_user }} 
     
-- name: Ensure dconf is installed
+- name: Ensure gnome-initial-setup is removed
   apt:
-    name: dconf-cli
-    state: present
-
-- name: Disable initial setup for all users
-  command: >
-    dconf write /org/gnome/initial-setup/disable-user-setup true
-
+    name: gnome-initial-setup
+    state: absent
 
 - name: Restart GDM to apply changes
   systemd:
