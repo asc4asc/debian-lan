@@ -201,7 +201,7 @@
         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
-       menuentry 'Debian {{ di_version }} (amd64) + preseed installhost2' {
+       menuentry 'Debian {{ di_version }} (amd64) + preseed installbox2' {
         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                   hostname=installbox2 auto=true priority=critical \
                   url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
