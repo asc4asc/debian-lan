@@ -87,6 +87,7 @@
 #[ -z "$playbook" ] || in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" \ # does not work
 #                              -i localhost, --url=git://{{ ansible_hostname }}/.git $playbook ;\
 
+# Please edit default and timeout in default var file.
 - name: add pxe boot entries to di-netboot-assistant
   blockinfile:
     dest: /etc/di-netboot-assistant/pxelinux.HEAD
@@ -152,6 +153,7 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK default"
   notify: "rebuild di-netboot-assistant menu"
 
+# Please edit default and timeout in default var file.
 - name: add efi boot entries to di-netboot-assistant
   blockinfile:
     dest: /etc/di-netboot-assistant/grub.cfg.HEAD
