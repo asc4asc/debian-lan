@@ -1,0 +1,2 @@
+prep_default: "# DEFAULT gnomehost"
+prep_timeout: "# TIMEOUT 100"
