@@ -1,7 +1,7 @@
 boot_host: gnomehost
 boot_timeout: 10
 
-boot_timeout10: {{ boot_timeout * 10 }}
+boot_timeout10: "{{ boot_timeout * 10 }}"
 prep_default: DEFAULT gnomehost
 prep_timeout: TIMEOUT {{ boot_timeout10 }}
 
