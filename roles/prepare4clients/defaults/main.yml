@@ -1,6 +1,6 @@
 # use a big timeout to see that the CPU is still activ if you are testing 
 # for complete deaktivate you must edit -> # timeout={{ boot_timeout }}
-boot_host: gnomehost
+boot_host: demohost
 boot_timeout: 10
 
 prep_default: DEFAULT gnomehost
