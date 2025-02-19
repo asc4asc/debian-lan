@@ -6,5 +6,5 @@ boot_timeout: 10
 prep_default: DEFAULT {{ boot_host }}
 prep_timeout: TIMEOUT {{ boot_timeout * 10 }}
 
-prep_default_efi: set default="Debian preseed {{ boot_host }}.yml' 
+prep_default_efi: set default="Debian preseed { boot_host }}.yml" 
 prep_timeout_efi: timeout={{ boot_timeout }}
