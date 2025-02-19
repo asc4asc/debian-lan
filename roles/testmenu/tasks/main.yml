@@ -76,8 +76,8 @@
       clean-sda) clean hardisk sda for new install
       p) poweroff 
       r) reboot
-      clean.sda) Clean hardisk (only sda) for new Install over the net.
-      Please copy 900-* to todo to get a endless test. 
+      clean.boot) Clean boot disk. Example for a new Install over the net.
+      Please use start-reboot or start-restart to start a endless test. 
       ---------------------------------------------------
 
 - name: Add a line to .bashrc
