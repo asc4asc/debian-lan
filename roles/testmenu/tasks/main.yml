@@ -73,7 +73,6 @@
     dest: /home/ansible/menu.txt 
     content: |
       ---------------------------------------------------
-      clean-sda) clean hardisk sda for new install
       p) poweroff 
       r) reboot
       clean.boot) Clean boot disk. Example for a new Install over the net.
