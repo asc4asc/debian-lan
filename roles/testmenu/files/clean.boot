@@ -18,10 +18,11 @@ show_help() {
 
 # Function to find the root/boot disk
 find_root_disk() {
-    root_disk=$(df / | tail -1 | awk '{print $1}' | sed 's/[0-9]*$//')
+    root_disk=$(lsblk | grep \ disk | awk '{print $1}')
+    # root_disk=$(df / | tail -1 | awk '{print $1}' | sed 's/[0-9]*$//')
     echo "Clean Root/boot disk: $root_disk"
     sleep 3
-    sudo dd if=/dev/zero of=${root_disk} count=1000 && sudo sync && sudo reboot
+    # sudo dd if=/dev/zero of=${root_disk} count=1000 && sudo sync && sudo reboot
 }
 
 # Check for help option
