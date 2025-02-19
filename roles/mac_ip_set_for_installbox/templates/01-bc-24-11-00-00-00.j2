@@ -3,4 +3,4 @@ DEFAULT installbox
 LABEL installbox
    MENU LABEL Debian 12 (amd64) + preseed installbox
    kernel ::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/linux
-   append initrd=::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
+   append initrd=::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
