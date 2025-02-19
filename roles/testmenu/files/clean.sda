@@ -35,6 +35,7 @@ if [[ "$1" == "-f" || "$1" == "--force" || -f /this_is_a_test_install ]]; then
     find_root_disk
 else
     root_disk=$(df / | tail -1 | awk '{print $1}' | sed 's/[0-9]*$//')
-    echo "Use -f or --force option, or create 'this_is_a_test_install' file in the root directory to clena the root/boot disk: $root_disk"
+    echo "Use -f or --force option, or create 'this_is_a_test_install' file"
+    echo "In the root directory to clean the root/boot disk: $root_disk"
     exit 1
 fi
