@@ -90,3 +90,8 @@
     path: /home/ansible/.bashrc
     line: 'if [ -d todo ]; then run-parts todo; else menu; fi'
     
+- name: create a file 
+  copy:
+    dest: /this_is_a_test_install 
+    content: |
+      file to mark that this is only a test install and can deleated easy.
