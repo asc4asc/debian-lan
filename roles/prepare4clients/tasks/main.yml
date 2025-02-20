@@ -71,7 +71,7 @@
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
       [ -z "$playbook" ] ||echo "#!/bin/bash" >/target/home/{{ ansible_user }}/makeit ; \
-      [ -z "$playbook" ] ||echo ' [[ $- != *i* ]] && sleep 9 >/target/home/{{ ansible_user }}/makeit ; \
+      [ -z "$playbook" ] ||echo '[[ $- != *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit ; \
       [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/makeit ; \
