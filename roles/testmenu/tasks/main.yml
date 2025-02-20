@@ -90,6 +90,8 @@
        
 - name: create a small file with instructions
   copy:
+    owner: ansible
+    group: ansible
     dest: /home/ansible/menu.txt 
     content: |
       ---------------------------------------------------
