@@ -7,7 +7,8 @@ copy of: https://salsa.debian.org/andi/debian-lan-ansible
 ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
 ```
 # Problems
-Need a simple local start file and autologin.
+ansible start in debian installer does not work.
+ansible start after boot also make sone problems. Still working on a solution.
 
 ### Later
 git.repro does not start as a service. Must start it in the shell
