@@ -22,7 +22,7 @@ find_root_disk() {
     # root_disk=$(df / | tail -1 | awk '{print $1}' | sed 's/[0-9]*$//')
     echo "Clean Root/boot disk: $root_disk"
     sleep 3
-    sudo dd if=/dev/zero of=${root_disk} count=1000 && sudo sync && sudo poweroff
+    sudo dd if=/dev/zero of=/dev/${root_disk} count=1000 && sudo sync && sudo poweroff
 }
 
 # Check for help option
