@@ -41,7 +41,7 @@
 - name: preseed client - add firmware-linux, ansible and git network-manager only once
   replace:
     dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
-    regexp: '#.*pkgsel/include string firmware-linux'
+    regexp: '#di pkgsel/include string firmware-linux'
     replace: 'di pkgsel/include string firmware-linux ansible git network-manager'
 
 - name: insert start of managed block
