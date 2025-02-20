@@ -22,42 +22,56 @@
     src: p
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
     src: r
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
     src: start-reboot
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
     src: 900-timeout-reboot
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
     src: start-powercycle
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
     src: stress-test
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
     
 - name: Deploy script
   ansible.builtin.copy:
     src: 900-timeout-powercycle
     dest: /home/ansible/
     mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
@@ -81,6 +95,7 @@
       ---------------------------------------------------
       p) poweroff 
       r) reboot
+      stress-test) Simple script to make CPU stress.
       clean.boot) Clean boot disk. Example for a new Install over the net.
       Please use start-reboot or start-restart to start a endless test. 
       ---------------------------------------------------
