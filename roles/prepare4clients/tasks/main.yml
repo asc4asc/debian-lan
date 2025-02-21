@@ -75,8 +75,10 @@
       [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo "sudo dhclient && ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo "sudo dhclient && ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/gnomehost.yml \$@ " >>/target/home/{{ ansible_user }}/makeit.gnome ; \
-      [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit\* ; \
-      [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/makeit\* ; \
+      [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit ; \
+      [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/makeit ; \
+      [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit.gnome ; \
+      [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/makeit.gnome ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
