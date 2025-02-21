@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File to store the previous hardware state
-PREV_HW_FILE="/path/to/store/prev_hw_info.txt"
+PREV_HW_FILE="prev_hw_info.txt"
 
 # Function to get current hardware information
 get_hw_info() {
