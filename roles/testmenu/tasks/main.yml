@@ -10,6 +10,14 @@
     src: sudo4user
     dest: /usr/local/bin/
     mode: '0755'
+    
+- name: Deploy script
+  ansible.builtin.copy:
+    src: check4hardware-change
+    dest: /home/ansible/
+    mode: '0755'
+    owner: ansible
+    group: ansible
 
 - name: Deploy script
   ansible.builtin.copy:
