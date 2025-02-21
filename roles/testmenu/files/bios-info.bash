@@ -1,10 +1,7 @@
 #!/bin/bash
-
-# Check if the script is run as root
-if [ "$EUID" -ne 0 ]; then
-  echo "Please run as root"
-  exit
-fi
-
 # Collect detailed BIOS information
-dmidecode -t bios -t system -t baseboard
+sudo dmidecode -t bios -t system -t baseboard
+
+echo Name: ; sudo dmidecode -s baseboard-product-name
+echo Serial Number ; sudo dmidecode -s baseboard-serial-number
+echo BIOS Build ; sudo dmidecode -s bios-version
