@@ -5,13 +5,13 @@ PREV_HW_FILE="/home/ansible/prev_hw_info.txt"
 
 # Function to get current hardware information
 get_hw_info() {
-    lshw -short
+    sudo lshw -short
 }
 
 # Function to update the hardware information
 update_hw_info() {
     echo "Updating hardware information..."
-    sudo get_hw_info > "$PREV_HW_FILE"
+    get_hw_info > "$PREV_HW_FILE"
     echo "Hardware information updated."
 }
 
