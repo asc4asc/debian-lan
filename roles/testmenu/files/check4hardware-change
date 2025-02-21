@@ -52,6 +52,7 @@ if [ -f "$PREV_HW_FILE" ]; then
     if [ "$CURRENT_HW_INFO" != "$PREV_HW_INFO" ]; then
         echo "Hardware changes detected:"
         diff <(echo "$PREV_HW_INFO") <(echo "$CURRENT_HW_INFO")
+        read 
     else
         echo "No hardware changes detected."
     fi
