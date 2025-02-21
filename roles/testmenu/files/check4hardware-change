@@ -5,7 +5,8 @@ PREV_HW_FILE="/home/ansible/prev_hw_info.txt"
 
 # Function to get current hardware information
 get_hw_info() {
-    sudo lshw -short
+    #sudo lshw -short
+    sudo lspci -vvv
 }
 
 # Function to update the hardware information
