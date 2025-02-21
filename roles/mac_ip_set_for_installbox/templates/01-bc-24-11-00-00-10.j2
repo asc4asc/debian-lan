@@ -1,0 +1,6 @@
+DEFAULT demohost10
+
+LABEL demohost10
+   MENU LABEL Debian 12 (amd64) + preseed demohost
+   kernel ::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/linux
+   append initrd=::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost10 interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
