@@ -64,7 +64,15 @@
     mode: '0755'
     owner: ansible
     group: ansible
-    
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: bios-info.bash
+    dest: /home/ansible/
+    mode: '0755'
+    owner: ansible
+    group: ansible
+     
 - name: Deploy script
   ansible.builtin.copy:
     src: 900-timeout-powercycle
@@ -72,6 +80,14 @@
     mode: '0755'
     owner: ansible
     group: ansible
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: 900-timeout-powercycle
+    dest: /home/ansible/
+    mode: '0755'
+    owner: ansible
+    group: ansible    
 
 - name: Deploy script
   ansible.builtin.copy:
