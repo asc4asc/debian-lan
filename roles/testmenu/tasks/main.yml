@@ -6,14 +6,13 @@
     state: latest
 
 - name: Copy files from the 'files' directory
-      copy:
-        src: "{{ item }}"
-        dest: "/usr/local/bin/{{ item }}"
-      with_items:
-        - sudo4user
-        - clean.boot
-        - gen-new-hostname-ip.bash
-        mode: '0755'
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+  with_items:
+    - sudo4user
+    - clean.boot
+    - gen-new-hostname-ip.bash
 
 - name: Deploy script
   ansible.builtin.copy:
