@@ -9,6 +9,7 @@
   copy:
     src: "{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
+    mode: '0755'
   with_items:
     - sudo4user
     - clean.boot
