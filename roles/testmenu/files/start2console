@@ -1,2 +1,2 @@
 #!/bin/bash
-systemctl set-default multi-user.target # Grafik aus.
+sudo systemctl set-default multi-user.target # Grafik aus.
