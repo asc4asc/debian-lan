@@ -1,0 +1,55 @@
+---
+- name: Setup Git Server on Apache2
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+
+    - name: Create Git repository directory
+      file:
+        path: /var/www/git
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Initialize bare Git repository
+      command: git init --bare /var/www/git/myrepo.git
+      creates: /var/www/git/myrepo.git
+
+    - name: Configure Apache2 for Git
+      copy:
+        dest: /etc/apache2/sites-available/git.conf
+        content: |
+          <VirtualHost *:80>
+              ServerAdmin webmaster@localhost
+              DocumentRoot /var/www/git
+              <Directory /var/www/git>
+                  Options +ExecCGI +Indexes +FollowSymLinks
+                  AllowOverride All
+                  Require all granted
+              </Directory>
+              ScriptAlias /git/ /usr/lib/git-core/git-http-backend/
+              SetEnv GIT_PROJECT_ROOT /var/www/git
+              SetEnv GIT_HTTP_EXPORT_ALL
+              SetEnv REMOTE_USER=$REDIRECT_REMOTE_USER
+          </VirtualHost>
+
+    - name: Enable Apache2 site
+      command: a2ensite git.conf
+
+    - name: Enable CGI module
+      command: a2enmod cgi
+
+    - name: Restart Apache2
+      service:
+        name: apache2
+        state: restarted
