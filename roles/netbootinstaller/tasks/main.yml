@@ -16,7 +16,8 @@
 
 - name: provide preseed file
   copy:
-    src: /usr/share/doc/di-netboot-assistant/examples/preseed.cfg
+    # src: /usr/share/doc/di-netboot-assistant/examples/preseed.cfg
+    src: preseed.cfg
     dest: "{{ tftp_root }}/d-i/{{ di_dist }}"
     mode: 0644
     force: false
