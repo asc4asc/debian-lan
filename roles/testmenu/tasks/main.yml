@@ -18,7 +18,7 @@
 - name: Copy files from the 'files' directory
   copy:
     src: "{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
+    dest: "/home/{{ ansible_user }}/local/bin/{{ item }}"
     mode: '0755'
     owner: ansible
     group: ansible
