@@ -71,8 +71,8 @@
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
       echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \
-      mkdir /target/etc/systemd/system/getty@tty${TTY}.service.da ; \ 
-      echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin ${USERIN} --noclear %I 38400 linux" >'target/etc/systemd/system/getty@tty${TTY}.service.d/autologin.conf ; \
+      # mkdir /target/etc/systemd/system/getty@tty${TTY}.service.da ; \ 
+      # echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin ${USERIN} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty${TTY}.service.d/autologin.conf ; \
       [ -z "$playbook" ] ||echo "#!/bin/bash" >/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo "sudo dhclient && ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/makeit ; \
