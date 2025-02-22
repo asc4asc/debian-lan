@@ -5,12 +5,16 @@
       - ansible
     state: latest
 
-- name: Deploy script
-  ansible.builtin.copy:
-    src: sudo4user
-    dest: /usr/local/bin/
-    mode: '0755'
-    
+- name: Copy files from the 'files' directory
+      copy:
+        src: "{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
+      with_items:
+        - sudo4user
+        - clean.boot
+        - gen-new-hostname-ip.bash
+        mode: '0755'
+
 - name: Deploy script
   ansible.builtin.copy:
     src: check4hardware-change
@@ -18,12 +22,6 @@
     mode: '0755'
     owner: ansible
     group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: clean.boot
-    dest: /usr/local/bin/
-    mode: '0755'
 
 - name: Deploy script
   ansible.builtin.copy:
@@ -128,12 +126,6 @@
     mode: '0755'
     owner: ansible
     group: ansible    
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: gen-new-hostname-ip.bash
-    dest: /usr/local/bin/
-    mode: '0755'
 
 - name: Ensure .bash_aliases file exists
   copy:
