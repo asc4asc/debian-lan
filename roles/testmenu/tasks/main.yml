@@ -15,113 +15,31 @@
     - clean.boot
     - gen-new-hostname-ip.bash
 
-- name: Deploy script
-  ansible.builtin.copy:
-    src: check4hardware-change
-    dest: /home/ansible/
+- name: Copy files from the 'files' directory
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
     mode: '0755'
     owner: ansible
     group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: p
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: r
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: start-reboot
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: 900-timeout-reboot
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: start-powercycle
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: stress-test
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: bios-info.bash
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: start2grafik-back
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: start2console
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: logout2console
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
+  with_items:
+    - check4hardware-change
+    - p
+    - r
+    - start-reboot
+    - 900-timeout-reboot
+    - start-powercycle
+    - stress-test
+    - bios-info.bash
+    - start2grafik-back
+    - start2console
+    - logout2console
+    - 900-timeout-powercycle
+    - 900-timeout-powercycle
+   
 - name: Deploy script
   ansible.builtin.copy:
     src: startx
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-     
-- name: Deploy script
-  ansible.builtin.copy:
-    src: 900-timeout-powercycle
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible
-
-- name: Deploy script
-  ansible.builtin.copy:
-    src: 900-timeout-powercycle
     dest: /home/ansible/
     mode: '0755'
     owner: ansible
