@@ -96,6 +96,22 @@
     mode: '0755'
     owner: ansible
     group: ansible
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: logout2console
+    dest: /home/ansible/
+    mode: '0755'
+    owner: ansible
+    group: ansible
+
+- name: Deploy script
+  ansible.builtin.copy:
+    src: startx
+    dest: /home/ansible/
+    mode: '0755'
+    owner: ansible
+    group: ansible
      
 - name: Deploy script
   ansible.builtin.copy:
