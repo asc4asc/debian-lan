@@ -9,8 +9,8 @@ TTY=1
 REMOVE_FLAG=0
 
 function make_auto_login() {
-mkdir /etc/systemd/system/getty@tty${TTY}.service.d 
-cat > /etc/systemd/system/getty@tty${TTY}.service.d/overwrite.conf <<EOF
+sudo mkdir /etc/systemd/system/getty@tty${TTY}.service.d 
+sudo cat > /etc/systemd/system/getty@tty${TTY}.service.d/overwrite.conf <<EOF
 [Service]
 ExecStart=
 ExecStart=-/sbin/agetty --autologin ${USERIN} --noclear %I 38400 linux
@@ -18,8 +18,8 @@ EOF
 }
 
 function rm_auto_login() {
-rm -r /etc/systemd/system/getty@tty${TTY}.service.d 
-exit 0;
+  sudo rm -r /etc/systemd/system/getty@tty${TTY}.service.d 
+  exit 0;
 }
 
 usage() {
