@@ -1,2 +1,2 @@
 #!/bin/bash
-systemctl set-default graphical.target # Grafik wieder ein.
+sudo systemctl set-default graphical.target # Grafik wieder ein.
