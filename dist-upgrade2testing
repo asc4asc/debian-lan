@@ -1,0 +1,34 @@
+---
+- name: Update to Debian Testing (Trixie or Sid)
+  hosts: all
+  become: yes
+  vars:
+    debian_release: "testing"  # Change this to "sid" for Sid
+
+  tasks:
+    - name: Update apt package list
+      apt:
+        update_cache: yes
+
+    - name: Install necessary packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+
+    - name: Add Debian {{ debian_release }} repository
+      apt_repository:
+        repo: "deb http://deb.debian.org/debian {{ debian_release }} main contrib non-free"
+        state: present
+
+    - name: Add Debian {{ debian_release }} security repository
+      apt_repository:
+        repo: "deb http://deb.debian.org/debian-security {{ debian_release }}-security main contrib non-free"
+        state: present
+
+    - name: Upgrade all packages to {{ debian_release }}
+      apt:
+        upgrade: dist
+        update_cache: yes
