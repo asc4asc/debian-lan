@@ -52,7 +52,7 @@
       alias ll='ls -la'
       alias gs='git status'
       alias gp='git pull'
-      alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt'
+      alias menu='echo $PATH | grep :.$ > /dev/null || PATH=$PATH:. && cat menu.txt' 
        
 - name: create a small file with instructions
   copy:
@@ -76,7 +76,9 @@
 - name: Add a line to .bashrc
   lineinfile:
     path: /home/ansible/.bashrc
-    line: 'if [ -d todo ]; then run-parts todo; else menu; fi'
+    line: 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; else menu; fi'
+    regexp: '^if [ -d "todo" ].*'
+    create: yes
     
 - name: create a file 
   copy:
