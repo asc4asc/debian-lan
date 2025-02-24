@@ -74,11 +74,10 @@
       [ -z "$playbook" ] ||mkdir -p /target/etc/systemd/system/getty@tty1.service.d ; \
       [ -z "$playbook" ] ||echo -e "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin {{ ansible_user }} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty1.service.d/override.conf ; \
       [ -z "$playbook" ] ||echo "#!/bin/bash" >/target/home/{{ ansible_user }}/makeit ; \
-      [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
+      # [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo "sudo dhclient && ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/makeit ; \
-      [ -z "$playbook" ] ||echo "sudo dhclient && ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/gnomehost.yml \$@ " >>/target/home/{{ ansible_user }}/makeit.gnome ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/makeit ; \
-      [ -z "$playbook" ] ||echo "makeit" >/target/home/{{ ansible_user }}/.bashrc ; \
+      [ -z "$playbook" ] ||echo "./makeit" >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/debian-lan ; \
       # [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
