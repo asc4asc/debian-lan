@@ -71,8 +71,8 @@
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
       echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \
-      # mkdir -p /target/etc/systemd/system/getty@tty1.service.d ; \ 
-      # echo -e "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin {{ ansible_user }} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty1.service.d/override.conf ; \
+      mkdir -p /target/etc/systemd/system/getty@tty1.service.d ; \ 
+      echo -e "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin {{ ansible_user }} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty1.service.d/override.conf ; \
       [ -z "$playbook" ] ||echo "#!/bin/bash" >/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
       [ -z "$playbook" ] ||echo "sudo dhclient && ansible-playbook -i localhost, --connection=local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/makeit ; \
@@ -83,7 +83,7 @@
       [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/makeit.gnome ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/debian-lan ; \
-      [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
+      # [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
