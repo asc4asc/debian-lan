@@ -76,6 +76,7 @@
       [ -z "$playbook" ] ||mkdir -p /target/home/{{ ansible_user }}/todo && mkdir -p /target/home/{{ ansible_user }}/done ; \
       [ -z "$playbook" ] ||echo "#!/bin/bash" >/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, -c=local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
+      [ -z "$playbook" ] ||echo "mv $0 done" >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||chmod -R a+x /target/home/ansible/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -a todo)" ]; then run-parts todo; else menu; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
