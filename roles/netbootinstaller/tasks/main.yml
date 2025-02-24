@@ -21,7 +21,7 @@
     dest: "{{ tftp_root }}/d-i/{{ di_dist }}"
     mode: 0644
     force: false
-    remote_src: true
+    # remote_src: true
 
 - name: make the hostname resolvable from the LAN
   replace:
