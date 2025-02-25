@@ -13,8 +13,8 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 ### Later
 
 ### Idea 
-* xxxbox is a computer to install.
-* xxxhost is also a computer to install
+* xxxbox is a computer to install. It is mostly a host for the infrastruktur
+* xxxhost is also a computer to install. It is a host for uns as standalone also outside this network
 * xxxadd is a funktion like gnome testmenu that will be added to the current installation.
 * dist-upgrade2testing.yml is also a playbook for changing a host.
 
