@@ -1,0 +1,12 @@
+---
+# Useful for testing with menu  
+
+- name: apply a minimal test configuration to the machine
+  hosts: all
+  remote_user: ansible
+  become: true
+ 
+  roles:
+    - setup
+    - up2date_debian
+    - testmenu
