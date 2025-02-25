@@ -16,6 +16,9 @@
         
     - name: Set idle delay to never (disable screen blanking)
       command: gsettings set org.gnome.desktop.session idle-delay 0
+    
+    - name: Do not dimm screen 
+      command: gsettings set org.gnome.settings-daemon.plugins.power idle-dim false
 
     - name: Set ony term in favorites
       command: gsettings set org.gnome.shell favorite-apps "['org.gnome.Terminal.desktop']"
