@@ -12,6 +12,9 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 
 ### Later
 
-
+### Idea 
+* xxxbox is a computer to install.
+* xxxhost is also a computer to install
+* xxxadd is a funktion like gnome testmenu that will be added to the current installation
 
 
