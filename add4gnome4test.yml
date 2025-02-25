@@ -1,15 +1,14 @@
 ---
 - name: Configure GNOME settings
+  become: yes
   hosts: all
   
   tasks:
     - name: Update apt cache
-      become: yes
       apt:
         update_cache: yes
 
     - name: Install psutil
-      become: yes
       apt:
         name: python3-psutil
         state: present
@@ -43,19 +42,3 @@
         key: /org/gnome/settings-daemon/plugins/power/sleep-display-ac
         value: false
         state: present
-
-    - name: Set idle delay to never (disable screen blanking)
-      command: gsettings set org.gnome.desktop.session idle-delay 0
-
-    - name: Set ony term in favorites
-      command: gsettings set org.gnome.shell favorite-apps "['org.gnome.Terminal.desktop']"
-
-    - name: Damit man auch mit dem Griff runterfahren kann ohne 60s zu warten.
-      command: gsettings set org.gnome.SessionManager logout-prompt "false" 
-
-    - name: power button interaktiv
-      command: gsettings set org.gnome.settings-daemon.plugins.power power-button-action 'interactive'
-
-    - name: do not sleep 
-      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "nothing" 
-
