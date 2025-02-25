@@ -17,6 +17,12 @@
         key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-ac-timeout
         value: 0
         state: present
+        
+    - name: Disable sleep
+      community.general.dconf:
+        key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-battery-timeout
+        value: 0
+        state: present
 
     - name: Disable screen sleep
       community.general.dconf:
@@ -27,8 +33,15 @@
     - name: Set idle delay to never (disable screen blanking)
       command: gsettings set org.gnome.desktop.session idle-delay 0
 
-    - name: Disable automatic suspend on AC power
-      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+    - name: Set ony term in favorites
+      command: gsettings set org.gnome.shell favorite-apps "['org.gnome.Terminal.desktop']"
 
-    - name: Disable automatic suspend on battery power
-      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'nothing'
+    - name: Damit man auch mit dem Griff runterfahren kann ohne 60s zu warten.
+      command: gsettings set org.gnome.SessionManager logout-prompt "false" 
+
+    - name: power button interaktiv
+      command: gsettings set org.gnome.settings-daemon.plugins.power power-button-action 'interactive'
+
+    - name: do not sleep 
+      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "nothing" 
+
