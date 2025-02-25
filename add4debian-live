@@ -1,0 +1,23 @@
+- name: Build Debian Live CD
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install live-build
+      ansible.builtin.apt:
+        name: live-build
+        state: present
+
+    - name: Create build directory
+      ansible.builtin.file:
+        path: /home/{{ ansible_user }}/live-build
+        state: directory
+
+    - name: Configure live-build
+      ansible.builtin.command:
+        cmd: lb config
+        chdir: /home/{{ ansible_user }}/live-build
+
+    - name: Build the live CD
+      ansible.builtin.command:
+        cmd: lb build
+        chdir: /home/{{ ansible_user }}/live-build
