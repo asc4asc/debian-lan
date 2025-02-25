@@ -1,0 +1,27 @@
+---
+- name: Configure GNOME settings
+  hosts: all
+  tasks:
+    - name: Disable sleep
+      community.general.dconf:
+        key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-ac-timeout
+        value: 0
+        state: present
+
+    - name: Disable screen sleep
+      community.general.dconf:
+        key: /org/gnome/settings-daemon/plugins/power/sleep-display-ac
+        value: false
+        state: present
+
+    - name: Enable push-button shutdown
+      community.general.dconf:
+        key: /org/gnome/settings-daemon/plugins/power/power-button-action
+        value: 'shutdown'
+        state: present
+
+    - name: Set GNOME to Classic Mode
+      community.general.dconf:
+        key: '/org/gnome/desktop/session/session-name'
+        value: 'gnome-classic'
+        state: present
