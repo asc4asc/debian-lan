@@ -13,9 +13,3 @@
         key: /org/gnome/settings-daemon/plugins/power/sleep-display-ac
         value: false
         state: present
-
-    - name: Set GNOME to Classic Mode
-      community.general.dconf:
-        key: '/org/gnome/desktop/session/session-name'
-        value: 'gnome-classic'
-        state: present
