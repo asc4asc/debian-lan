@@ -1,6 +1,7 @@
 ---
 - name: Configure GNOME settings
   hosts: all
+  become: yes
   tasks:
     - name: Update apt cache
       apt:
