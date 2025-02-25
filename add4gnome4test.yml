@@ -23,3 +23,12 @@
         key: /org/gnome/settings-daemon/plugins/power/sleep-display-ac
         value: false
         state: present
+
+    - name: Set idle delay to never (disable screen blanking)
+      command: gsettings set org.gnome.desktop.session idle-delay 0
+
+    - name: Disable automatic suspend on AC power
+      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+
+    - name: Disable automatic suspend on battery power
+      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'nothing'
