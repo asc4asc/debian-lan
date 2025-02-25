@@ -2,6 +2,11 @@
 - name: Configure GNOME settings
   hosts: all
   tasks:
+    - name: Install psutil
+      apt:
+        name: python3-psutil
+        state: present
+  
     - name: Disable sleep
       community.general.dconf:
         key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-ac-timeout
