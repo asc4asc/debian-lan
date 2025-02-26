@@ -1,27 +1,40 @@
-- name: Build Debian Live CD
-  hosts: all
+---
+- name: Erstelle Debian Live-CD mit toram
+  hosts: localhost
   become: yes
   tasks:
-    - name: Update apt cache
+    - name: Installiere notwendige Pakete
       apt:
-        update_cache: yes
-
-    - name: Install live-build
-      ansible.builtin.apt:
-        name: live-build
+        name: "{{ item }}"
         state: present
+      with_items:
+        - live-build
+        - syslinux
+        - isolinux
+        - squashfs-tools
+        - xorriso
+        - grub-pc-bin
+        - grub-efi-amd64-bin
+        - grub-efi-ia32-bin
+        - mtools
+        - dosfstools
 
-    - name: Create build directory
-      ansible.builtin.file:
-        path: /home/ansible/live-build
+    - name: Erstelle Verzeichnis für Live-System
+      file:
+        path: /home/{{ ansible_user }}/live-debian
         state: directory
 
-    - name: Configure live-build
-      ansible.builtin.command:
-        cmd: lb config
-        chdir: /home/ansible/live-build
+    - name: Initialisiere Live-Build-System
+      command: lb config
+      args:
+        chdir: /home/{{ ansible_user }}/live-debian
 
-    - name: Build the live CD
-      ansible.builtin.command:
-        cmd: lb build
-        chdir: /home/ansible/live-build
+    - name: Füge toram zu den Boot-Parametern hinzu
+      lineinfile:
+        path: /home/{{ ansible_user }}/live-debian/config/bootloaders/grub-pc/live.cfg
+        line: "  linux /live/vmlinuz boot=live toram"
+
+    - name: Baue das Live-System
+      command: lb build
+      args:
+        chdir: /home/{{ ansible_user }}/live-debian
