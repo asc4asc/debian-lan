@@ -51,7 +51,7 @@
       - "{{ ansible_command }}"
 -     args:
         chdir: /home/{{ ansible_user }}/live-debian
-        
+
     - name: Baue das Live-System
       command: lb build
       args:
