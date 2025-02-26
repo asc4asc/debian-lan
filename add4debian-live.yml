@@ -2,6 +2,7 @@
 - name: Erstelle Debian Live-CD mit toram
   hosts: all
   become: yes
+  remote_user: ansible
   tasks:
     - name: Installiere notwendige Pakete
       apt:
