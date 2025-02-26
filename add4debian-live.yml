@@ -30,11 +30,6 @@
       args:
         chdir: /home/{{ ansible_user }}/live-debian
 
-    - name: Füge toram zu den Boot-Parametern hinzu
-      lineinfile:
-        path: /home/{{ ansible_user }}/live-debian/config/bootloaders/grub-pc/live.cfg
-        line: "  linux /live/vmlinuz boot=live toram"
-
     - name: Baue das Live-System
       command: lb build
       args:
