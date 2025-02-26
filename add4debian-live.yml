@@ -26,10 +26,21 @@
         state: directory
 
     - name: Initialisiere Live-Build-System
-      command: lb config
+      command: >
+        lb config noauto
+        --clean
+        --cache false
+        --net-tarball false
+        --ignore-system-defaults
+        --distribution bookworm
+        --binary-images netboot
+        --mode debian
+        --backports true
+        --linux-packages linux-image
+        --archive-areas "main non-free-firmware contrib non-free"
       args:
         chdir: /home/{{ ansible_user }}/live-debian
-
+        
     - name: Baue das Live-System
       command: lb build
       args:
