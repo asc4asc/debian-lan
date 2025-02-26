@@ -36,6 +36,7 @@
     - logout2console
     - 900-timeout-powercycle
     - 900-timeout-powercycle
+    - makeit4test
    
 - name: Deploy script
   ansible.builtin.copy:
