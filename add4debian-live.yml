@@ -1,6 +1,6 @@
 ---
 - name: Erstelle Debian Live-CD mit toram
-  hosts: localhost
+  hosts: all
   become: yes
   tasks:
     - name: Installiere notwendige Pakete
