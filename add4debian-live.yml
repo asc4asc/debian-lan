@@ -46,8 +46,7 @@
         --archive-areas "main non-free-firmware contrib"
         --bootappend-live "boot=live username=ekf ${BOOT} nosplash"
         --bootappend-live-failsafe "boot=live ${BOOT} nosplash"
--        
-      args:
+-     args:
         chdir: /home/{{ ansible_user }}/live-debian
         
     - name: Baue das Live-System
