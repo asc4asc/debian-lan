@@ -38,6 +38,11 @@
 -     args:
         chdir: /home/{{ ansible_user }}/live-debian
 
+    - name: Baue das Live-System
+      command: lb build
+      args:
+        chdir: /home/{{ ansible_user }}/live-debian
+
 #        --mirror-bootstrap "http://deb.debian.org/debian/"
 #        --mirror-binary "http://deb.debian.org/debian/"
 #        --binary-images netboot
@@ -52,7 +57,3 @@
 
 
 
-    - name: Baue das Live-System
-      command: lb build
-      args:
-        chdir: /home/{{ ansible_user }}/live-debian
