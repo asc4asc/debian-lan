@@ -32,7 +32,8 @@
         --cache false
         --net-tarball false
         --ignore-system-defaults
-        --security "false" --updates "false"
+        --security "false" 
+        --updates "false"
         --distribution bookworm
         --mirror-bootstrap "http://deb.debian.org/debian/"
         --mirror-binary "http://deb.debian.org/debian/"
