@@ -48,7 +48,7 @@
         --bootappend-live-failsafe "boot=live nosplash"
         "{{ item }}"
       with_items:
-      - "{{ ansible_command }}"
+        - "{{ ansible_command }}"
 -     args:
         chdir: /home/{{ ansible_user }}/live-debian
 
