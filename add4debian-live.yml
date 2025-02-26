@@ -32,12 +32,20 @@
         --cache false
         --net-tarball false
         --ignore-system-defaults
+        --security "false" --updates "false" \
         --distribution bookworm
+        --mirror-bootstrap "http://deb.debian.org/debian/"
+     	  --mirror-binary "http://deb.debian.org/debian/"
         --binary-images netboot
         --mode debian
         --backports true
         --linux-packages linux-image
         --archive-areas "main non-free-firmware contrib non-free"
+    	  --cache-packages "false" \
+	      --archive-areas "main non-free-firmware contrib" \
+	      --bootappend-live "boot=live username=ekf ${BOOT} nosplash" \
+	      --bootappend-live-failsafe "boot=live ${BOOT} nosplash" \
+-        
       args:
         chdir: /home/{{ ansible_user }}/live-debian
         
