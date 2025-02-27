@@ -1,0 +1,82 @@
+- name: gnome desktop
+  apt:
+    name:
+      - task-gnome-desktop
+    state: latest # noqa package-latest
+
+- name: make sure /etc/dconf/profile/ exists
+  file:
+    path: /etc/dconf/profile/
+    state: directory
+    recurse: true
+
+- name: prepare for gnome customized defaults
+  copy:
+    src: user
+    dest: /etc/dconf/profile/user
+    mode: 0644
+  notify: update dconf
+
+- name: make sure /etc/dconf/db/local.d/ exists
+  file:
+    path: /etc/dconf/db/local.d/
+    state: directory
+    recurse: true
+
+- name: modify gnome defaults
+  copy:
+    src: defaults
+    dest: /etc/dconf/db/local.d/defaults
+    mode: 0644
+  notify: update dconf
+
+- name: disable splash screen
+  replace:
+    dest: "/etc/default/grub"
+    regexp: '"quiet"$'
+    replace: '" "'
+  notify: update grub
+
+- name: Create autostart directory if it doesn't exist
+  file:
+    path: /home/{{ ansible_user }}/.config/autostart
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Create GNOME Terminal autostart .desktop file
+  copy:
+    content: |
+      [Desktop Entry]
+      Type=Application
+      Name=GNOME Terminal
+      Exec=gnome-terminal
+      OnlyShowIn=GNOME;
+      X-GNOME-Autostart-enabled=true
+    dest: /home/{{ ansible_user }}/.config/autostart/gnome-terminal.desktop
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Replace a localhost entry searching for a literal string to avoid escaping
+  ansible.builtin.lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '#.*AutomaticLoginEnable'
+    line: AutomaticLoginEnable=True
+
+- name: Replace a localhost entry searching for a literal string to avoid escaping
+  ansible.builtin.lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '#.*AutomaticLogin'
+    line: AutomaticLogin={{ ansible_user }} 
+    
+- name: Ensure gnome-initial-setup is removed
+  apt:
+    name: gnome-initial-setup
+    state: absent
+
+- name: Restart GDM to apply changes
+  systemd:
+    name: gdm
+    state: restarted
