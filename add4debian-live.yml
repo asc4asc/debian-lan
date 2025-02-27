@@ -36,8 +36,7 @@
         --updates "false"
         --distribution bookworm
         --mirror-bootstrap "http://deb.debian.org/debian/"
-        --mirror-binary "http://deb.debian.org/debian/"
-        --binary-images netboot
+        --mirror-binary "http://deb.debian.org/debian/"    
         --mode debian
         --backports true
         --linux-packages linux-image
@@ -45,9 +44,11 @@
         --cache-packages "false" 
         --archive-areas "main non-free-firmware contrib"
         --bootappend-live "boot=live username=ekf nosplash"
-        --bootappend-live-failsafe "boot=live nosplash"
+        --bootappend-live-failsafe "boot=live username=ekf nosplash"
       args:
         chdir: /home/{{ ansible_user }}/live-debian
+
+# --binary-images netboot
 
     - name: Baue das Live-System
       command: lb build
