@@ -1,0 +1,8 @@
+ Useful for testing with menu and preseeding ..... 
+
+- name: add a test configuration to the machine
+  hosts: all
+  remote_user: ansible
+ 
+  roles:
+    - gnome4test
