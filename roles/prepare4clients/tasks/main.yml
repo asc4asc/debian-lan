@@ -206,7 +206,7 @@
 
       menuentry 'Debian preseed testhost.yml' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
-                   hostname=demohost auto=true interface=auto priority=critical \
+                   hostname=testhost auto=true interface=auto priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=testhost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
