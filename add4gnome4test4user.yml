@@ -4,7 +4,6 @@
 - name: add a test configuration to the machine
   hosts: all
   remote_user: ansible
-  become: true
  
   roles:
     - add4gnome4test4user
