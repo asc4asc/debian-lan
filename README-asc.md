@@ -8,7 +8,6 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 ```
 # Problems
 * ansible start in debian installer does not work.
-* ansible start after boot (cron @reboot) also make sone problems. Still working on a solution.
 
 ### Later
 
