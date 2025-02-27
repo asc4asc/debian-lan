@@ -20,9 +20,11 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 ### Make a normal install from this
 
 ```
-adduser ekf # normal user no control over the system.
+sudo adduser ekf # normal user no control over the system.
 
-adduser ekf --ingroup sudo # to be in charge of the system
+sudo adduser ekf --ingroup sudo # to be in charge of the system
+
+sudo make-auto-login-console -d
 ```
 give him a password.
 
