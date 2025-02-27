@@ -33,5 +33,5 @@
       command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "nothing" 
 
     - name: set keyboard to de and us!  
-      command: gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'de'), ('xkb', 'us')]"
+      command: gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'de')]"
 
