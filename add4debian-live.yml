@@ -30,7 +30,6 @@
         lb config noauto
         --clean
         --cache false
-        --net-tarball false
         --ignore-system-defaults
         --security "false" 
         --updates "false"
@@ -48,6 +47,7 @@
       args:
         chdir: /home/{{ ansible_user }}/live-debian
 
+#  --net-tarball false
 # --binary-images netboot
 
     - name: Baue das Live-System
