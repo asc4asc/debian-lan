@@ -82,10 +82,10 @@
       [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
-      # [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
+# [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
 # [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
 # echo "ansible-pull -i localhost, --url=https://github.com/asc4asc/debian-lan.git $playbook" >/target/home/{{ ansible_user }}/makeit ; \
 #[ -z "$playbook" ] ||echo '@reboot ansible sleep 4 && /home/ansible/makeit' >>/target/etc/crontab ; \
