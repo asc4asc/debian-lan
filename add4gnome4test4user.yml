@@ -1,37 +1,10 @@
 ---
-- name: Configure GNOME settings
+# Useful for testing with menu and preseeding ..... 
+
+- name: add a test configuration to the machine
   hosts: all
-  
-  tasks:
-    - name: Update apt cache
-      become: yes
-      apt:
-        update_cache: yes
-
-    - name: Install psutil
-      become: yes
-      apt:
-        name: python3-psutil
-        state: present
-        
-    - name: Set idle delay to never (disable screen blanking)
-      command: gsettings set org.gnome.desktop.session idle-delay 0
-    
-    - name: Do not dimm screen 
-      command: gsettings set org.gnome.settings-daemon.plugins.power idle-dim false
-
-    - name: Set ony term in favorites
-      command: gsettings set org.gnome.shell favorite-apps "['org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.DiskUtility.desktop' ]"
-
-    - name: Damit man auch mit dem Griff runterfahren kann ohne 60s zu warten.
-      command: gsettings set org.gnome.SessionManager logout-prompt "false" 
-
-    - name: power button interaktiv
-      command: gsettings set org.gnome.settings-daemon.plugins.power power-button-action 'interactive'
-
-    - name: do not sleep 
-      command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "nothing" 
-
-    - name: set keyboard to de and us!  
-      command: gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'de')]"
-
+  remote_user: ansible
+  become: true
+ 
+  roles:
+    - add4gnome4test4user
