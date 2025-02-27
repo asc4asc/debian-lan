@@ -1,5 +1,5 @@
 ---
-# Useful for testing with menu and preseeding ..... 
+# Useful for testing preseeding ..... 
 
 - name: apply a test configuration to the machine
   hosts: all
@@ -9,6 +9,4 @@
   roles:
     - setup
     - up2date_debian
-    - gnome4test
-    - add4gnome4test4user
-    - testmenu
+    - gnome
