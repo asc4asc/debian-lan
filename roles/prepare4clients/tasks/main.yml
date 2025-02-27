@@ -114,6 +114,11 @@
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
+      LABEL testhost
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=testhost.yml ---
+
       LABEL demohost1
          MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost1
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
@@ -196,6 +201,13 @@
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
                    hostname=demohost auto=true interface=auto priority=critical \
                    url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
+         initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
+      }
+
+      menuentry 'Debian preseed testhost.yml' {
+         linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
+                   hostname=demohost auto=true interface=auto priority=critical \
+                   url=tftp://{{ ansible_hostname }} playbook=testhost.yml ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
 
