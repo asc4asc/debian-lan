@@ -20,6 +20,13 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 ### Make a normal install from this
 
 ```
+adduser ekf # normal user no control over the system.
+
+adduser ekf --ingroup sudo # to be in charge of the system
+```
+give him a password.
+
+```
 sudo passwd -l $USER # deaktiviert password. Mit -u kann wieder aktiviert werden. 
 
 sudo passwd -d $USER # clean password.
