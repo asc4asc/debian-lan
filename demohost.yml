@@ -10,7 +10,8 @@
     - setup
     - up2date_debian
     - auto_consol_login
-    - role: testmenu
-      when: enable_testmenu_role | default(true)
+    - debug
+    # - role: testmenu
+    #   when: enable_testmenu_role | default(true)
 
-#      when: not enable_testmenu_role | default(true)
+    #   when: not enable_testmenu_role | default(true)
