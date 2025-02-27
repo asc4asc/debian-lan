@@ -23,11 +23,14 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 sudo adduser ekf # normal user no control over the system.
 
 sudo adduser ekf --ingroup sudo # to be in charge of the system
-
-sudo make-auto-login-console -d
 ```
 give him a password.
+```
+sudo make-auto-login-console -d # disable auto login.
+```
+You can still login with ssh and key from the install server .... 
 
+### Some Ideas to manage password of install users.
 ```
 sudo passwd -l $USER # deaktiviert password. Mit -u kann wieder aktiviert werden. 
 
