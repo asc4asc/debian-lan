@@ -109,6 +109,11 @@
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz mirror/http/proxy?=http://{{ ansible_hostname }}:3142/ pkgsel/include=etckeeper preseed/late_command="rm -fv /target/etc/apt/apt.conf" ---
 
+      LABEL newhost
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
+         kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=newhost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
+
       LABEL demohost
          MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
