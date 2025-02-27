@@ -18,3 +18,15 @@ ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  -
 * xxxadd is a funktion like gnome testmenu that will be added to the current installation.
 * dist-upgrade2testing.yml is also a playbook for changing a host.
 
+### Make a normal install from this
+
+```
+sudo passwd -l $USER # deaktiviert password. Mit -u kann wieder aktiviert werden. 
+
+sudo passwd -d $USER # clean password.
+passwd # new password if it is clean.
+
+sudo passwd $USER # new password for user.
+
+sudo passwd root # new password for the root user.
+```
