@@ -110,17 +110,17 @@
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz mirror/http/proxy?=http://{{ ansible_hostname }}:3142/ pkgsel/include=etckeeper preseed/late_command="rm -fv /target/etc/apt/apt.conf" ---
 
       LABEL newhost
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
+         MENU LABEL newhost no playbook / Debian {{ di_version }} (amd64) 
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=newhost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} ---
 
       LABEL demohost
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
+         MENU LABEL demohost + playbook / Debian {{ di_version }} (amd64) 
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
       LABEL testhost
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook demohost (special cron)
+         MENU LABEL testhost + playbook Debian {{ di_version }} (amd64)  
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=testhost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=testhost.yml ---
 
