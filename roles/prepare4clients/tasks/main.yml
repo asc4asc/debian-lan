@@ -190,7 +190,7 @@
 
       menuentry 'Debian preseed ohne playbook' {
          linux   /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux \
-                   hostname=newhost auto=true priority=critical \
+                   hostname=newhost auto=true interface=auto priority=critical \
                    url=tftp://{{ ansible_hostname }} ---
          initrd  /d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz
       }
