@@ -28,7 +28,6 @@
     - p
     - r
     - start-reboot
-    - 900-timeout-reboot
     - start-powercycle
     - stress-test
     - bios-info.bash
