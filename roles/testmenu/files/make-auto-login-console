@@ -7,14 +7,16 @@ error=0; trap 'error=$(($?>$error?$?:$error))' ERR # save maximum error code
 export LANG=C
 TTY=1
 REMOVE_FLAG=0
+OVER=/tmp/overwrite$$.conf
 
 function make_auto_login() {
 sudo mkdir /etc/systemd/system/getty@tty${TTY}.service.d 
-sudo cat > /etc/systemd/system/getty@tty${TTY}.service.d/overwrite.conf <<EOF
+cat > $OVER <<EOF
 [Service]
 ExecStart=
 ExecStart=-/sbin/agetty --autologin ${USERIN} --noclear %I 38400 linux
 EOF
+sudo cp $OVER /etc/systemd/system/getty@tty${TTY}.service.d/overwrite.conf
 }
 
 function rm_auto_login() {
