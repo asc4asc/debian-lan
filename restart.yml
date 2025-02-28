@@ -4,6 +4,8 @@
   become: yes
 
   tasks:
+    - name: Run uptime command
+      command: make-auto-login-console
     - name: Restart the computer
       command: /sbin/shutdown -r now
       async: 1
