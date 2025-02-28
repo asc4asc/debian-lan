@@ -54,7 +54,7 @@ while getopts "edrvh?t:" opt ; do
 done
 shift $(($OPTIND-1))
 
-USERIN=${USER}
+USERIN=${USER} # ${SUDO_USER} if we use sudo? / check if not set for both?
 [ $1 ] && USERIN=$1
 
 if [[ ${REMOVE_FLAG} == 0 ]] 
