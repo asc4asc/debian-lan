@@ -1,0 +1,11 @@
+---
+- name: Restart computer
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Restart the computer
+      command: /sbin/shutdown -r now
+      async: 1
+      poll: 0
+      ignore_errors: true
