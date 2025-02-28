@@ -78,7 +78,7 @@
   lineinfile:
     path: /home/ansible/.bashrc
     line: 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; else menu; fi'
-    regexp: '^if [ -d "todo" ].*'
+    regexp: '^if \[ -d "todo" \].*'
     create: yes
     
 - name: create a file 
