@@ -130,19 +130,19 @@
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=demohost1 interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=demohost.yml ---
 
       LABEL gnomehost
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook gnomehost
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook gnomehost
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=gnomehost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=gnomehost.yml ---  
 
       LABEL minihost
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed ohne playbook  minihost
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed playbook  minihost
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
          append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=minihost interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=minihost.yml ---
 
-      LABEL installbox
-         MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox 
+      LABEL installbox1
+         MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox1 
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox1 interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
 
       LABEL installbox2
          MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox2
