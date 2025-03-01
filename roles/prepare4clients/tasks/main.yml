@@ -79,13 +79,13 @@
       [ -z "$playbook" ] ||echo 'mv $0 done' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||chmod -R a+x /target/home/ansible/todo/300-makeit ; \
       [ -z "$playbook" ] ||( [[ $playbook == *"install"* ]] && echo -e "#!/bin/bash\nsudo dhclient\nmv \$0 done" >>/target/home/{{ ansible_user }}/todo/200-netup;chmod -R a+x /target/home/{{ ansible_user }}/todo/200-netup ) ; \
-      [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
+      # [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
       echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
-      in-target ansible-pull -i localhost, -c=local  --verbose --purge --extra-vars="run_in_installer=true" --url=https://github.com/asc4asc/debian-lan.git $playbook ; \
+      [ -z "$playbook" ] ||in-target ansible-pull -i localhost, -c=local  --verbose --purge --extra-vars="run_in_installer=true" --url=https://github.com/asc4asc/debian-lan.git $playbook ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
