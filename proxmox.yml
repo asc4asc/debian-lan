@@ -49,13 +49,22 @@
         
     - name: Configure static IP address
       copy:
-        dest: /etc/network/interfaces.d/{{ if_lan }}
+        dest: /etc/network/interfaces
         content: |
-          auto {{ if_lan }} 
-          iface {{ if_lan }} inet static
-          address {{ ipaddr_lan }}
-          netmask 255.255.255.0
+          auto lo
+          iface lo inet loopback
 
+          auto {{ if_lan }}
+          iface {{ if_lan }} inet manual
+
+          auto vmbr0
+          iface vmbr0 inet static
+              address {{ ipaddr_lan }} 
+              netmask 255.255.255.0
+              bridge_ports {{ if_lan }}
+              bridge_stp off
+              bridge_fd 0
+c
     - name: Set the hostname
       hostname:
         name: pve01.example.com
