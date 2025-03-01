@@ -68,13 +68,13 @@
       in-target chmod -R og= /home/ansible/.ssh/ ; \
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
       echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \
-      [ -z "$playbook" ] ||echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
-      [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible/get.misc ; \
-      [ -z "$playbook" ] ||in-target chmod -R a+x /home/ansible/get.misc ; \
+      echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
+      in-target chown -R ansible:ansible /home/ansible/get.misc ; \
+      in-target chmod -R a+x /home/ansible/get.misc ; \
       mkdir -p /target/etc/systemd/system/getty@tty1.service.d ; \
       echo -e "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin {{ ansible_user }} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty1.service.d/override.conf ; \
       mkdir -p /target/home/{{ ansible_user }}/todo && mkdir -p /target/home/{{ ansible_user }}/done ; \
-      [ -z "$playbook" ] ||echo '#!/bin/bash' >/target/home/{{ ansible_user }}/todo/300-makeit ; \
+      echo '#!/bin/bash' >/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo '[ $(tty) == /dev/tty1 ] || exit 0' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, -c local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo 'mv $0 done' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
@@ -83,7 +83,7 @@
       [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone https://github.com/asc4asc/debian-lan.git /home/ansible/debian-lan ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
-      echo  "@reboot watch -n 5 ping -c 1 {{  ansible_hostname }} " >>/target/etc/crontab ; \
+      echo  "@reboot watch -n 5 ping -c 1 {{  ansible_hostname }}" >>/target/etc/crontab ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
