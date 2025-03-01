@@ -1,5 +1,5 @@
 ---
-- name: Install Proxmox VE with special kernel
+- name: Install Proxmox VE on Debian Bookworm
   hosts: all
   become: yes
   tasks:
@@ -8,40 +8,38 @@
         update_cache: yes
         upgrade: dist
 
-    - name: Install required packages
-      apt:
-        name:
-          - wget
-          - gnupg
-          - apt-transport-https
-        state: present
+    - name: Set the hostname
+      hostname:
+        name: pve01.example.com
 
     - name: Add Proxmox VE repository
       apt_repository:
-        repo: 'deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription'
+        repo: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
         state: present
 
     - name: Add Proxmox VE repository key
       apt_key:
-        url: 'http://download.proxmox.com/debian/proxmox-ve-release-6.x.gpg'
+        url: "https://enterprise.proxmox.com/debian/proxmox-ve-release-8.x.gpg"
         state: present
 
-    - name: Update apt cache
+    - name: Install Proxmox VE and dependencies
       apt:
-        update_cache: yes
-
-    - name: Install Proxmox VE
-      apt:
-        name: proxmox-ve
+        name:
+          - proxmox-ve
+          - postfix
+          - open-iscsi
         state: present
 
-    - name: Install Proxmox special kernel
+    - name: Remove Debian kernel
       apt:
-        name: pve-kernel-6.8
-        state: present
+        name: 'linux-image-amd64'
+        state: absent
+        autoremove: yes
 
     - name: Reboot the server
       reboot:
-        msg: "Rebooting after Proxmox VE and kernel installation"
-        pre_reboot_delay: 10
+        msg: "Rebooting after Proxmox VE installation"
+        connect_timeout: 5
+        reboot_timeout: 600
+        pre_reboot_delay: 0
         post_reboot_delay: 30
