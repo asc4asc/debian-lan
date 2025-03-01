@@ -19,6 +19,9 @@ after clone the git repro. git clone https://github.com/asc4asc/debian-lan.git
 ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
 ```
 
+We have examples in proxmox for testing with fixed Mac Adresses and auto install.
+
+
 # Problems
 * ansible start in debian installer does not work.
 
