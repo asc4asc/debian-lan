@@ -11,7 +11,7 @@ The installbox is a host to install clients with debian over the net.
 
 -----------------------------------------------------------------------------------
 
-# Example Call 
+# Example Calls 
 ```
 #!/bin/bash
 ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
