@@ -12,10 +12,13 @@ The installbox is a host to install clients with debian over the net.
 -----------------------------------------------------------------------------------
 
 # Example Calls 
+
+after clone the git repro. git clone https://github.com/asc4asc/debian-lan.git
 ```
 #!/bin/bash
 ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
 ```
+
 # Problems
 * ansible start in debian installer does not work.
 
