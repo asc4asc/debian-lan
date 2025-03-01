@@ -6,6 +6,7 @@
   vars:
     ## This interface provides the default route:
     if_wan: "{{ ansible_default_ipv4.interface }}"
+    if_lan: "{{ ansible_interfaces | difference([if_wan, 'lo']) | first }}"
   
   tasks:
     - name: Update and upgrade apt packages
@@ -44,10 +45,10 @@
         
     - name: Configure static IP address
       copy:
-        dest: /etc/network/interfaces.d/{{ wan }}
+        dest: /etc/network/interfaces.d/{{ lan }}
         content: |
-          auto {{ wan }} 
-          iface {{ wan }} inet static
+          auto {{ lan }} 
+          iface {{ lan }} inet static
           address 192.168.4.114
           netmask 255.255.255.0
              
