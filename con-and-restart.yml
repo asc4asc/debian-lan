@@ -3,6 +3,11 @@
   hosts: all
   # become: yes
 
+ roles:
+    - setup
+    - up2date_debian
+    - testmenu
+
   tasks:
     - name: Run uptime command
       command: make-auto-login-console
