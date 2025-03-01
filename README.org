@@ -5,27 +5,6 @@ copy of: https://salsa.debian.org/andi/debian-lan-ansible !!
 
 Please check if the original fits your requirements more!
 
-The goal of the "Debian Local Area Network"-project is to make setting
-up Debian in a local area network as easy as possible.  This repository
-offers ansible playbooks and instructions for the following machines:
-
- • installbox:  orchestration of automatic installs in the LAN
-     - set up as gateway to some external network (WAN)
-     - provides TFTP installations on the LAN interface
-     - automatic installs: preseeding and ansible playbooks
-     - package cache
-
-• installbox2:  orchestration of automatic installs in the LAN
-     - set up as gateway to some external network (WAN)
-     - provides TFTP installations on the LAN interface
-     - automatic installs: preseeding and ansible playbooks
-     - package cache
-
-The second installbox is necasaary for install a installbox from installbox.
-
- • minimal:  for testing 
- 
-
 ----------------------------------------------------------------------------------
 If you need one of these boxes please go back to the original ansible-debian-lan
 
