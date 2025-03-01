@@ -6,7 +6,7 @@
   vars:
     ## This interface provides the default route:
     if_lan: "{{ ansible_default_ipv4.interface }}"
-    if_wan: "{{ ansible_interfaces | difference([if_lan, 'lo']) | first }}"
+    # if_wan: "{{ ansible_interfaces | difference([if_lan, 'lo']) | first }}"
   
   tasks:
     - name: Update and upgrade apt packages
