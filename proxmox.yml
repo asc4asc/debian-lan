@@ -28,6 +28,7 @@
           - proxmox-ve
           - postfix
           - open-iscsi
+          - chrony
         state: present
 
     - name: Remove Debian kernel
