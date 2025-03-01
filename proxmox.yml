@@ -64,7 +64,7 @@
               bridge_ports {{ if_lan }}
               bridge_stp off
               bridge_fd 0
-c
+
     - name: Set the hostname
       hostname:
         name: pve01.example.com
