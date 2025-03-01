@@ -48,7 +48,7 @@
         content: |
           auto {{ wan }} 
           iface {{ wan }} inet static
-          address 192.168.4.100
+          address 192.168.4.114
           netmask 255.255.255.0
              
     - name: Reboot the server
