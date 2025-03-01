@@ -1,1 +1,6 @@
+DEFAULT proxmox
 
+LABEL proxmox
+   MENU LABEL Debian 12 (amd64) + preseed without playbook
+   kernel ::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/linux
+   append initrd=::/d-i/n-pkg/images/12/amd64/text/debian-installer/amd64/initrd.gz hostname=pve01 interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }}  playbook=proxmox.yml ---
