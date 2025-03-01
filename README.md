@@ -1,7 +1,17 @@
 # debian-lan
 copy of: https://salsa.debian.org/andi/debian-lan-ansible
 
-# Call 
+Install a nativ debian bookworm with preseeding to have a optimal start for a ansible install with playbooks.
+
+The installbox is a host to install clients with debian over the net. 
+
+* install from a ansible host with ansible-playbook ......
+* install from git from the net with ansible-pull ......
+* instll local with ansible-playbook -i localhost -c local
+
+-----------------------------------------------------------------------------------
+
+# Example Call 
 ```
 #!/bin/bash
 ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
