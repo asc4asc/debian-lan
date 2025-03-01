@@ -20,7 +20,7 @@
       apt:
         name:
           - gpg
-      state: present
+        state: present
 
     - name: Add Proxmox VE repository key
       apt_key:
