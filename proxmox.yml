@@ -2,7 +2,10 @@
 - name: Install Proxmox VE on Debian Bookworm
   hosts: all
   become: yes
-  if_wan: "{{ ansible_default_ipv4.interface }}"
+
+  vars:
+    ## This interface provides the default route:
+    if_wan: "{{ ansible_default_ipv4.interface }}"
   
   tasks:
     - name: Update and upgrade apt packages
