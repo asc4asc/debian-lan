@@ -61,9 +61,8 @@
         name: pve01.example.com
              
     - name: Reboot the server
-      reboot:
-        msg: "Rebooting after Proxmox VE installation"
-        connect_timeout: 5
-        reboot_timeout: 600
-        pre_reboot_delay: 0
-        post_reboot_delay: 30
+      command: /sbin/shutdown -r now
+      become: yes
+      async: 1
+      poll: 0
+      ignore_errors: true
