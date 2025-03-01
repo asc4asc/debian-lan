@@ -14,7 +14,7 @@
 
     - name: Add Proxmox VE repository
       apt_repository:
-        repo: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
+        repo: "deb [arch=amd64] http://download.proxmox.com/debian/pve bookworm pve-no-subscription" 
         state: present
 
     - name: Add Proxmox VE repository key
