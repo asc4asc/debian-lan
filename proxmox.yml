@@ -19,7 +19,7 @@
 
     - name: Add Proxmox VE repository key
       apt_key:
-        url: "https://enterprise.proxmox.com/debian/proxmox-ve-release-8.x.gpg"
+        url: "https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg" 
         state: present
 
     - name: Install Proxmox VE and dependencies
