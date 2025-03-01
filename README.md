@@ -27,6 +27,9 @@ ansible-playbook -c=local --inventory=localhost, add-testmenu.yml # --extra-vars
 
 On installbox (ansible host)
 ```
+ssh-keygen -R demohost12
+ssh-keyscan demohost12 >> .ssh/known_hosts # prepare only in secure places.
+
 ansible-playbook --inventory=demohost12, debian-lan/add-testmenu.yml # --extra-vars "domain=test.local"
 ```
 
