@@ -1,6 +1,6 @@
 ---
 - name: Install Proxmox VE with special kernel
-  hosts: proxmox
+  hosts: all
   become: yes
   tasks:
     - name: Update and upgrade apt packages
