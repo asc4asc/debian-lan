@@ -12,14 +12,14 @@
       hostname:
         name: pve01.example.com
 
-    - name: Add Proxmox VE repository
-      apt_repository:
-        repo: "deb [arch=amd64] http://download.proxmox.com/debian/pve bookworm pve-no-subscription" 
-        state: present
-
     - name: Add Proxmox VE repository key
       apt_key:
         url: "https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg" 
+        state: present
+    
+    - name: Add Proxmox VE repository
+      apt_repository:
+        repo: "deb [arch=amd64] http://download.proxmox.com/debian/pve bookworm pve-no-subscription" 
         state: present
 
     - name: Install Proxmox VE and dependencies
