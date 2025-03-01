@@ -53,7 +53,7 @@
         content: |
           auto {{ if_lan }} 
           iface {{ if_lan }} inet static
-          address ipaddr_lan 
+          address {{ ipaddr_lan }}
           netmask 255.255.255.0
 
     - name: Set the hostname
