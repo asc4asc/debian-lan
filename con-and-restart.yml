@@ -10,7 +10,7 @@
 
   tasks:
     - name: Run uptime command
-      command: make-auto-login-console
+      command: make-auto-login-console ansible
       
     - name: Restart the computer
       command: /sbin/shutdown -r now
