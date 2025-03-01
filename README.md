@@ -16,10 +16,21 @@ The installbox is a host to install clients with debian over the net.
 after clone the git repro. git clone https://github.com/asc4asc/debian-lan.git
 ```
 #!/bin/bash
-ansible-playbook -c=local --inventory=localhost, ../debian-lan/installbox.yml  --extra-vars "hostname=installbox domain=test.local"
+ansible-playbook -c=local --inventory=localhost, debian-lan/demohost.yml  # --extra-vars "hostname=demohost10 domain=test.local"
 ```
 
-We have examples in proxmox for testing with fixed Mac Adresses and auto install.
+Direct from Net.
+```
+#!/bin/bash
+ansible-playbook -c=local --inventory=localhost, demohost.yml # --extra-vars "hostname=demohost11 domain=test.local"
+```
+
+On installbox (ansible host)
+```
+ansible-playbook --inventory=demohost12, debian-lan/demohost.yml # --extra-vars "domain=test.local"
+```
+
+We will have examples in proxmox for testing with fixed Mac Adresses and auto install.
 
 
 # Problems
