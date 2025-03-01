@@ -16,9 +16,11 @@
         update_cache: yes
         upgrade: dist
 
-    - name: Set the hostname
-      hostname:
-        name: pve01.example.com
+    - name: Installi dendencies
+      apt:
+        name:
+          - gpg
+      state: present
 
     - name: Add Proxmox VE repository key
       apt_key:
@@ -53,6 +55,10 @@
           iface {{ if_lan }} inet static
           address ipaddr_lan 
           netmask 255.255.255.0
+
+    - name: Set the hostname
+      hostname:
+        name: pve01.example.com
              
     - name: Reboot the server
       reboot:
