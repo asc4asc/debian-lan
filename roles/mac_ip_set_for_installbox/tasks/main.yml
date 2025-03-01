@@ -40,3 +40,9 @@
     src: 01-bc-24-11-00-00-20.j2
     dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-20
     mode: '0755'
+
+- name: Copy the template file
+  template:
+    src: 01-bc-24-11-00-00-22.j2
+    dest: /var/lib/tftpboot/debian-installer/pxelinux.cfg/01-bc-24-11-00-00-22
+    mode: '0755'
