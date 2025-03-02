@@ -24,14 +24,10 @@
           iface lo inet loopback
 
           auto {{ if_lan }}
-          iface {{ if_lan }} inet manual
+          iface {{ if_lan }} inet dhcp
 
           auto vmbr0
-          iface vmbr0 inet static
-              address {{ ipaddr_lan }} 
-              broadcast  172.21.122.255
-              netmask 255.255.255.0
-              gateway 172.21.122.1
+          iface vmbr0 inet manual
               bridge-ports {{ if_lan }}
               bridge-stp off
               bridge-fd 0
