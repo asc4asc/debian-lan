@@ -37,6 +37,7 @@
     - 900-timeout-reboot
     - 900-timeout-powercycle
     - makeit4test
+    - put-git-sshkeys2authorized_keys
        
 - name: Deploy script
   ansible.builtin.copy:
