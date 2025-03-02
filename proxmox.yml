@@ -8,7 +8,7 @@
     if_lan: "{{ ansible_default_ipv4.interface }}"
     if_wan: "{{ ansible_interfaces | difference([if_lan, 'lo']) | first }}"
 
-    ipaddr_lan: 192.168.4.100/24
+    ipaddr_lan: 172.21.122.56/24
   
   tasks:
     - name: Update and upgrade apt packages
