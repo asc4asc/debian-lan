@@ -8,7 +8,7 @@
     if_lan: "{{ ansible_default_ipv4.interface }}"
     if_wan: "{{ ansible_interfaces | difference([if_lan, 'lo']) | first }}"
 
-    ipaddr_lan: 172.21.122.56/24
+    ipaddr_lan: 172.21.122.56
   
   tasks:
     - name: Update and upgrade apt packages
@@ -59,7 +59,7 @@
 
           auto vmbr0
           iface vmbr0 inet static
-              address {{ ipaddr_lan }} 
+              address {{ ipaddr_lan }}/24 
               netmask 255.255.255.0
               bridge_ports {{ if_lan }}
               bridge_stp off
@@ -70,7 +70,7 @@
         dest: /etc/hosts
         content: |
           127.0.0.1       localhost
-          {{ if_lan }} prox4m1.proxmox.com prox4m1
+          {{ ipaddr_lan }} prox4m1.proxmox.com prox4m1
           # The following lines are desirable for IPv6 capable hosts
           ::1     localhost ip6-localhost ip6-loopback
           ff02::1 ip6-allnodes
