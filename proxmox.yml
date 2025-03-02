@@ -64,6 +64,7 @@
               bridge_ports {{ if_lan }}
               bridge_stp off
               bridge_fd 0
+              gateway 172.21.122.1
 
     - name: Configure host file
       copy:
