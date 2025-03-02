@@ -30,11 +30,11 @@
           iface vmbr0 inet static
               address {{ ipaddr_lan }}/24 
               netmask 255.255.255.0
+              gateway 172.21.122.1
               bridge-ports {{ if_lan }}
               bridge-stp off
               bridge-fd 0
-              gateway 172.21.122.1
-
+             
     - name: Configure host file
       copy:
         dest: /etc/hosts
