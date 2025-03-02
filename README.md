@@ -7,7 +7,7 @@ The installbox is a host to install clients with debian over the net.
 
 * install from a ansible host with ansible-playbook ......
 * install from git from the net with ansible-pull ......
-* instll local with ansible-playbook -i localhost -c local
+* install local with ansible-playbook -i localhost -c local
 
 -----------------------------------------------------------------------------------
 
