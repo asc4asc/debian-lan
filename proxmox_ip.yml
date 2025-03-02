@@ -28,7 +28,8 @@
 
           auto vmbr0
           iface vmbr0 inet static
-              address {{ ipaddr_lan }}/24 
+              address {{ ipaddr_lan }} 
+              broadcast  172.21.122.255
               netmask 255.255.255.0
               gateway 172.21.122.1
               bridge-ports {{ if_lan }}
