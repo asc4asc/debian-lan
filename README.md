@@ -1,5 +1,5 @@
 # debian-lan
-copy of: https://salsa.debian.org/andi/debian-lan-ansible
+copy of: https://salsa.debian.org/andi/debian-lan-ansible / with great thanks to andi@debian.org
 
 Install a nativ debian bookworm with preseeding to have a optimal start for a ansible install with playbooks.
 
