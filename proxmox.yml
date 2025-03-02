@@ -3,20 +3,13 @@
   hosts: all
   become: yes
 
-  vars:
-    ## This interface provides the default route:
-    if_lan: "{{ ansible_default_ipv4.interface }}"
-    if_wan: "{{ ansible_interfaces | difference([if_lan, 'lo']) | first }}"
-
-    ipaddr_lan: 172.21.122.56
-  
   tasks:
     - name: Update and upgrade apt packages
       apt:
         update_cache: yes
         upgrade: dist
 
-    - name: Installi dendencies
+    - name: Install dendencies
       apt:
         name:
           - gpg
@@ -47,43 +40,3 @@
         state: absent
         autoremove: yes
         
-    - name: Configure static IP address
-      copy:
-        dest: /etc/network/interfaces
-        content: |
-          auto lo
-          iface lo inet loopback
-
-          auto {{ if_lan }}
-          iface {{ if_lan }} inet manual
-
-          auto vmbr0
-          iface vmbr0 inet static
-              address {{ ipaddr_lan }}/24 
-              netmask 255.255.255.0
-              bridge_ports {{ if_lan }}
-              bridge_stp off
-              bridge_fd 0
-              gateway 172.21.122.1
-
-    - name: Configure host file
-      copy:
-        dest: /etc/hosts
-        content: |
-          127.0.0.1       localhost
-          {{ ipaddr_lan }} prox4m1.proxmox.com prox4m1
-          # The following lines are desirable for IPv6 capable hosts
-          ::1     localhost ip6-localhost ip6-loopback
-          ff02::1 ip6-allnodes
-          ff02::2 ip6-allrouters
-
-    - name: Set the hostname
-      hostname:
-        name: pve01.example.com
-             
-    - name: Reboot the server
-      command: /sbin/shutdown -r now
-      become: yes
-      async: 1
-      poll: 0
-      ignore_errors: true
