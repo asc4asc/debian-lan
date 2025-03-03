@@ -7,19 +7,6 @@
   become: true
   
   pre_tasks:
-    - name: Get adapter
-      set_fact: 
-        adapter: '{{ item }}'
-      loop: '{{ ansible_facts.interfaces }}'
-      when: 'item.startswith("enp")' 
-
-    - name: Wait for network interface to be up
-      command: ip link show "{{ adapter }}"
-      register: result
-      until: "'state UP' in result.stdout"
-      retries: 10
-      delay: 1
- 
     - name: Gather facts
       ansible.builtin.setup:
       
