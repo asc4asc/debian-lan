@@ -1,5 +1,5 @@
 ---
-# Useful for testing with menu and preseeding ..... 
+# Useful for testing with menu and preseeding ..... It is only for the user?
 
 - name: add a test configuration to the machine
   hosts: all
