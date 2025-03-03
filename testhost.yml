@@ -6,7 +6,7 @@
   remote_user: ansible
   become: true
 
-  tasks:
+  pre_tasks:
   - name: Wait for network interface
     command: ip link show {{ ansible_default_ipv4.interface }}
     register: result
