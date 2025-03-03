@@ -6,6 +6,13 @@
   remote_user: ansible
   become: true
 
+  - name: Gather facts
+    ansible.builtin.setup:
+
+  - name: Debug ansible_default_ipv4.interface
+    debug:
+      var: ansible_default_ipv4.interface
+  
   pre_tasks:
   - name: Wait for network interface
     command: ip link show "{{ ansible_default_ipv4.interface }}"
