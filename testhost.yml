@@ -16,7 +16,7 @@
       register: result
       
     - name: Wait for network interface
-      command: ip link show "
+      command: "ip link show"
       register: result
       until: "'state UP' in result.stdout"
       retries: 10
