@@ -5,7 +5,15 @@
   hosts: all
   remote_user: ansible
   become: true
- 
+
+  tasks:
+  - name: Wait for network interface
+    command: ip link show {{ ansible_interfaces[0] }}
+    register: result
+    until: "'state UP' in result.stdout"
+    retries: 10
+    delay: 5
+  
   roles:
     - setup
     - up2date_debian
