@@ -9,11 +9,7 @@
   pre_tasks:
     - name: Gather facts
       setup:
-      
-    - name: Print the interface
-      debug:
-        msg: "The default IPv4 interface is: {{ ansible_default_ipv4.interface }}"
-        
+           
     - name: Wait for ansible_default_ipv4.interface to be valid
       wait_for:
         timeout: 10  # Maximum time to wait in seconds
