@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Define the test file and size
+TEST_FILE="/tmp/testfile"
+TEST_SIZE="1G"
+
+# Write test
+echo "Starting write test..."
+WRITE_SPEED=$(dd if=/dev/zero of=$TEST_FILE bs=1M count=$TEST_SIZE oflag=direct 2>&1 | grep -o '[0-9.]* MB/s')
+echo "Write speed: $WRITE_SPEED"
+
+# Read test
+echo "Starting read test..."
+READ_SPEED=$(dd if=$TEST_FILE of=/dev/null bs=1M count=$TEST_SIZE iflag=direct 2>&1 | grep -o '[0-9.]* MB/s')
+echo "Read speed: $READ_SPEED"
+
+# Clean up
+rm -f $TEST_FILE
