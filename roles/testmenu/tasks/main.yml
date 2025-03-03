@@ -38,7 +38,8 @@
     - 900-timeout-powercycle
     - makeit4test
     - put-git-sshkeys2authorized_keys
-    - testnet.bash
+    - test-net
+    - test-ssd
        
 - name: Deploy script
   ansible.builtin.copy:
