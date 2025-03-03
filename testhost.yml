@@ -9,6 +9,12 @@
   pre_tasks:
     - name: Gather facts
       ansible.builtin.setup:
+      
+    - name: Get adapter
+      set_fact: 
+        adapter: '{{ item }}'
+      loop: '{{ ansible_facts.interfaces }}'
+      when: 'item.startswith("e")' 
            
     - name: Wait for ansible_default_ipv4.interface to be valid
       wait_for:
