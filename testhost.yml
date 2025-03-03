@@ -8,7 +8,7 @@
 
   tasks:
   - name: Wait for network interface
-    command: ip link show {{ ansible_interfaces[0] }}
+    command: ip link show {{ ansible_interfaces[1] }}
     register: result
     until: "'state UP' in result.stdout"
     retries: 10
