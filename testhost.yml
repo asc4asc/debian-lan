@@ -17,7 +17,7 @@
     - name: Wait for ansible_default_ipv4.interface to be valid
       wait_for:
         timeout: 300  # Maximum time to wait in seconds
-        delay: 10     # Time to wait between checks in seconds
+        delay: 0.1     # Time to wait between checks in seconds
         state: started
       until: ansible_default_ipv4.interface != ""
       # until: ansible_default_ipv4.interface is defined and ansible_default_ipv4.interface != ""
