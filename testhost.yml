@@ -17,28 +17,7 @@
         delay: 1
         timeout: 30
       delegate_to: localhost
-
-    - name: Get adapter
-      set_fact: 
-        adapter: '{{ item }}'
-      loop: '{{ ansible_facts.interfaces }}'
-      when: 'item.startswith("enp")' 
-           
-    - name: Wait for ansible_default_ipv4.interface to be valid
-      wait_for:
-        timeout: 10  # Maximum time to wait in seconds
-        delay: 1     # Time to wait between checks in seconds
-        state: started
-      until: ansible_default_ipv4.interface is defined and ansible_default_ipv4.interface != ""
-      register: result
-      
-    - name: Wait for network interface
-      command: ip link show "{{ ansible_default_ipv4.interface }}"
-      register: result
-      until: "'state UP' in result.stdout"
-      retries: 10
-      delay: 1
-  
+ 
   roles:
     - setup
     - up2date_debian
