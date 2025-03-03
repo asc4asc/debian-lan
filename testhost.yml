@@ -8,7 +8,7 @@
   
   pre_tasks:
     - name: Gather facts
-      setup:
+      ansible.builtin.setup:
            
     - name: Wait for ansible_default_ipv4.interface to be valid
       wait_for:
