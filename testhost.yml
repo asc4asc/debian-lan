@@ -14,7 +14,7 @@
       set_fact: 
         adapter: '{{ item }}'
       loop: '{{ ansible_facts.interfaces }}'
-      when: 'item.startswith("e")' 
+      when: 'item.startswith("enp")' 
            
     - name: Wait for ansible_default_ipv4.interface to be valid
       wait_for:
