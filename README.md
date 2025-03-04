@@ -37,7 +37,7 @@ We will have examples in proxmox for testing with fixed Mac Adresses and auto in
 
 
 # Problems
-* ansible start in debian installer does not work.
+* ansible start in debian installer does only work with a workaround.
 
 ### Later
 
