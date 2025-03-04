@@ -62,7 +62,7 @@ You can still login with ssh and key from the install server ....
 
 ### Some Ideas to manage password of install users.
 ```
-sudo passwd -l $USER # deaktiviert password. Mit -u kann wieder aktiviert werden. 
+sudo passwd -l $USER # deactivate password. With -u it can be activated again. 
 
 sudo passwd -d $USER # clean password.
 passwd # new password if it is clean.
