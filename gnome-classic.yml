@@ -1,0 +1,16 @@
+--
+- name: Configure GNOME Classic Mode
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure GNOME Classic Mode is installed
+      apt:
+        name: gnome-session-flashback
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Set GNOME Classic as default session
+      community.general.dconf:
+        key: /org/gnome/desktop/session/session-name
+        value: 'gnome-flashback'
+        state: present
