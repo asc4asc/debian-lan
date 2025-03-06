@@ -79,7 +79,8 @@
   apt:
     name: gnome-initial-setup
     state: absent
-  become: true  
+  become: true
+  notify: Restart GDM to apply changes
 
 #- name: Restart GDM to apply changes
 #  systemd:
