@@ -1,22 +1,20 @@
 ---
+- name: Install GNOME Classic on Debian
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install GNOME Classic
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - gnome-session-flashback
+        - gnome-panel
+        - gnome-applets
+        - gnome-flashback
+        - gnome-terminal
+        - nautilus
+        - gdm3
 - name: Configure GNOME Classic Mode
   hosts: all
   become: yes
-
-  tasks:
-    - name: Install psutil
-      apt:
-        name: python3-psutil
-        state: present
-        
-    - name: Ensure GNOME Classic Mode is installed
-      apt:
-        name: gnome-session-flashback
-        state: present
-      when: ansible_os_family == "Debian"
-
-    - name: Set GNOME Classic as default session
-      community.general.dconf:
-        key: /org/gnome/desktop/session/session-name
-        value: 'gnome-flashback'
-        state: present
