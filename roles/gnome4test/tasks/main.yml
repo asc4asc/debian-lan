@@ -13,7 +13,6 @@
   become: true  
   notify: update dconf
   
-
 - name: make sure /etc/dconf/db/local.d/ exists
   file:
     path: /etc/dconf/db/local.d/
