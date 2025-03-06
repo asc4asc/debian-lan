@@ -9,4 +9,4 @@
     - setup
     - up2date_debian
     - gnome4test
-    - add4gnome4test4user
+    # - add4gnome4test4user # must be called if gnome and user is up and running.
