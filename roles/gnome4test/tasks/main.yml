@@ -1,7 +1,7 @@
 - name: gnome desktop
   apt:
     name:
-    - task-gnome-desktop
+      - task-gnome-desktop
     state: latest # noqa package-latest
 
 - name: make sure /etc/dconf/profile/ exists
