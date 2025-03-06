@@ -1,0 +1,13 @@
+---
+# Useful for testing preseeding ..... 
+
+- name: apply a test configuration to the machine
+  hosts: all
+  remote_user: ansible
+  become: true
+ 
+  roles:
+    - setup
+    - up2date_debian
+    - gnome
+    - gnome4test
