@@ -1,7 +1,9 @@
 - name: update dconf
   command: dconf update
   listen: update dconf
+  become: true
 
 - name: update grub
   command: update-grub
   listen: update grub
+  become: true
