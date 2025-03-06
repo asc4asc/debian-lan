@@ -15,6 +15,17 @@
         - gnome-terminal
         - nautilus
         - gdm3
-- name: Configure GNOME Classic Mode
-  hosts: all
-  become: yes
+
+    - name: Create Terminal Desktop Entry
+      copy:
+        dest: /usr/share/applications/gnome-terminal.desktop
+        content: |
+          [Desktop Entry]
+          Name=Terminal
+          Comment=Use the command line
+          Exec=gnome-terminal
+          Icon=utilities-terminal
+          Terminal=false
+          Type=Application
+          Categories=Utility;TerminalEmulator;
+          Keywords=shell;prompt;command;commandline;cmd;
