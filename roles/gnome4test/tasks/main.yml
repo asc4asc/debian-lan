@@ -1,3 +1,9 @@
+- name: gnome desktop
+  apt:
+    name:
+      - task-gnome-desktop
+    state: latest # noqa package-latest
+
 - name: make sure /etc/dconf/profile/ exists
   file:
     path: /etc/dconf/profile/
@@ -66,23 +72,17 @@
     regexp: '#.*AutomaticLoginEnable'
     line: AutomaticLoginEnable=True
   become: true
-
+  
 - name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
     regexp: '#.*AutomaticLogin'
     line: AutomaticLogin={{ ansible_user }}
   become: true  
+  notify: Restart GDM
     
 - name: Ensure gnome-initial-setup is removed
   apt:
     name: gnome-initial-setup
     state: absent
   become: true
-  notify: Restart GDM to apply changes
-
-#- name: Restart GDM to apply changes
-#  systemd:
-#    name: gdm
-#    state: restarted
-#  become: true  
