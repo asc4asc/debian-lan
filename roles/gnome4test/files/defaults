@@ -32,3 +32,6 @@ lock-enabled=false
 clock-show-date=true
 clock-show-seconds=true
 clock-show-weekday=true
+
+[org/gnome/shell]
+favorite-apps=['gedit.desktop', 'gnome-terminal.desktop', 'nautilus.desktop']
