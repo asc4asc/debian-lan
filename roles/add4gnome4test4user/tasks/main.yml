@@ -13,36 +13,22 @@
     
 - name: Set idle delay to never (disable screen blanking)
   command: gsettings set org.gnome.desktop.session idle-delay 0
-  become: yes
-  become_user: ansible
-
+  
 - name: Do not dimm screen 
   command: gsettings set org.gnome.settings-daemon.plugins.power idle-dim false
-  become: yes
-  become_user: ansible
-
+  
 - name: Set ony term in favorites
   command: gsettings set org.gnome.shell favorite-apps "['org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.DiskUtility.desktop' ]"
-  become: yes
-  become_user: ansible
-
+  
 - name: Damit man auch mit dem Griff runterfahren kann ohne 60s zu warten.
   command: gsettings set org.gnome.SessionManager logout-prompt "false" 
-  become: yes
-  become_user: ansible
-
+  
 - name: power button interaktiv
   command: gsettings set org.gnome.settings-daemon.plugins.power power-button-action 'interactive'
-  become: yes
-  become_user: ansible
-
+  
 - name: do not sleep 
   command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "nothing" 
-  become: yes
-  become_user: ansible
-
+  
 - name: set keyboard to de and us!  
   command: gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'de')]"
-  become: yes
-  become_user: ansible
-
+  
