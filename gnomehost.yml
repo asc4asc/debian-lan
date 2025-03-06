@@ -9,4 +9,4 @@
   roles:
     - setup
     - up2date_debian
-    - gnome
+    - gnome4test  # - gnome 
