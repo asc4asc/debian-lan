@@ -1,3 +1,16 @@
+- name: Install GNOME Classic
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - gnome-session-flashback
+    - gnome-panel
+    - gnome-applets
+    - gnome-flashback
+    - gnome-terminal
+    - nautilus
+    - gdm3
+
 - name: make sure /etc/dconf/profile/ exists
   file:
     path: /etc/dconf/profile/
