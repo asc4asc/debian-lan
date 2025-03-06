@@ -3,31 +3,37 @@
     name:
       - task-gnome-desktop
     state: latest # noqa package-latest
+    become: true
 
 - name: make sure /etc/dconf/profile/ exists
   file:
     path: /etc/dconf/profile/
     state: directory
     recurse: true
+  become: true
 
 - name: prepare for gnome customized defaults
   copy:
     src: user
     dest: /etc/dconf/profile/user
     mode: 0644
+  become: true  
   notify: update dconf
+  
 
 - name: make sure /etc/dconf/db/local.d/ exists
   file:
     path: /etc/dconf/db/local.d/
     state: directory
     recurse: true
+  become: true
 
 - name: modify gnome defaults
   copy:
     src: defaults
     dest: /etc/dconf/db/local.d/defaults
     mode: 0644
+  become: true  
   notify: update dconf
 
 - name: disable splash screen
@@ -35,6 +41,7 @@
     dest: "/etc/default/grub"
     regexp: '"quiet"$'
     replace: '" "'
+  become: true  
   notify: update grub
 
 - name: Create autostart directory if it doesn't exist
@@ -44,6 +51,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+  become: true  
 
 - name: Create GNOME Terminal autostart .desktop file
   copy:
@@ -58,25 +66,30 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+  become: true  
 
 - name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
     regexp: '#.*AutomaticLoginEnable'
     line: AutomaticLoginEnable=True
+  become: true
 
 - name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
     regexp: '#.*AutomaticLogin'
-    line: AutomaticLogin={{ ansible_user }} 
+    line: AutomaticLogin={{ ansible_user }}
+  become: true  
     
 - name: Ensure gnome-initial-setup is removed
   apt:
     name: gnome-initial-setup
     state: absent
+  become: true  
 
 - name: Restart GDM to apply changes
   systemd:
     name: gdm
     state: restarted
+  become: true  
