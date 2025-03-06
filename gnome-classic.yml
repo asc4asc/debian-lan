@@ -5,8 +5,8 @@
 
   tasks:
     - name: Install psutil
-      pip:
-        name: psutil
+      apt:
+        name: python3-psutil
         state: present
         
     - name: Ensure GNOME Classic Mode is installed
