@@ -3,7 +3,7 @@
     name:
       - task-gnome-desktop
     state: latest # noqa package-latest
-    become: true
+  become: true
 
 - name: make sure /etc/dconf/profile/ exists
   file:
