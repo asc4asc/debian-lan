@@ -81,8 +81,8 @@
     state: absent
   become: true  
 
-- name: Restart GDM to apply changes
-  systemd:
-    name: gdm
-    state: restarted
-  become: true  
+#- name: Restart GDM to apply changes
+#  systemd:
+#    name: gdm
+#    state: restarted
+#  become: true  
