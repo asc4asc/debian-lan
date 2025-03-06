@@ -2,7 +2,18 @@
 - name: Configure GNOME Classic Mode
   hosts: all
   become: yes
+
   tasks:
+    - name: Ensure pip is installed
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install psutil
+      pip:
+        name: psutil
+        state: present
+        
     - name: Ensure GNOME Classic Mode is installed
       apt:
         name: gnome-session-flashback
