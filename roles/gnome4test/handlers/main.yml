@@ -8,8 +8,8 @@
   listen: update grub
   become: true
 
-- name: Restart GDM to apply changes
+- name: Restart GDM
   systemd:
     name: gdm
     state: restarted
-  become: true  
+  become: true
