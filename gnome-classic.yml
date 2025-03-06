@@ -1,6 +1,6 @@
---
+---
 - name: Configure GNOME Classic Mode
-  hosts: localhost
+  hosts: all
   become: yes
   tasks:
     - name: Ensure GNOME Classic Mode is installed
