@@ -70,9 +70,9 @@
       echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \
       mkdir -p /target/etc/systemd/system/getty@tty1.service.d ; \
       echo -e "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin {{ ansible_user }} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty1.service.d/override.conf ; \
-      [ -z "$playbook" ] ||mkdir -p /target/home/{{ ansible_user }}/todo && mkdir -p /target/home/{{ ansible_user }}/done ; \
+      [ -z "$playbook" ] ||( mkdir -p /target/home/{{ ansible_user }}/todo && mkdir -p /target/home/{{ ansible_user }}/done ; ) \
       [ -z "$playbook" ] ||echo '#!/bin/bash' >/target/home/{{ ansible_user }}/todo/300-makeit ; \
-      [ -z "$playbook" ] ||echo '[ $(tty) == /dev/tty1 ] || mv $0 done ; exit 0' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
+      [ -z "$playbook" ] ||echo '[ $(tty) == /dev/tty1 ] || ( mv $0 done ; exit 0 )' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, -c local /home/ansible/debian-lan/$playbook \$@ " >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       # [ -z "$playbook" ] ||echo "ansible-pull --url https://github.com/asc4asc/debian-lan.git -i localhost, -c local $playbook \$@ " >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
       [ -z "$playbook" ] ||echo 'mv $0 done' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
