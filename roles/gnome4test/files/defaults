@@ -18,15 +18,23 @@ default-folder-viewer='list-view'
 [org/gnome/nautilus/list-view]
 use-tree-view=true
 
+org.gnome.settings-daemon.plugins.power 
 [org/gnome/settings-daemon/plugins/power]
+idle-dim=false
 power-button-action='shutdown'
-sleep-inactive-battery-timeout=900
+sleep-inactive-battery-timeout=90000
 sleep-inactive-battery-type='hibernate'
-sleep-inactive-ac-timeout=7200
+sleep-inactive-ac-timeout=72000
 sleep-inactive-ac-type='suspend'
 
 [org/gnome/desktop/screensaver]
 lock-enabled=false
+
+[org/gnome/desktop/session] 
+idle-delay=0
+
+[org/gnome/SessionManager] 
+logout-prompt="false" 
 
 [org/gnome/desktop/interface]
 clock-show-date=true
@@ -34,4 +42,5 @@ clock-show-seconds=true
 clock-show-weekday=true
 
 [org/gnome/shell]
-favorite-apps=['gedit.desktop', 'gnome-terminal.desktop', 'nautilus.desktop']
+favorite-apps=['org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.DiskUtility.desktop' ]
+# favorite-apps=['gedit.desktop', 'gnome-terminal.desktop', 'nautilus.desktop']
