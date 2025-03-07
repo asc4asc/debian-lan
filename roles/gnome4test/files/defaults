@@ -18,7 +18,6 @@ default-folder-viewer='list-view'
 [org/gnome/nautilus/list-view]
 use-tree-view=true
 
-org.gnome.settings-daemon.plugins.power 
 [org/gnome/settings-daemon/plugins/power]
 idle-dim=false
 power-button-action='shutdown'
