@@ -42,5 +42,5 @@ clock-show-seconds=true
 clock-show-weekday=true
 
 [org/gnome/shell]
-favorite-apps=['org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.DiskUtility.desktop' ]
-# favorite-apps=['gedit.desktop', 'gnome-terminal.desktop', 'nautilus.desktop']
+# favorite-apps=['org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.DiskUtility.desktop' ]
+favorite-apps=['gnome-DiskUtility.desktop', 'gnome-terminal.desktop', 'nautilus.desktop']
