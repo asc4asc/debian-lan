@@ -33,7 +33,7 @@
     - bios-info.bash
     - start2grafik-back
     - start2console
-    - logout2console
+    - logout-gnome
     - 900-timeout-reboot
     - 900-timeout-powercycle
     - makeit4test
