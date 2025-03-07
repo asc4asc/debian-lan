@@ -40,15 +40,7 @@
     - put-git-sshkeys2authorized_keys
     - test-net
     - test-ssd
-       
-- name: Deploy script
-  ansible.builtin.copy:
-    src: startx
-    dest: /home/ansible/
-    mode: '0755'
-    owner: ansible
-    group: ansible    
-
+     
 - name: Ensure .bash_aliases file exists
   copy:
     dest: /home/ansible/.bash_aliases
