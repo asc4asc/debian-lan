@@ -7,7 +7,7 @@ clock-show-seconds=true
 clock-show-weekday=true
 
 [org/gnome/desktop/session] 
-idle-delay=0
+idle-delay=uint32 0
 
 [org/gnome/settings-daemon/plugins/power]
 power-button-action='shutdown'
