@@ -355,8 +355,8 @@
        
 - name: provide git repo if not available already # noqa git-latest
   git:
-    repo: {{ git_repo_url }}
-    dest: "{{ repo_dir }}" #  dest: "{{ git_dest }}"
+    repo: "{{ git_repo_url }}"
+    dest: "{{ git_dest }}" # dest: "{{ repo_dir }}" #
     version: "{{ git_branch }}"
     update: false
   become_user: "{{ ansible_user }}"
