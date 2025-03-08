@@ -8,6 +8,9 @@
   remote_user: ansible
   become: true
 
+  vars_files:
+    - git_vars.yml
+    
   vars:
     ## This interface provides the default route:
     if_wan: "{{ ansible_default_ipv4.interface }}"
@@ -26,7 +29,7 @@
     di_pkg: "debian-installer-{{ di_version }}-netboot-amd64"
 
     ansible_user: ansible
-    repo_dir: "/home/{{ ansible_user }}/debian-lan"
+    # repo_dir: "/home/{{ ansible_user }}/debian-lan"
     ansible_python_interpreter: "/usr/bin/python3"  ## needed for firewalld module
 
   pre_tasks:
