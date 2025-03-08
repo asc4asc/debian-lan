@@ -122,7 +122,7 @@
     state: absent
   become: true
 
-- name: remove the helper script for install
-  file:
-    path: /home/{{ ansible_user }}/todo/300-makeit
-    dest: /home/{{ ansible_user }}/done/300-makeit
+
+- name: Move the script to the second directory
+    command: mv /home/{{ ansible_user }}/todo/300-makeit /home/{{ ansible_user }}/done
+    ignore_errors: yes
