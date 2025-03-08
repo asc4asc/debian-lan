@@ -123,6 +123,6 @@
   become: true
 
 - name: remove the helper script for install
-  file:
-    path: /home/{{ ansible_user }}/todo/300-makeit
+  ansible.builtin.move:
+    src: /home/{{ ansible_user }}/todo/300-makeit
     dest: /home/{{ ansible_user }}/done/300-makeit
