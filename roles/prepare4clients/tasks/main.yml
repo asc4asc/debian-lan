@@ -78,7 +78,7 @@
       [ -z "$playbook" ] ||chmod -R a+x /target/home/ansible/todo/300-makeit ; \
       [ -z "$playbook" ] ||( [[ $playbook == *"install"* ]] && echo -e "#!/bin/bash\nsudo dhclient\nmv \$0 done" >>/target/home/{{ ansible_user }}/todo/200-netup;chmod -R a+x /target/home/{{ ansible_user }}/todo/200-netup ) ; \
       [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
-      [ -z "$playbook" ] ||in-target git clone {{ git_repo_url }} {{ repo_dir }} ; \
+      [ -z "$playbook" ] ||in-target git clone {{ git_repo_url }} --branch {{ git_branch }} {{ repo_dir }} ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
       echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
@@ -358,7 +358,7 @@
   git:
     repo: "{{ git_repo_url }}"
     dest: "{{ repo_dir }}" # dest: "{{ git_dest }}
-    # version: "{{ git_branch }}"
+    version: "{{ git_branch }}"  
     update: false
   become_user: "{{ ansible_user }}"
   when: not run_in_installer|default(false)|bool
