@@ -356,8 +356,8 @@
 - name: provide git repo if not available already # noqa git-latest
   git:
     repo: "{{ git_repo_url }}"
-    dest: "{{ git_dest }}"/debian-lan # dest: "{{ repo_dir }}" #
-    version: "{{ git_branch }}"
+    dest: "{{ repo_dir }}" # dest: "{{ git_dest }}
+    # version: "{{ git_branch }}"
     update: false
   become_user: "{{ ansible_user }}"
   when: not run_in_installer|default(false)|bool
