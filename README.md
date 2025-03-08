@@ -2,12 +2,16 @@
 copy of: https://salsa.debian.org/andi/debian-lan-ansible / with great thanks to andi@debian.org
 
 Install a nativ debian bookworm with preseeding to have a optimal start for a ansible install with playbooks.
+We are installing only testhosts for debugging and testing. No production server!!!  
 
 The installbox is a host to install clients with debian over the net. 
 
-* install from a ansible host with ansible-playbook ......
-* install from git from the net with ansible-pull ......
-* install local with ansible-playbook -i localhost -c local
+* Install with netboot debian pressed and the fresh client will be completed with ansible.
+  * direkt version with start ansible in the chroot of the installer
+  * Version that start ansible after reboot of the client better for debugging.....
+* Install from a ansible host with ansible-playbook ...... (Need a ansible prepared host to start.) 
+* Install from git from the net with ansible-pull ...... (Need a ansible prepared host to start.) 
+* Install local with ansible-playbook -i localhost -c local (Need a ansible prepared host to start.) 
 
 -----------------------------------------------------------------------------------
 
