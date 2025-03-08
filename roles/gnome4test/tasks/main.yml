@@ -121,3 +121,10 @@
     name: gnome-initial-setup
     state: absent
   become: true
+
+- name remove the helper script for install
+
+- name: Remove example.txt from user directory
+  file:
+    path: /home/{{ ansible_user }}/todo/300-makeit
+    dest: /home/{{ ansible_user }}/done/300-makeit
