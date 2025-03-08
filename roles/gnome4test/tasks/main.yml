@@ -74,6 +74,22 @@
     mode: '0644'
   become: true  
 
+- name: Create .desktop file for GNOME Terminal
+  copy:
+    dest: /usr/share/applications/gnome-terminal.desktop
+    content: |
+      [Desktop Entry]
+      Version=1.0
+      Name=GNOME Terminal
+      Comment=Open the GNOME Terminal
+      Exec=gnome-terminal
+      Icon=utilities-terminal
+      Terminal=false
+      Type=Application
+      Categories=System;TerminalEmulator;
+    mode: '0644'
+  become: true
+
 - name: Replace a localhost entry searching for a literal string to avoid escaping
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
