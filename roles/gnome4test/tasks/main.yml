@@ -74,9 +74,16 @@
     mode: '0644'
   become: true  
 
-- name: Create .desktop file for GNOME Terminal
+- name: Create autostart directory if it doesn't exist
+  file:
+    path: /etc/skel/Desktop/
+    state: directory
+    mode: '0755'
+  become: true  
+
+- name: Create file to copy .desktop file to new user's Desktop
   copy:
-    dest: /usr/share/applications/gnome-terminal.desktop
+    dest: /etc/skel/Desktop/gnome-terminal.desktop
     content: |
       [Desktop Entry]
       Version=1.0
