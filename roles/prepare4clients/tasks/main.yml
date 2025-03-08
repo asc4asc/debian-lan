@@ -154,7 +154,7 @@
       LABEL installbox2
          MENU LABEL Debian {{ di_version }} (amd64) + preseed installbox2
          kernel ::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/linux
-         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox2.yml ---
+         append initrd=::/d-i/n-pkg/images/{{ di_version }}/amd64/text/debian-installer/amd64/initrd.gz hostname=installbox2 interface=auto auto=true priority=critical url=tftp://{{ ansible_hostname }} playbook=installbox.yml ---
 
       LABEL kiosk
          MENU LABEL Debian {{ di_version }} (amd64) + preseed + kiosk.yml (playbook does not work so)
