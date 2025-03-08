@@ -124,5 +124,6 @@
 
 
 - name: Move the script to the second directory
-    command: mv /home/{{ ansible_user }}/todo/300-makeit /home/{{ ansible_user }}/done
+    command: "mv /home/{{ ansible_user }}/todo/300-makeit /home/{{ ansible_user }}/done"
     ignore_errors: yes
+  become: true
