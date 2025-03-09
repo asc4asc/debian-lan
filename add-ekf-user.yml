@@ -1,7 +1,6 @@
 ---
 - name: Create a new disabled user without a password
   hosts: all
-  become: yes
   tasks:
     - name: Add a new user in a disabled state
       user:
@@ -10,10 +9,19 @@
         shell: /bin/bash
         state: present
         password: "*"
+      become: true  
 
     - name: Automatic login user ekf 
       ansible.builtin.lineinfile:
         path: /etc/gdm3/daemon.conf
         regexp: '^(#\s*)?\s*AutomaticLogin=.*'
         line: 'AutomaticLogin=ekf'
+      become: true  
+
+    - name: Grant sudo privileges to the user using sudoers.d
+      copy:
+        content: 'ekf ALL=(ALL) NOPASSWD:ALL'
+        dest: /etc/sudoers.d/ekf
+        mode: '0440'
+        validate: 'visudo -cf %s'
       become: true  
