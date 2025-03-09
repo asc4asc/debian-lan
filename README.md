@@ -42,13 +42,14 @@ We will have examples in proxmox for testing with fixed Mac Adresses and auto in
 
 # Problems
 * ansible start in debian installer does only work with a workaround.
+* the preseed file and the boot config files are difficult and so not so easy to set up for different needs. 
 
 ### Later
 
 ### Idea 
-* xxxbox is a computer to install. It is mostly a host for the infrastruktur
+* xxxbox is a computer to install. It is mostly a host for the infrastructur
 * xxxhost is also a computer to install. It is a host for uns as standalone also outside this network
-* xxxadd is a funktion like gnome testmenu that will be added to the current installation.
+* add-xxx is a function like gnome testmenu that will be added to the current installation.
 * dist-upgrade2testing.yml is also a playbook for changing a host.
 
 ### Make a normal install from this
