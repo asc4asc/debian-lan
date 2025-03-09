@@ -21,7 +21,7 @@
       in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
       in-target chmod -R og= /home/ansible/.ssh/ ; \
       echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
-      echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \ 
+      echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \
   marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
 
 - name: insert block
