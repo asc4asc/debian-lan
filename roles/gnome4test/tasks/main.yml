@@ -108,7 +108,7 @@
     line: AutomaticLoginEnable=True
   become: true
   
-- name: Replace a localhost entry searching for a literal string to avoid escaping
+- name: Automatic login user ansible_user
   ansible.builtin.lineinfile:
     path: /etc/gdm3/daemon.conf
     regexp: '#.*AutomaticLogin'
