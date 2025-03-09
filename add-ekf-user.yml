@@ -1,9 +1,8 @@
 ---
-vars:
-  new_user: "ekf" 
-
 - name: Create a new disabled user without a password
   hosts: all
+  vars:
+    new_user: "ekf"
   tasks:
     - name: Add a new user in a disabled state
       user:
