@@ -34,11 +34,19 @@
       [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone {{ git_repo_url }} --branch {{ git_branch }} {{ repo_dir }} ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
+    marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
+   
+- name: insert block
+  blockinfile:
+    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
+    insertafter: "^### This command3 is run just before the install finishes:"
+    block: |
       echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
       in-target chown -R ansible:ansible /home/ansible/get.misc ; \
       in-target chmod -R a+x /home/ansible/get.misc ; \
       true
     marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
+
 
 # mkdir Bugfix is needed why?
 #[ -z "$playbook" ] || mkdir /dev/shm && in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" -i localhost, -c=local --url=git://{{ ansible_hostname }}/.git $playbook ;\
