@@ -10,3 +10,10 @@
         shell: /bin/bash
         state: present
         password: "*"
+
+- name: Automatic login user ekf 
+  ansible.builtin.lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '#.*AutomaticLogin'
+    line: AutomaticLogin=ekf
+  become: true  
