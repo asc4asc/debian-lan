@@ -14,6 +14,6 @@
     - name: Automatic login user ekf 
       ansible.builtin.lineinfile:
         path: /etc/gdm3/daemon.conf
-        regexp: '#.*AutomaticLogin'
+        regexp: '^(#\s*)?\s*AutomaticLogin=.*'
         line: AutomaticLogin=ekf
       become: true  
