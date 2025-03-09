@@ -13,7 +13,7 @@
 - name: insert block
   blockinfile:
     dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
-    insertafter: "^### This command is run just before the install finishes:"
+    insertafter: "^### This command1 is run just before the install finishes:"
     block: |
       d-i preseed/late_command string \
       mkdir -p /target/home/ansible/.ssh && \
