@@ -1,5 +1,5 @@
 # git_vars.yml
 git_repo_url: "https://github.com/asc4asc/debian-lan.git"
-git_branch: "main" # not uesed in the moment?
+git_branch: "main" 
 git_dest: "/home/{{ ansible_user }}"  
 repo_dir: "{{ git_dest }}/debian-lan"
