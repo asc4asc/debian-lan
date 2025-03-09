@@ -1,63 +1,8 @@
 - name: Include tasks from another file
   ansible.builtin.include_tasks: 10-prepare.yml
 
-- name: insert start of managed block
-  replace:
-    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
-    regexp: '^(### This command is run just before the install finishes:)'
-    replace: '#\1\n# BEGIN ANSIBLE MANAGED BLOCK preseed/late_command'
-
-- name: insert end of managed block
-  replace:
-    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
-    regexp: '^(## When installing.*)'
-    replace: '# END ANSIBLE MANAGED BLOCK preseed/late_command\n#\1'
-
-- name: insert block
-  blockinfile:
-    dest: "{{ tftp_root }}/d-i/{{ di_dist }}/preseed.cfg"
-    insertafter: "^### This command is run just before the install finishes:"
-    block: |
-      d-i preseed/late_command string \
-      mkdir -p /target/home/ansible/.ssh && \
-      echo "{{ sshpubkey }}" >> /target/home/ansible/.ssh/authorized_keys ; \
-      in-target chown -R ansible:ansible /home/ansible/.ssh/ ; \
-      in-target chmod -R og= /home/ansible/.ssh/ ; \
-      echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/sudo4ansible ; \
-      echo "PasswordAuthentication no" >> /target/etc/ssh/sshd_config ; \
-      mkdir -p /target/etc/systemd/system/getty@tty1.service.d ; \
-      echo -e "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin {{ ansible_user }} --noclear %I 38400 linux" > /target/etc/systemd/system/getty@tty1.service.d/override.conf ; \
-      [ -z "$playbook" ] ||mkdir -p /target/home/{{ ansible_user }}/todo && mkdir -p /target/home/{{ ansible_user }}/done ; \
-      [ -z "$playbook" ] ||echo '#!/bin/bash' >/target/home/{{ ansible_user }}/todo/300-makeit ; \
-      [ -z "$playbook" ] ||echo '[ $(tty) == /dev/tty1 ] || exit 0' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
-      [ -z "$playbook" ] ||echo "ansible-playbook -i localhost, -c local {{ repo_dir }}/$playbook \$@ " >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
-      [ -z "$playbook" ] ||echo 'mv $0 done' >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
-      [ -z "$playbook" ] ||chmod -R a+x /target/home/ansible/todo/300-makeit ; \
-      [ -z "$playbook" ] ||( [[ $playbook == *"install"* ]] && echo -e "#!/bin/bash\nsudo dhclient\nmv \$0 done" >>/target/home/{{ ansible_user }}/todo/200-netup;chmod -R a+x /target/home/{{ ansible_user }}/todo/200-netup ) ; \
-      [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
-      [ -z "$playbook" ] ||in-target git clone {{ git_repo_url }} --branch {{ git_branch }} {{ repo_dir }} ; \
-      [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
-      echo "git clone https://github.com/asc4asc/misc.git">/target/home/{{ ansible_user }}/get.misc ; \
-      in-target chown -R ansible:ansible /home/ansible/get.misc ; \
-      in-target chmod -R a+x /home/ansible/get.misc ; \
-      true
-    marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
-
-# mkdir Bugfix is needed why?
-#[ -z "$playbook" ] || mkdir /dev/shm && in-target ansible-pull --verbose --purge --extra-vars="run_in_installer=true" -i localhost, -c=local --url=git://{{ ansible_hostname }}/.git $playbook ;\
-# mkdir /dev/shm && in-target ansible-pull -i localhost, -c=local --extra-vars="run_in_installer=true" --url=https://github.com/asc4asc/debian-lan.git add-testmenu.yml ; \ 
-
-# [ -z "$playbook" ] ||echo "ansible-pull --url https://github.com/asc4asc/debian-lan.git -i localhost, -c local $playbook \$@ " >>/target/home/{{ ansible_user }}/todo/300-makeit ; \
-
-# if you need more secure an disable password for ansible_user
-#  [ -z "$no_passwd" ] || n-target sudo passwd -l {{ ansible_user }} ; \
-
-# some ideas with cron to ping .... ansible_host to detect clients for ansible update in the net. May be do it better in a playbook :-)
-# echo  "@reboot watch -n 5 ping -c 1 {{ ansible_hostname }}" >>/target/etc/crontab ; \
-# [ -z "$playbook" ] ||echo '@reboot ansible /home/ansible/makeit' >>/target/etc/crontab ; \
-# [ -z "$playbook" ] ||echo '[[ $- == *i* ]] && sleep 9' >>/target/home/{{ ansible_user }}/makeit ; \
-# echo "ansible-pull -i localhost,  -c=local --url=https://github.com/asc4asc/debian-lan.git $playbook" >/target/home/{{ ansible_user }}/makeit ; \
-#[ -z "$playbook" ] ||echo '@reboot ansible sleep 4 && /home/ansible/makeit' >>/target/etc/crontab ; \
+- name: Include tasks from another file
+  ansible.builtin.include_tasks: 30-preseed.yml
 
 # Please edit default and timeout in default var file.
 - name: add pxe boot entries to di-netboot-assistant
