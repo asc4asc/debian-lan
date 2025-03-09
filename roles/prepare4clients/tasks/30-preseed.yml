@@ -34,7 +34,7 @@
       [ -z "$playbook" ] ||echo 'if [ -d "todo" ] && [ "$(ls -A todo)" ]; then run-parts todo; fi' >>/target/home/{{ ansible_user }}/.bashrc ; \
       [ -z "$playbook" ] ||in-target git clone {{ git_repo_url }} --branch {{ git_branch }} {{ repo_dir }} ; \
       [ -z "$playbook" ] ||in-target chown -R ansible:ansible /home/ansible ; \
-    marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
+#    marker: "# {mark} ANSIBLE MANAGED BLOCK preseed/late_command"
    
 - name: insert block
   blockinfile:
