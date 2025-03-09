@@ -1,5 +1,5 @@
 ---
-var:
+vars:
   new_user: "ekf" 
 
 - name: Create a new disabled user without a password
