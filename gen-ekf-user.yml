@@ -15,5 +15,5 @@
       ansible.builtin.lineinfile:
         path: /etc/gdm3/daemon.conf
         regexp: '^(#\s*)?\s*AutomaticLogin=.*'
-        line: AutomaticLogin=ekf
+        line: 'AutomaticLogin=ekf'
       become: true  
