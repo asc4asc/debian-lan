@@ -40,6 +40,7 @@
     - put-git-sshkeys2authorized_keys
     - test-net
     - test-ssd
+    - i2c-test
      
 - name: Ensure .bash_aliases file exists
   copy:
