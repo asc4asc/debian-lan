@@ -1,10 +1,10 @@
 # use a big timeout to see that the CPU is still activ if you are testing 
 # for complete deaktivate you must edit -> # timeout={{ boot_timeout }}
-boot_host: testhost
+boot_host: gnomehost
 boot_timeout: 10
 
 prep_default: DEFAULT {{ boot_host }}
 prep_timeout: TIMEOUT {{ boot_timeout * 10 }}
 
-prep_default_efi: set default='Debian preseed testhost.yml'
+prep_default_efi: set default='Debian preseed gnomehost.yml'
 prep_timeout_efi: timeout={{ boot_timeout }}
