@@ -38,8 +38,8 @@
     - 900-timeout-powercycle
     - makeit4test
     - put-git-sshkeys2authorized_keys
-    - test-net
-    - test-ssd
+    - net-test
+    - ssd-test
     - i2c-test
      
 - name: Ensure .bash_aliases file exists
