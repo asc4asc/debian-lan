@@ -9,6 +9,8 @@
     - gnome-flashback
     - gnome-terminal
     - nautilus
+    - gedit
+    - firefox-esr
     - gdm3
   become: true  
 
