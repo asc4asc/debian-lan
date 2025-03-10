@@ -29,3 +29,9 @@
     regexp: '^(127\.0\.1\.1.*)$'
     replace: '#\1\n{{ ipaddr_lan | ipaddr("address") }} {{ ansible_hostname }}.{{ ansible_domain }} {{ ansible_hostname }}'
   when: ipaddr_lan is defined
+
+- name: copy file to /usr/local/sbin
+  copy:
+    src: clean-dhcp-cache
+    dest: /usr/local/sbin
+    mode: 0755
