@@ -23,4 +23,4 @@ idle-dim=false
 lock-enabled=false
 
 [org/gnome/SessionManager] 
-logout-prompt="false" 
+logout-prompt=false
