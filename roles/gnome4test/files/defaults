@@ -9,7 +9,6 @@ clock-show-weekday=true
 [org/gnome/desktop/session] 
 idle-delay=uint32 0
 
-# here the rest looks like it does not work as expected. :-(
 [org/gnome/settings-daemon/plugins/power]
 power-button-action='shutdown'
 sleep-inactive-battery-timeout==uint32 0
