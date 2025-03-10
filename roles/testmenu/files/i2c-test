@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-SMBus=$(ls -l /sys/bus/i2c/devices/ |grep 0000:00:14.4 | awk '{print 9}' | grep i2c | sed 's/i2c-//')
+PCIDEV="0000:00:1f.4"
+SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 readonly SLEEP4ME=0.2
 sudo modprobe i2c-dev
 # SMBus=$(sudo i2cdetect -l |grep smbus|cut -d'-' -f2|cut  -f1)
