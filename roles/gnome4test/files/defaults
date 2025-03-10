@@ -11,12 +11,12 @@ idle-delay=uint32 0
 
 [org/gnome/settings-daemon/plugins/power]
 power-button-action='shutdown'
-sleep-inactive-battery-timeout=0
+sleep-inactive-battery-timeout==uint32 0
 sleep-inactive-battery-type='hibernate'
-sleep-inactive-ac-timeout=0
+sleep-inactive-ac-timeout==uint32 0
 sleep-inactive-ac-type='suspend'
-sleep-display-ac=0
-sleep-display-battery=0
+sleep-display-ac==uint32 0
+sleep-display-battery==uint32 0
 idle-dim=false
 
 [org/gnome/desktop/screensaver]
