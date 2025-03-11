@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# May be a Probem we overwrite the register insted of read the byte and modify one bit and write this data back.
-# must be in a function. :-( / is to complex for easy use.
-
 sudo modprobe i2c-dev # to prevent problems.
 
 modify_i2c_register() {
@@ -43,7 +40,7 @@ modify_i2c_register() {
 
 # Example usage
 PCIDEV="0000:00:15.0"
-REGISTER_ADDR=0x70
+let REGISTER_ADDR=0x70
 BIT_POSITION=0
 NEW_BIT_VALUE=1
 
@@ -51,28 +48,9 @@ modify_i2c_register $PCIDEV $REGISTER_ADDR $BIT_POSITION $NEW_BIT_VALUE
 
 PCIDEV="0000:00:15.1"
 
-REGISTER_ADDR=0x70 
-for i in {0x70..0x77}
+let REGISTER_ADDR=0x70 
+for i in {0..7}
 do 
   modify_i2c_register $PCIDEV $REGISTER_ADDR $BIT_POSITION $NEW_BIT_VALUE
-  REGISTER_ADDR=$REGISTER_ADDR+1
+  let REGISTER_ADDR=$REGISTER_ADDR+1
 done
-
-# i2cset -y ${I2CBus} 0x58 0x00 # PMbus Netzteil off?? 
-# a=`i2cget -y ${I2CBus} 0x58 0x96 w` && b=`echo $a|cut -b 5-6` && c=`echo $a|cut -b 3-4` && d=`echo 0x$b$c` && printf "%d \n" $d # Power Register auslesen?? / geht das nicht einfacher?
-
-PCIDEV="0000:00:1f.4"
-I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
-readonly SLEEP4ME=0.2
-sudo modprobe i2c-dev
-# I2CBus=$(sudo i2cdetect -l |grep I2CBus|cut -d'-' -f2|cut  -f1)
-echo "Test start:"
-while true; do
-  sudo i2cset -y ${I2CBus} 0x2E 0xa0 0x80 b # LED
-  # sudo i2cset -y ${I2CBus} 0x2E 0xa0 0x04 b # Watchdog
-  sleep $SLEEP4ME
-  sudo i2cset -y ${I2CBus} 0x2E 0xa0 0x00 b 
-  sleep $SLEEP4ME
-done
-
- 
