@@ -2,7 +2,7 @@
 
 # May be a Probem we overwrite the register insted of read the byte and modify one bit and write this data back.
 
-modprobe i2c-dev # to prevent problems.
+sudo modprobe i2c-dev # to prevent problems.
 
 PCIDEV="0000:00:15.0"
 let I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
