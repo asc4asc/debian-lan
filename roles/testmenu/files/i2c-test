@@ -3,6 +3,9 @@
 PCIDEV="0000:00:15.0"
 SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 # scan side cards and read eeproms 
+sudo i2cset -y $SMBUS 0x70 1 
+sudo i2cdump -y $SMBUS 0x55 
+sudo i2cset -y $SMBUS 0x70 1 
 
 PCIDEV="0000:00:15.1"
 SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
