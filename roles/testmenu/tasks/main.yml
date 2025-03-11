@@ -41,6 +41,7 @@
     - net-test
     - ssd-test
     - i2c-test
+    - id2board_name
      
 - name: Ensure .bash_aliases file exists
   copy:
