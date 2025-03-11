@@ -1,4 +1,4 @@
-r#!/bin/bash
+#!/bin/bash
 #
 PCIDEV="0000:00:15.0"
 SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
@@ -34,6 +34,8 @@ sudo i2cset -y $SMBus 0x76 0
 sudo i2cset -y $SMBus 0x77 1 && sudo i2cdump -y $SMBus 0x55 
 sudo i2cset -y $SMBus 0x77 0 
 
+# i2cset -y $SMBus 0x58 0x00 # PMbus Netzteil off
+
 PCIDEV="0000:00:1f.4"
 SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 readonly SLEEP4ME=0.2
@@ -47,3 +49,5 @@ while true; do
   sudo i2cset -y ${SMBus} 0x2E 0xa0 0x00 b 
   sleep $SLEEP4ME
 done
+
+ 
