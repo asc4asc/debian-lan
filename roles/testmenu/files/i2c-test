@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# May be a Probem we overwrite the register insted of read the byte and modify one bit and write this data back.
+
 PCIDEV="0000:00:15.0"
 I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 # scan side cards and read eeproms 
-sudo i2cset -y ${I2CBus} 0x70 0x0 0x1 b && sudo i2cdump -y ${I2CBus} 0x55 b 
+dat=$(sudo i2cget -y ${I2CBus} 0x70 0x0) 
+dat=$dat | 0x01;
+sudo i2cset -y ${I2CBus} 0x70 0x0 $dat b && sudo i2cdump -y ${I2CBus} 0x55 b 
+dat=$(sudo i2cget -y ${I2CBus} 0x70 0x0) 
+dat=$dat & ~(0x01);
 sudo i2cset -y ${I2CBus} 0x70 0x0 0x0 b
 
 PCIDEV="0000:00:15.1"
