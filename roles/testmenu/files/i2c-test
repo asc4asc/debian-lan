@@ -1,41 +1,38 @@
 #!/bin/bash
 
-# It looks like we have a syntax problem with i2cset -> i2cset -y ${I2CBus} 0x2E 0xa0 0x80 b or i2cset -y ${I2CBus} 0x70 1
-# please check again.
-
 PCIDEV="0000:00:15.0"
 I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 # scan side cards and read eeproms 
 sudo i2cset -y ${I2CBus} 0x70 0x0 0x1 b 
-sudo i2cdump -y ${I2CBus} 0x55 
+sudo i2cdump -y ${I2CBus} 0x55 b 
 sudo i2cset -y ${I2CBus} 0x70 0x0 0x0 b
 
 PCIDEV="0000:00:15.1"
 I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 # scan pci bus and read eeproms 
-sudo i2cset -y ${I2CBus} 0x70 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x70 0 
+sudo i2cset -y ${I2CBus} 0x70 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x70 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x71 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x71 0 
+sudo i2cset -y ${I2CBus} 0x71 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x71 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x72 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x72 0 
+sudo i2cset -y ${I2CBus} 0x72 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x72 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x73 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x73 0 
+sudo i2cset -y ${I2CBus} 0x73 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x73 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x74 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x74 0 
+sudo i2cset -y ${I2CBus} 0x74 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x74 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x75 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x75 0 
+sudo i2cset -y ${I2CBus} 0x75 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x75 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x76 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x76 0 
+sudo i2cset -y ${I2CBus} 0x76 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x76 0x00 0x00 b
 
-sudo i2cset -y ${I2CBus} 0x77 1 && sudo i2cdump -y ${I2CBus} 0x55 
-sudo i2cset -y ${I2CBus} 0x77 0 
+sudo i2cset -y ${I2CBus} 0x77 0x00 0x01 b sudo i2cdump -y ${I2CBus} 0x55 b 
+sudo i2cset -y ${I2CBus} 0x77 0x00 0x00 b
 
 # i2cset -y ${I2CBus} 0x58 0x00 # PMbus Netzteil off?? 
 # a=`i2cget -y ${I2CBus} 0x58 0x96 w` && b=`echo $a|cut -b 5-6` && c=`echo $a|cut -b 3-4` && d=`echo 0x$b$c` && printf "%d \n" $d # Power Register auslesen?? / geht das nicht einfacher?
