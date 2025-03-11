@@ -1,8 +1,56 @@
 #!/bin/bash
 
 # May be a Probem we overwrite the register insted of read the byte and modify one bit and write this data back.
+# must be in a function. :-( / is to complex for easy use.
 
 sudo modprobe i2c-dev # to prevent problems.
+
+modify_i2c_register() {
+    local PCIDEV=$1
+    local REGISTER_ADDR=$2
+    local BIT_POSITION=$3
+    local NEW_BIT_VALUE=$4
+
+    # Get the I2C bus number
+    local I2CBus=$(ls -l /sys/bus/i2c/devices/ | grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//')
+
+    # Check if the device is present
+    if (sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null >/dev/null); then
+        # Read the current register value
+        local dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null)
+
+        # Modify the bit
+        if [ $NEW_BIT_VALUE -eq 1 ]; then
+            dat=$(($dat | (1 << BIT_POSITION)))
+        else
+            dat=$(($dat & ~(1 << BIT_POSITION)))
+        fi
+
+        # Write the modified value back to the register
+        sudo i2cset -y ${I2CBus} ${REGISTER_ADDR} 0x0 $dat b
+
+        # Optional: Dump the EEPROM data
+        sudo i2cdump -y ${I2CBus} 0x55 b
+
+        # Reset the bit (example)
+        dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0)
+        dat=$((dat & ~(1 << BIT_POSITION)))
+        sudo i2cset -y ${I2CBus} ${REGISTER_ADDR} 0x0 $dat b
+
+        echo "Register modified successfully!"
+    else
+        echo "No device found on side board!"
+    fi
+}
+
+# Example usage
+PCIDEV="0000:00:15.0"
+REGISTER_ADDR=0x70
+BIT_POSITION=0
+NEW_BIT_VALUE=1
+
+modify_i2c_register $PCIDEV $REGISTER_ADDR $BIT_POSITION $NEW_BIT_VALUE
+
 
 PCIDEV="0000:00:15.0"
 let I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
