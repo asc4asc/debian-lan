@@ -10,31 +10,11 @@ sudo i2cset -y $SMBus 0x70 0
 PCIDEV="0000:00:15.1"
 SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 # scan pci bus and read eeproms 
-  sudo i2cset -y $SMBus 0x70 1 
-  sudo i2cdump -y $SMBus 0x55 
+  sudo i2cset -y $SMBus 0x70 1 && sudo i2cdump -y $SMBus 0x55 
   sudo i2cset -y $SMBus 0x70 0 
-  sudo i2cset -y $SMBus 0x71 1 
-  sudo i2cdump -y $SMBus 0x55 
-  sudo i2cset -y $SMBus 0x71 0 
-  sudo i2cset -y $SMBus 0x72 1 
-  sudo i2cdump -y $SMBus 0x55 
-  sudo i2cset -y $SMBus 0x72 0 
-  sudo i2cset -y $SMBus 0x73 1 
-  sudo i2cdump -y $SMBus 0x55 
-  sudo i2cset -y $SMBus 0x73 0 
-  sudo i2cset -y $SMBus 0x74 1 
-  sudo i2cdump -y $SMBus 0x55 
-  sudo i2cset -y $SMBus 0x74 0 
-  sudo i2cset -y $SMBus 0x75 1 
-  sudo i2cdump -y $SMBus 0x55 
-  sudo i2cset -y $SMBus 0x75 0 
-  sudo i2cset -y $SMBus 0x76 1 
-  sudo i2cdump -y $SMBus 0x55 
+  sudo i2cset -y $SMBus 0x76 1 && sudo i2cdump -y $SMBus 0x55 
   sudo i2cset -y $SMBus 0x76 0 
-  sudo i2cset -y $SMBus 0x77 1 
-  sudo i2cdump -y $SMBus 0x55 
-  sudo i2cset -y $SMBus 0x77 0 
-
+ 
 PCIDEV="0000:00:1f.4"
 SMBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 readonly SLEEP4ME=0.2
