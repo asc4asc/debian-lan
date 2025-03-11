@@ -7,14 +7,16 @@ modprobe i2c-dev # to prevent problems.
 PCIDEV="0000:00:15.0"
 let I2CBus=$(ls -l /sys/bus/i2c/devices/ |grep ${PCIDEV} | awk '{print $9}' | grep i2c | sed 's/i2c-//' )
 # scan side cards and read eeproms 
-if ( dat=$(sudo i2cget -y ${I2CBus} 0x70 0x0 2>/dev/null) ); then 
+if ( sudo i2cget -y ${I2CBus} 0x70 0x0 2>/dev/null >/dev/null ); 
+then 
+  let dat=$(sudo i2cget -y ${I2CBus} 0x70 0x0 2>/dev/null)
   let dat=$(($dat | 0x01))
   sudo i2cset -y ${I2CBus} 0x70 0x0 $dat b && sudo i2cdump -y ${I2CBus} 0x55 b 
   let dat=$(sudo i2cget -y ${I2CBus} 0x70 0x0) 
   let dat=$((dat & ~(0x01)))
   sudo i2cset -y ${I2CBus} 0x70 0x0 0x0 b
 else 
-  echo "no device found on side board!"
+  echo "No device found on side board!"
 fi
 
 
