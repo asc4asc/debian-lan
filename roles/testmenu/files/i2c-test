@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo apt install i2c-tools
 sudo modprobe i2c-dev # to prevent problems.
 
 decode_board_id() {
