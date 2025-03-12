@@ -29,6 +29,7 @@ show_id_register() {
 
         # Optional: dump eeprom
         sudo i2cdump -y ${I2CBus} 0x55 b
+
         # Optional: Read the board ID
         sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x3F b
         sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0x3F b
@@ -51,13 +52,12 @@ show_id_register() {
         echo -n " "
         printf rid3=0x%X $(($id3>>4 & 0x03)) 
         echo
-        # printf id1R $((($id1>>3) & 0x03))
-        # echo
-        # printf boardID=0x%X $boardID
-        # echo 
-        # printf revID=0x%X $revID
+        
         # Bit 6,7 are not used because they are uesed for decoding.
         # echo
+        # Info for decode further.
+        # uint8_t hex2quad[] = {  0,  1,  4,  5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85 };
+        # uint8_t revId2rev[] = {  0,  1,  2, -1,  3,  4,  5,  6,  7,  8, -1, -1, -1, -1, -1 };
         # boardId += hex2quad[expData & 0x0F];		// Mask bit 3:0
 	# revId += hex2quad[(expData >> 4) & 0x03];	// Mask bit 5:4
    
