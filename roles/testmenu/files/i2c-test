@@ -7,15 +7,17 @@ sudo modprobe i2c-dev # to prevent problems.
 
 decode_board_id() {
     local I2CBus=$1
-    local REGISTER_ID=$2
+    local REGISTER_IO=$2
 
-local hex2quad=( 0  1  4  5 16 17 20 21 64 65 68 69 80 81 84 85 )
+local hex2quad=( 0 1 4 5 16 17 20 21 64 65 68 69 80 81 84 85 )
 local power_pin_tab=( 0x3F 0xBF 0xFF )
 revId2rev=( 0 1 2 -1 3 4 5 6 7 8 -1 -1 -1 -1 -1 )
 
 local let i=0
 local let board=0
 local let rev=0
+
+sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x3F b # set power direction pins 
 
 for out in "${power_pin_tab[@]}"
 do
