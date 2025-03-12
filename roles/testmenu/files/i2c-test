@@ -19,9 +19,11 @@ do
 
   let i=$i+1
   printf id$i=0x%X $(($id & 0xF0))
+  let id1=$(($id & 0xF0))
   echo -n " "
   printf rid$i=0x%X $(($id>>4 & 0x03)) 
   echo
+  echo Tab $id1 "${hex2quad[$id1]}" 
 done
 echo Tab4 "${hex2quad[4]}"
 echo Tab7 "${hex2quad[7]}"
