@@ -22,7 +22,7 @@ do
   echo -n " "
   printf rid$i=0x%X $(($id>>4 & 0x03)) 
   echo
-  echo "${hex2quad[$id]}"
+  echo "${hex2quad[$(($id & 0xF0))]}"
 done
 
 # Bit 6,7 are not used because they are uesed for decoding.
