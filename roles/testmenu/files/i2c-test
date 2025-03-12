@@ -18,7 +18,7 @@ do
   id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
 
   let i=$i+1
-  printf id$i=0x%X $(($id & 0xF0)
+  printf id$i=0x%X $(($id & 0xF0))
   echo -n " "
   printf rid$i=0x%X $(($id>>4 & 0x03)) 
   echo
