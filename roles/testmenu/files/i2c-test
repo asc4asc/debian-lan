@@ -5,6 +5,17 @@ sudo modprobe i2c-dev # to prevent problems.
 
 # add checks if all is in order to work!
 
+read_board_handle() {
+    local I2CBus=$1
+    local REGISTER_IO=$2
+
+sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0xFE b # set power direction pins 
+id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
+
+echo Handle open: $id
+}
+
+
 decode_board_id() {
     local I2CBus=$1
     local REGISTER_IO=$2
@@ -81,11 +92,30 @@ show_id_register() {
 
         decode_board_id ${I2CBus} ${REGISTER_IO}
       
-   
         # close multiplexer port
         dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0)
         dat=$((dat & ~(1 << BIT_POSITION)))
         sudo i2cset -y ${I2CBus} ${REGISTER_ADDR} 0x0 $dat b      
+
+        local dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null)
+
+        # Modify the bit
+        if [ $NEW_BIT_VALUE -eq 1 ]; then
+            dat=$(($dat | (2 << BIT_POSITION)))
+        else
+            dat=$(($dat & ~(2 << BIT_POSITION)))
+        fi
+
+        # Write the modified value back to the register
+        sudo i2cset -y ${I2CBus} ${REGISTER_ADDR} 0x0 $dat b
+
+        read_board_handle ${I2CBus} ${REGISTER_IO}
+        
+        # close multiplexer port
+        dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0)
+        dat=$((dat & ~(2 << BIT_POSITION)))
+        sudo i2cset -y ${I2CBus} ${REGISTER_ADDR} 0x0 $dat b    
+
     else
         let local slot=$REGISTER_ADDR-112
         echo "No device found on I2C/PCIDEV bus: ${PCIDEV} on Slot: ${slot}!"
