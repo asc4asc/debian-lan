@@ -14,6 +14,12 @@ The installbox is a host to install clients with debian over the net.
 * Install local with ansible-playbook -i localhost -c local (Need a ansible prepared host to start.) 
 
 -----------------------------------------------------------------------------------
+# Gnome
+dconf read /org/gnome/desktop/screensaver/idle-activation-enabled
+
+dconf write /org/gnome/desktop/screensaver/idle-activation-enabled false
+
+gsettings list-schemas 
 
 # Example Calls 
 
