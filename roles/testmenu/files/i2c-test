@@ -31,15 +31,15 @@ show_id_register() {
         sudo i2cdump -y ${I2CBus} 0x55 b
 
         # Optional: Read the board ID
-        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x3F b
-        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0x3F b
+        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x3F b # set IO for output power pins
+
+        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0x3F b # set power pins 
         id1=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
-        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xBF b
+        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xBF b # set power pins
         id2=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
-        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xFF b
+        sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xFF b # set power pins
         id3=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
-        # boardID=$(($id1 & 0x0F)) + $((id2 & 0x0F)) + $((id3 & 0x0F)) # Board ID is in bit 0,3
-        # revID=$((($id1>>3) & 0x03)) + $((($id2>>3) & 0x03)) + $((($id3>>) & 0x03)) # Rev is in bit 4,5 
+        
         printf id1=0x%X $(($id1 & 0x0F))
         echo -n " "
         printf rid1=0x%X $(($id1>>4 & 0x03)) 
@@ -56,12 +56,13 @@ show_id_register() {
         # Bit 6,7 are not used because they are uesed for decoding.
         # echo
         # Info for decode further.
+        # power_pin_tab[] = { 0x3F, 0xBF, 0xFF }
         # uint8_t hex2quad[] = {  0,  1,  4,  5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85 };
         # uint8_t revId2rev[] = {  0,  1,  2, -1,  3,  4,  5,  6,  7,  8, -1, -1, -1, -1, -1 };
         # boardId += hex2quad[expData & 0x0F];		// Mask bit 3:0
 	# revId += hex2quad[(expData >> 4) & 0x03];	// Mask bit 5:4
    
-        # Reset the bit (example)
+        # close multiplexer port
         dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0)
         dat=$((dat & ~(1 << BIT_POSITION)))
         sudo i2cset -y ${I2CBus} ${REGISTER_ADDR} 0x0 $dat b      
