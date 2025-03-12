@@ -43,11 +43,11 @@ show_id_register() {
         echo -n " "
         printf rid1=0x%X $(($id1 & 0x30)) 
         echo
-        printf id2=0x%X $(($id2 & 0x3F)) 
+        printf id2=0x%X $(($id2 & 0x0F)) 
         echo -n " "
         printf rid2=0x%X $(($id2 & 0x30)) 
         echo
-        printf id3=0x%X $(($id3 & 0x3F))
+        printf id3=0x%X $(($id3 & 0x0F))
         echo -n " "
         printf rid3=0x%X $(($id3 & 0x30)) 
         echo
