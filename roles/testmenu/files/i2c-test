@@ -37,7 +37,7 @@ show_id_register() {
         id2=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
         sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xFF b
         id3=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
-        let boardID=$(($id1 & 0x0F)) + $((id2 & 0x0F)) + $((id3 & 0x0F)) # Board ID is in bit 0,3
+        # boardID=$(($id1 & 0x0F)) + $((id2 & 0x0F)) + $((id3 & 0x0F)) # Board ID is in bit 0,3
         # revID=$((($id1>>3) & 0x03)) + $((($id2>>3) & 0x03)) + $((($id3>>) & 0x03)) # Rev is in bit 4,5 
         printf id1=0x%X $id1 
         echo
