@@ -2,18 +2,24 @@
 
 sudo modprobe i2c-dev # to prevent problems.
 
-decode_board_id()
+decode_board_id() {
     local I2CBus=$1
     local REGISTER_ID=$2
-{
+
 local hex2quad=( 0  1  4  5 16 17 20 21 64 65 68 69 80 81 84 85 )
 local power_pin_tab=( 0x3F 0xBF 0xFF )
 
+id1=0
 for out in "${power_pin_tab[@]}"
 do
   echo "$out"
+  sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 $out b # set power pins 
+  id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
+  let id1=$id1+$hex2quad[$id]
 done
+echo wert: $id1
 }
+
 
 show_id_register() {
     local PCIDEV=$1
@@ -42,6 +48,8 @@ show_id_register() {
 
         # Optional: dump eeprom
         sudo i2cdump -y ${I2CBus} 0x55 b
+
+        decode_board_id ${I2CBus} ${REGISTER_IO}
 
         # Optional: Read the board ID
         sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x3F b # set IO for output power pins
@@ -123,7 +131,7 @@ modify_i2c_register() {
     fi
 }
 
-decode_board_id 1 2 
+ 
 
 # Example usage
 PCIDEV="0000:00:15.0"
