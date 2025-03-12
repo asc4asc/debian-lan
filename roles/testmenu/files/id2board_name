@@ -70,5 +70,5 @@ Sub_Vendor_PCI_Device_Id=(
 
 let id=0005
 [ $1 ] && let id=$1
-echo Board with id $id is "${boardId2name[id]}" "${Sub_Vendor_PCI_Device_Id[id]}"
+echo Board with id $id is "${boardId2name[id]}" EKF Subvendor Device ID vergeben "${Sub_Vendor_PCI_Device_Id[id]}"
 
