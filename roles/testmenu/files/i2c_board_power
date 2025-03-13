@@ -18,10 +18,14 @@ let result=$(( $id & 0x01 ))
 if [ $result -ne 0 ]; then
   echo Handle open $id switch power off!
   dat=$(($dat |  2)) 
+  dat=$(($dat |  4))
+  dat=$(($dat |  8))
   echo Handle open $id switch after power off!
 else
   echo Handle close! $id overwrite power off!
   dat=$(($dat & ~2)) 
+  dat=$(($dat & ~4)) 
+  dat=$(($dat & ~8)) 
   echo Handle close! $id overwrite after power off!
 fi
 sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 $dat b
