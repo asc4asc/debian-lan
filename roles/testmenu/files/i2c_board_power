@@ -9,7 +9,7 @@ read_board_handle() {
     local I2CBus=$1
     local REGISTER_IO=$2
 
-sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x01 b # set power direction pins 
+sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x01 b # set power direction pins Handle is Input pin 1 
 let id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
 
 local dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null)
@@ -17,20 +17,23 @@ local dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null)
 let result=$(( $id & 0x01 ))
 if [ $result -ne 0 ]; then
   echo Handle open $id switch power off!
-  dat=$(($dat |  2)) 
-  dat=$(($dat |  4))
-  dat=$(($dat |  8))
-  dat=$(($dat | 10))
-  dat=$(($dat | 20))
+  dat=$(($dat |  2)) # Power on the most boards
+  # dat=$(($dat |  4))
+  # dat=$(($dat |  8))
+  # dat=$(($dat | 10))
+  # dat=$(($dat | 20))
+  # dat=$(($dat | 40))
+  # dat=$(($dat | 80))
   echo Handle open $id switch after power off!
 else
   echo Handle close! $id overwrite power off!
-  dat=$(($dat & ~2)) 
-  dat=$(($dat & ~4)) 
-  dat=$(($dat & ~8))
-  dat=$(($dat & ~10))
-  dat=$(($dat & ~20))
-
+  dat=$(($dat &  ~2)) # Power on the most boards
+  # dat=$(($dat &  ~4)) 
+  # dat=$(($dat &  ~8))
+  # dat=$(($dat & ~10))
+  # dat=$(($dat & ~20))
+  # dat=$(($dat & ~40))
+  # dat=$(($dat & ~80))
   echo Handle close! $id overwrite after power off!
 fi
 sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 $dat b
