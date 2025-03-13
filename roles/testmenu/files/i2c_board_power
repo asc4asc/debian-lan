@@ -15,7 +15,7 @@ let id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
 let result=$(( $id & 0x01 ))
 if [ $result -ne 0 ]; then
   echo Handle open $id switch power off!
-  sudo i2cset -y ${I2CBus} 0x01 0x01 b
+  sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0x01 b
 else
   echo Handle close!  $id
 fi
