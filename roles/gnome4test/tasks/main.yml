@@ -76,6 +76,25 @@
     group: "{{ ansible_user }}"
     mode: '0644'
   become: true
+
+- name: Create file to copy .desktop file to user's ansible_user Desktop
+  copy:
+    dest: /home/{{ ansible_user }}/Desktop/gnome-DiskUtility.desktop
+    content: |
+      [Desktop Entry]
+      Version=1.0
+      Name=GNOME Disk
+      Comment=Open the GNOME Disk Util
+      Exec=gnome-disks
+      Icon=org.gnome.Diskutility
+      Terminal=false
+      Type=Application
+      Categories=GNOME;GTK;Utility;X-Gnome-Utilities
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+  become: true
+
   
 - name: Create autostart directory if it doesn't exist
   file:
