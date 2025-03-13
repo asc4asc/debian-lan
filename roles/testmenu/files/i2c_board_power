@@ -12,7 +12,7 @@ read_board_handle() {
 sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x01 b # set power direction pins 
 let id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
 
-let result=$(( $id | 0xFE ))
+let result=$(( $id & 0x01 ))
 if [ $result -ne 0 ]; then
   echo Handle open $id switch power off!
   # i2cset -y ${I2CBus} 0x01 0x0 $dat b
