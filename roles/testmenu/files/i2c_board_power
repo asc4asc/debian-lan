@@ -12,15 +12,18 @@ read_board_handle() {
 sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x03 0x01 b # set power direction pins 
 let id=$(sudo i2cget -y ${I2CBus} ${REGISTER_IO} 0x0)
 
+local dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null)
+
 let result=$(( $id & 0x01 ))
 if [ $result -ne 0 ]; then
   echo Handle open $id switch power off!
-  sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xFF b
+  dat=$(($dat | 0x02)) 
 else
-  echo Handle close!  $id
-  sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 0xFC b
+  echo Handle close! $id
+  dat=$(($dat & 0xFC)) 
 fi
 }
+sudo i2cset -y ${I2CBus} ${REGISTER_IO} 0x01 $dat b
 
 show_id_register() {
     local PCIDEV=$1
