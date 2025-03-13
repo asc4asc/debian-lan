@@ -42,6 +42,7 @@
     - ssd-test
     - i2c-test
     - id2board_name
+    - i2c_board_power
      
 - name: Ensure .bash_aliases file exists
   copy:
