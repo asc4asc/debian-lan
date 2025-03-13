@@ -16,7 +16,7 @@ local dat=$(sudo i2cget -y ${I2CBus} ${REGISTER_ADDR} 0x0 2>/dev/null)
 
 let result=$(( $id & 0x01 ))
 if [ $result -ne 0 ]; then
-  echo Handle open $id switch power off!
+  echo Handle open $id switch power on!
   dat=$(($dat | 0x02)) 
 else
   echo Handle close! $id
