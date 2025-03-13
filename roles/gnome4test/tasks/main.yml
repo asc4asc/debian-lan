@@ -86,7 +86,7 @@
       Name=GNOME Disk
       Comment=Open the GNOME Disk Util
       Exec=gnome-disks
-      Icon=org.gnome.Diskutility
+      Icon=org.gnome.DiskUtility
       Terminal=false
       Type=Application
       Categories=GNOME;GTK;Utility;X-Gnome-Utilities
