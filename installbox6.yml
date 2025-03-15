@@ -10,6 +10,9 @@
   remote_user: ansible
   become: true
 
+  vars_files:
+    - git_vars.yml
+
   vars:
     ## This interface provides the default route:
     if_lan: "{{ ansible_default_ipv4.interface }}"
@@ -30,7 +33,7 @@
 
   roles:
     - up2date_debian
-    - dhcp6radvdatftpd
+    - dhcp6radvdatftp
     - netbootinstaller
     - aptcacher
     - prepare4clients
