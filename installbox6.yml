@@ -22,7 +22,7 @@
     ipv6_lan: "{{ prefix | ipaddr('address') | slaac(ansible_default_ipv4.macaddress) }}"
 
     di_dist: "{{ ansible_distribution_release }}"
-    di_version: 11 # "{{ ansible_distribution_major_version }}"
+    di_version: 12 # "{{ ansible_distribution_major_version }}"
     di_pkg: "debian-installer-{{ di_version }}-netboot-amd64"
 
     extra_pkgs: [binutils] # FIXME: missing dependency in di-netboot-assistant
