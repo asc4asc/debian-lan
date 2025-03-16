@@ -13,6 +13,11 @@ The installbox is a host to install clients with debian over the net.
 * Install from git from the net with ansible-pull ...... (Need a ansible prepared host to start.) 
 * Install local with ansible-playbook -i localhost -c local (Need a ansible prepared host to start.) 
 
+# Setup installbox
+The installbox must be installed with two Interfaces the first is for boot over net.
+After install we must change (in proxmox...) the first interface to dhcp for internet and the second is the new local net to install new clients.
+You must install a other installbox 1 or 2 not the same as you are running because of IP doubles.
+
 -----------------------------------------------------------------------------------
 # Gnome
 dconf read /org/gnome/desktop/screensaver/idle-activation-enabled
