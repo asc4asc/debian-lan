@@ -1,0 +1,10 @@
+interface {{ if_lan }}
+{
+   AdvSendAdvert on;
+   AdvManagedFlag on;
+   AdvOtherConfigFlag on;
+
+   prefix {{ prefix }}
+   {
+   };
+};

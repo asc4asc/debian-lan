@@ -1,0 +1,14 @@
+## RAs 
+---
+- name: install di-netboot-assistant and installer package
+  apt:
+    name:
+      - radvd
+    state: latest # noqa package-latest
+
+- name: configure radvd
+  template:
+    src: radvd.conf.j2
+    dest: /etc/radvd.conf
+    mode: 0644
+  notify: restart radvd
