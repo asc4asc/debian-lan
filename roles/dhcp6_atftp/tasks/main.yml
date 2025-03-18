@@ -11,16 +11,8 @@
   apt:
     name:
       - kea-dhcp6-server
-      - radvd
       - atftpd
     state: latest # noqa package-latest
-
-- name: configure radvd
-  template:
-    src: radvd.conf.j2
-    dest: /etc/radvd.conf
-    mode: 0644
-  notify: restart radvd
 
 - name: configure kea-dhcp-server
   template:
