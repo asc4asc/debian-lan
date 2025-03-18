@@ -35,7 +35,7 @@
 
   roles:
     - up2date_debian
-    - radvd
+    # - radvd # in the moment we can not use IPV6 for the router because we use masq.
     - dhcp6_atftp
     - netbootinstaller
     - aptcacher
