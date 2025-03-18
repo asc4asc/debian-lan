@@ -30,9 +30,9 @@
   notify: restart kea-dhcp6-server
 
 - name: set IPv6 address on interface
-  blockinfile:
-    path: /etc/network/interfaces.d/static-ipv6
-    block: |
+  copy:
+    dest: /etc/network/interfaces.d/static-ipv6
+    content: |
       allow-hotplug {{ if_lan }}
       iface {{ if_lan }} inet6 static
          address 2001:db8:b001::1/64
