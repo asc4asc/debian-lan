@@ -14,11 +14,12 @@
     - git_vars.yml
 
   vars:
-    ## This interface provides the default route:
-    if_lan: "{{ ansible_default_ipv4.interface }}"
+    # if_lan: "{{ ansible_default_ipv4.interface }}"
+    ## Use the first remaining interface for the LAN:
+    if_lan: "{{ ansible_interfaces | difference([if_wan, 'lo']) | first }}"
     prefix: '2001:db8:b001::/64'
 
-    ## Find the IPv6 address: FIXME: not needed anymore?
+    ## Find the IPv6 address: FIXME: not needed anymore? 
     ipv6_lan: "{{ prefix | ipaddr('address') | slaac(ansible_default_ipv4.macaddress) }}"
 
     di_dist: "{{ ansible_distribution_release }}"
