@@ -14,6 +14,7 @@
     - git_vars.yml
 
   vars:
+    if_wan: "{{ ansible_default_ipv4.interface }}"
     # if_lan: "{{ ansible_default_ipv4.interface }}"
     ## Use the first remaining interface for the LAN:
     if_lan: "{{ ansible_interfaces | difference([if_wan, 'lo']) | first }}"
