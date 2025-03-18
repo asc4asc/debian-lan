@@ -31,7 +31,7 @@
 
 - name: set IPv6 address on interface
   blockinfile:
-    path: /etc/network/interfaces
+    path: /etc/network/interfaces.d/static-ipv6
     block: |
       allow-hotplug {{ if_lan }}
       iface {{ if_lan }} inet6 static
