@@ -35,7 +35,8 @@
 
   roles:
     - up2date_debian
-    - dhcp6radvdatftp
+    - radvd
+    - dhcp6_atftp
     - netbootinstaller
     - aptcacher
     - prepare4clients
