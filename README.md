@@ -18,7 +18,12 @@ The installbox must be installed with two Interfaces the first is for boot over 
 After install we must change (in proxmox...) the first interface to dhcp for internet and the second is the new local net to install new clients.
 You must install a other installbox 1 or 2 not the same as you are running because of IP doubles.
 
+```disable proxy in /etc/apt/apt.conf```
+
 -----------------------------------------------------------------------------------
+# Finisch the Installation of Client
+When you transfer the client into a other network ```disable proxy in /etc/apt/apt.conf``` 
+
 # Gnome
 dconf read /org/gnome/desktop/screensaver/idle-activation-enabled
 
